@@ -6,16 +6,7 @@ import { getUser } from '@/lib/db/queries';
 import { createCheckoutSession, createCustomerPortalSession } from '@/lib/payments/stripe';
 
 export async function checkoutAction(priceId: string): Promise<{ error?: string; redirect?: string }> {
-  // Añadir logs destacados para identificar fácilmente este proceso
-  console.log('\n\n');
-  console.log('🚀 =================================== 🚀');
-  console.log('🚀      INICIANDO PROCESO DE CHECKOUT      🚀');
-  console.log('🚀 =================================== 🚀');
-  console.log('\n');
-  
   try {
-    console.log(`🔄 Iniciando checkout con priceId: ${priceId}`);
-    
     // Validar el formato del ID de precio
     if (!priceId || !priceId.startsWith('price_')) {
       console.error(`❌ Formato de priceId inválido: ${priceId}`);
@@ -29,26 +20,13 @@ export async function checkoutAction(priceId: string): Promise<{ error?: string;
       return { error: 'no-session' };
     }
     
-    console.log(`✅ Usuario recuperado: ${user.id} (${user.email})`);
-    console.log(`🔄 Estado del usuario:
-      - stripeCustomerId: ${user.stripeCustomerId || 'No tiene'}
-      - stripeSubscriptionId: ${user.stripeSubscriptionId || 'No tiene'}
-      - stripeProductId: ${user.stripeProductId || 'No tiene'}
-      - subscriptionStatus: ${user.subscriptionStatus || 'No tiene'}
-    `);
-    
     if (user.stripeSubscriptionId && user.subscriptionStatus === 'active') {
-      console.log(`⚠️ El usuario ya tiene una suscripción activa: ${user.stripeSubscriptionId}`);
+      console.error(`❌ El usuario ya tiene una suscripción activa: ${user.stripeSubscriptionId}`);
       return { error: 'subscription-exists' };
     }
     
-    console.log(`🔄 Conectando directamente con Stripe para crear sesión de checkout...`);
-    
     // Usar siempre Stripe directamente sin simulación
     const redirectUrl = await createCheckoutSession({ user, priceId });
-    
-    console.log(`✅ URL de redirección generada: ${redirectUrl}`);
-    console.log('🚀 ======= FIN DE PROCESO DE CHECKOUT ======= 🚀\n\n');
     
     // Comprobar si la URL es una URL de error o una URL de Stripe
     if (redirectUrl.startsWith('/')) {
@@ -84,12 +62,6 @@ export async function checkoutAction(priceId: string): Promise<{ error?: string;
 }
 
 export async function customerPortalAction(): Promise<{ error?: string; redirect?: string }> {
-  console.log('\n\n');
-  console.log('💳 =================================== 💳');
-  console.log('💳    INICIANDO ACCESO AL PORTAL DE CLIENTE    💳');
-  console.log('💳 =================================== 💳');
-  console.log('\n');
-  
   try {
     const user = await getUser();
     
@@ -97,14 +69,6 @@ export async function customerPortalAction(): Promise<{ error?: string; redirect
       console.error(`❌ No se encontró sesión de usuario`);
       return { error: 'no-session' };
     }
-    
-    console.log(`✅ Usuario recuperado: ${user.id} (${user.email})`);
-    console.log(`🔄 Estado del usuario:
-      - stripeCustomerId: ${user.stripeCustomerId || 'No tiene'}
-      - stripeSubscriptionId: ${user.stripeSubscriptionId || 'No tiene'}
-      - stripeProductId: ${user.stripeProductId || 'No tiene'}
-      - subscriptionStatus: ${user.subscriptionStatus || 'No tiene'}
-    `);
     
     // Verificar si el usuario tiene un ID de cliente de Stripe
     if (!user.stripeCustomerId) {
@@ -124,8 +88,6 @@ export async function customerPortalAction(): Promise<{ error?: string; redirect
       return { error: 'no-product-id' };
     }
     
-    console.log(`🔄 Conectando directamente con Stripe para crear sesión de portal...`);
-    
     const session = await createCustomerPortalSession(user);
     
     // Manejar si createCustomerPortalSession devuelve un error
@@ -138,9 +100,6 @@ export async function customerPortalAction(): Promise<{ error?: string; redirect
       console.error('❌ La sesión del portal no tiene URL');
       return { error: 'portal-access' };
     }
-    
-    console.log(`✅ URL de portal generada: ${session.url}`);
-    console.log('💳 ======= FIN DE ACCESO AL PORTAL ======= 💳\n\n');
     
     return { redirect: session.url };
   } catch (error) {

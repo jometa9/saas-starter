@@ -82,21 +82,6 @@ export async function updateAppVersionAction(
         .where(ne(users.email, ''))
         .where(isNull(users.deletedAt));
       
-      console.log(`📧 Se enviarán notificaciones de versión a ${activeUsers.length} usuarios`);
-      
-      // Información opcional para el email
-      const releaseNotes = data instanceof FormData 
-        ? data.get('releaseNotes')?.toString() 
-        : '';
-        
-      const downloadUrl = data instanceof FormData 
-        ? data.get('downloadUrl')?.toString() 
-        : process.env.NEXT_PUBLIC_APP_URL;
-        
-      const isCritical = data instanceof FormData 
-        ? data.get('isCritical') === 'true'
-        : false;
-      
       // Enviar email a cada usuario de forma asíncrona
       // Limitar el número de emails simultáneos
       const batchSize = 5;
@@ -107,17 +92,21 @@ export async function updateAppVersionAction(
       for (let i = 0; i < activeUsers.length; i += batchSize) {
         const batch = activeUsers.slice(i, i + batchSize);
         
-        console.log(`📧 Procesando lote ${Math.floor(i/batchSize) + 1}/${Math.ceil(activeUsers.length/batchSize)} (${batch.length} usuarios)`);
-        
         const emailPromises = batch.map(recipient => 
           sendVersionUpdateEmail({
             email: recipient.email,
             name: recipient.name || recipient.email.split('@')[0],
             currentVersion: currentVersion,
             newVersion: updatedVersion,
-            releaseNotes: releaseNotes,
-            downloadUrl: downloadUrl,
-            isCritical: isCritical
+            releaseNotes: data instanceof FormData 
+              ? data.get('releaseNotes')?.toString() 
+              : '',
+            downloadUrl: data instanceof FormData 
+              ? data.get('downloadUrl')?.toString() 
+              : process.env.NEXT_PUBLIC_APP_URL,
+            isCritical: data instanceof FormData 
+              ? data.get('isCritical') === 'true'
+              : false
           }).then(() => {
             successCount++;
             return true;
@@ -138,26 +127,15 @@ export async function updateAppVersionAction(
         }
       }
       
-      console.log(`✅ Notificaciones de versión enviadas. Éxitos: ${successCount}, Fallos: ${failureCount}`);
-      
       // Enviar email cuando hay notas de la actualización
-      if (currentVersion && releaseNotes) {
+      if (currentVersion && data instanceof FormData && data.get('releaseNotes')) {
         try {
-          console.log('📧 Enviando emails de actualización a usuarios');
-          
-          // Solo en desarrollo, imprime mensaje de advertencia
-          if (process.env.NEXT_PUBLIC_EMAIL_MODE !== 'production') {
-            console.log('⚠️ MODO DESARROLLO: Los emails serán enviados a direcciones de prueba');
-          }
-          
           // Obtener todos los usuarios activos con email
           const activeUsers = await db
             .select()
             .from(users)
             .where(ne(users.email, ''))
             .where(isNull(users.deletedAt));
-          
-          console.log(`📧 Se enviarán notificaciones de versión a ${activeUsers.length} usuarios`);
           
           // Enviar email a cada usuario de forma asíncrona
           // Limitar el número de emails simultáneos
@@ -169,17 +147,21 @@ export async function updateAppVersionAction(
           for (let i = 0; i < activeUsers.length; i += batchSize) {
             const batch = activeUsers.slice(i, i + batchSize);
             
-            console.log(`📧 Procesando lote ${Math.floor(i/batchSize) + 1}/${Math.ceil(activeUsers.length/batchSize)} (${batch.length} usuarios)`);
-            
             const emailPromises = batch.map(recipient => 
               sendVersionUpdateEmail({
                 email: recipient.email,
                 name: recipient.name || recipient.email.split('@')[0],
                 currentVersion: currentVersion,
                 newVersion: updatedVersion,
-                releaseNotes: releaseNotes,
-                downloadUrl: downloadUrl,
-                isCritical: isCritical
+                releaseNotes: data instanceof FormData 
+                  ? data.get('releaseNotes')?.toString() 
+                  : '',
+                downloadUrl: data instanceof FormData 
+                  ? data.get('downloadUrl')?.toString() 
+                  : process.env.NEXT_PUBLIC_APP_URL,
+                isCritical: data instanceof FormData 
+                  ? data.get('isCritical') === 'true'
+                  : false
               }).then(() => {
                 successCount++;
                 return true;
@@ -200,8 +182,6 @@ export async function updateAppVersionAction(
             }
           }
           
-          console.log(`✅ Notificaciones de versión enviadas. Éxitos: ${successCount}, Fallos: ${failureCount}`);
-          
           // Si estamos en modo desarrollo, mostrar un mensaje especial
           if (process.env.NEXT_PUBLIC_EMAIL_MODE !== 'production') {
             console.log(`
@@ -209,8 +189,7 @@ export async function updateAppVersionAction(
               ⚠️ fueron redirigidos a direcciones de prueba seguras.
               ⚠️ Versión actual: ${currentVersion}
               ⚠️ Nueva versión: ${updatedVersion}
-              ⚠️ URL de descarga: ${downloadUrl || 'No especificada'}
-              ⚠️ Consulta los logs para más detalles
+              ⚠️ URL de descarga: ${data instanceof FormData ? data.get('downloadUrl')?.toString() || 'No especificada' : 'No especificada'}
             `);
           }
         } catch (error) {

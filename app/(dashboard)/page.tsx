@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CreditCard, Database, BookOpen } from 'lucide-react';
+import { ArrowRight, CreditCard, Database, BookOpen, Check } from 'lucide-react';
 import { Terminal } from './terminal';
+import Link from 'next/link';
 
 export default function HomePage() {
   return (
@@ -95,6 +96,144 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Pricing Plans</h2>
+            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
+              Choose the perfect plan for your needs. All plans include a 14-day free trial.
+            </p>
+          </div>
+          
+          <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:grid-cols-3">
+            {/* Free Plan */}
+            <div className="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200 bg-white">
+              <div className="p-6">
+                <h3 className="text-lg font-medium text-gray-900">Free</h3>
+                <p className="mt-4 text-sm text-gray-500">Basic features for personal projects or experimentation.</p>
+                <p className="mt-8">
+                  <span className="text-4xl font-extrabold text-gray-900">$0</span>
+                  <span className="text-base font-medium text-gray-500">/mo</span>
+                </p>
+                <Button
+                  asChild
+                  className="mt-8 block w-full bg-white border border-gray-800 rounded-md py-2 text-sm font-semibold text-gray-900 text-center hover:bg-gray-50"
+                >
+                  <Link href="/sign-up">Sign up for free</Link>
+                </Button>
+              </div>
+              <div className="px-6 pt-6 pb-8">
+                <h4 className="text-sm font-medium text-gray-900 tracking-wide">What's included</h4>
+                <ul className="mt-6 space-y-4">
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">Basic analytics</span>
+                  </li>
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">Up to 5 projects</span>
+                  </li>
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">Community support</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Standard Plan */}
+            <div className="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200 bg-white">
+              <div className="p-6">
+                <h3 className="text-lg font-medium text-gray-900">Standard</h3>
+                <p className="mt-4 text-sm text-gray-500">Extended features for professional use and growing businesses.</p>
+                <p className="mt-8">
+                  <span className="text-4xl font-extrabold text-gray-900">$29</span>
+                  <span className="text-base font-medium text-gray-500">/mo</span>
+                </p>
+                <Button
+                  asChild
+                  className="mt-8 block w-full bg-orange-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-orange-700"
+                >
+                  <Link href="/pricing">Go Premium</Link>
+                </Button>
+              </div>
+              <div className="px-6 pt-6 pb-8">
+                <h4 className="text-sm font-medium text-gray-900 tracking-wide">What's included</h4>
+                <ul className="mt-6 space-y-4">
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">All Free features</span>
+                  </li>
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">Advanced analytics</span>
+                  </li>
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">Unlimited projects</span>
+                  </li>
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">Priority email support</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Premium Plan */}
+            <div className="border-2 border-orange-500 rounded-lg shadow-sm divide-y divide-gray-200 bg-white">
+              <div className="p-6">
+                <h3 className="text-lg font-medium text-gray-900">Premium</h3>
+                <p className="mt-4 text-sm text-gray-500">Advanced features for enterprise needs and large teams.</p>
+                <p className="mt-8">
+                  <span className="text-4xl font-extrabold text-gray-900">$79</span>
+                  <span className="text-base font-medium text-gray-500">/mo</span>
+                </p>
+                <Button
+                  asChild
+                  className="mt-8 block w-full bg-orange-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-orange-700"
+                >
+                  <Link href="/pricing">Go Premium</Link>
+                </Button>
+              </div>
+              <div className="px-6 pt-6 pb-8">
+                <h4 className="text-sm font-medium text-gray-900 tracking-wide">What's included</h4>
+                <ul className="mt-6 space-y-4">
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">All Standard features</span>
+                  </li>
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">Custom integrations</span>
+                  </li>
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">Dedicated account manager</span>
+                  </li>
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">24/7 phone & email support</span>
+                  </li>
+                  <li className="flex space-x-3">
+                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
+                    <span className="text-sm text-gray-500">Advanced security features</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-10 text-center">
+            <Link href="/pricing">
+              <Button className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-md text-base font-medium">
+                View detailed comparison
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

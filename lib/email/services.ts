@@ -41,8 +41,6 @@ export async function sendWelcomeEmail({
   name: string;
   loginUrl?: string;
 }) {
-  console.log(`📨 Sending welcome email to ${email}`);
-  
   const { html, text } = welcomeEmailTemplate({
     name,
     loginUrl,
@@ -77,8 +75,6 @@ export async function sendSubscriptionChangeEmail({
   expiryDate?: string;
   dashboardUrl?: string;
 }) {
-  console.log(`📨 Sending subscription change email to ${email} for plan ${planName} (status: ${status})`);
-  
   try {
     if (!email) {
       throw new Error('Email address is missing');
@@ -103,8 +99,6 @@ export async function sendSubscriptionChangeEmail({
     } else if (status === 'unpaid') {
       subject = 'Problema de pago en tu suscripción a SaaS Starter';
     }
-    
-    console.log(`🔄 Sending subscription email with status: ${status}, subject: ${subject}`);
     
     // Reintentar el envío hasta 3 veces
     return await withRetry(
@@ -136,8 +130,6 @@ export async function sendPasswordResetEmail({
   token: string;
   expiryMinutes?: number;
 }) {
-  console.log(`📨 Sending password reset email to ${email}`);
-  
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
   
   const { html, text } = passwordResetEmailTemplate({
@@ -172,8 +164,6 @@ export async function sendVersionUpdateEmail({
   downloadUrl?: string;
   isCritical?: boolean;
 }) {
-  console.log(`📨 Sending version update email to ${email}`);
-  
   const { html, text } = versionUpdateEmailTemplate({
     name,
     currentVersion,

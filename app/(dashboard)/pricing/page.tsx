@@ -1,16 +1,18 @@
 import { checkoutAction } from '@/lib/payments/actions';
-import { Check, CreditCard, AlertTriangle } from 'lucide-react';
+import { Check, CreditCard, AlertTriangle, X } from 'lucide-react';
 import { getStripePrices, getStripeProducts } from '@/lib/payments/stripe';
 import { SubmitButton } from './submit-button';
 import { redirect } from 'next/navigation';
+import { getUser } from '@/lib/db/queries';
 
 // Prices are fresh for one hour max
 export const revalidate = 3600;
 
 export default async function PricingPage() {
-  const [prices, products] = await Promise.all([
+  const [prices, products, user] = await Promise.all([
     getStripePrices(),
     getStripeProducts(),
+    getUser(),
   ]);
 
   const basePlan = products.find((product) => product.name === 'Base');
@@ -19,36 +21,62 @@ export default async function PricingPage() {
   const basePrice = prices.find((price) => price.productId === basePlan?.id);
   const plusPrice = prices.find((price) => price.productId === plusPlan?.id);
 
+  const isLoggedIn = !!user;
+  const hasSubscription = !!(user?.stripeSubscriptionId && 
+    (user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trialing'));
+
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center mb-12">
         <h1 className="text-3xl font-bold mb-4">Choose Your Plan</h1>
         <p className="text-gray-600 max-w-xl mx-auto">
-          Select the subscription plan that best fits your needs. A subscription gives you full access to all features and the ability to manage your subscription through our customer portal.
+          Select the subscription plan that best fits your needs. All plans include a 14-day free trial.
         </p>
         
-        {/* Alerta para usuarios redirigidos */}
-        <div className="mt-6 bg-orange-50 border border-orange-200 rounded-lg p-4 max-w-lg mx-auto">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <AlertTriangle className="h-5 w-5 text-orange-500" />
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-orange-800">
-                Subscription Required
-              </h3>
-              <div className="mt-2 text-sm text-orange-700">
-                <p>
-                  To access the Manage Subscription portal, you need an active subscription. 
-                  Choose a plan below to get started.
-                </p>
+        {/* Alertas condicionales */}
+        {!isLoggedIn && (
+          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-lg mx-auto">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <AlertTriangle className="h-5 w-5 text-blue-500" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-blue-800">
+                  Sign Up Required
+                </h3>
+                <div className="mt-2 text-sm text-blue-700">
+                  <p>
+                    You need to create an account or sign in before subscribing.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
+        
+        {hasSubscription && (
+          <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4 max-w-lg mx-auto">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <Check className="h-5 w-5 text-green-500" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-green-800">
+                  You're Already Subscribed
+                </h3>
+                <div className="mt-2 text-sm text-green-700">
+                  <p>
+                    You already have an active subscription. You can manage your subscription from your dashboard.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       
-      <div className="grid md:grid-cols-2 gap-8 max-w-xl mx-auto">
+      {/* Pricing Cards Grid */}
+      <div className="grid md:grid-cols-2 gap-8 max-w-xl mx-auto mb-16">
         <PricingCard
           name={basePlan?.name || 'Base'}
           price={basePrice?.unitAmount || 800}
@@ -60,6 +88,8 @@ export default async function PricingPage() {
             'Email Support',
           ]}
           priceId={basePrice?.id}
+          isLoggedIn={isLoggedIn}
+          hasSubscription={hasSubscription}
         />
         <PricingCard
           name={plusPlan?.name || 'Plus'}
@@ -72,7 +102,91 @@ export default async function PricingPage() {
             '24/7 Support + Slack Access',
           ]}
           priceId={plusPrice?.id}
+          isLoggedIn={isLoggedIn}
+          hasSubscription={hasSubscription}
+          isRecommended={true}
         />
+      </div>
+      
+      {/* Full Feature Comparison Table */}
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold text-center mb-8">Feature Comparison</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Feature
+                </th>
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Free
+                </th>
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-orange-50">
+                  Base
+                </th>
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-orange-100">
+                  Plus
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              <FeatureRow 
+                feature="Number of Projects" 
+                free="3" 
+                base="Unlimited" 
+                plus="Unlimited" 
+              />
+              <FeatureRow 
+                feature="Team Members" 
+                free="1" 
+                base="Up to 5" 
+                plus="Unlimited" 
+              />
+              <FeatureRow 
+                feature="Storage" 
+                free="500MB" 
+                base="10GB" 
+                plus="100GB" 
+              />
+              <FeatureRow 
+                feature="API Access" 
+                free={<X className="h-5 w-5 text-red-500 mx-auto" />} 
+                base={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+                plus={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+              />
+              <FeatureRow 
+                feature="Priority Support" 
+                free={<X className="h-5 w-5 text-red-500 mx-auto" />} 
+                base={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+                plus={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+              />
+              <FeatureRow 
+                feature="Custom Domains" 
+                free={<X className="h-5 w-5 text-red-500 mx-auto" />} 
+                base={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+                plus={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+              />
+              <FeatureRow 
+                feature="Analytics Dashboard" 
+                free="Basic" 
+                base="Advanced" 
+                plus="Premium" 
+              />
+              <FeatureRow 
+                feature="White Labeling" 
+                free={<X className="h-5 w-5 text-red-500 mx-auto" />} 
+                base={<X className="h-5 w-5 text-red-500 mx-auto" />} 
+                plus={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+              />
+              <FeatureRow 
+                feature="Dedicated Account Manager" 
+                free={<X className="h-5 w-5 text-red-500 mx-auto" />} 
+                base={<X className="h-5 w-5 text-red-500 mx-auto" />} 
+                plus={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+              />
+            </tbody>
+          </table>
+        </div>
       </div>
     </main>
   );
@@ -112,6 +226,9 @@ function PricingCard({
   trialDays,
   features,
   priceId,
+  isLoggedIn,
+  hasSubscription,
+  isRecommended = false,
 }: {
   name: string;
   price: number;
@@ -119,9 +236,17 @@ function PricingCard({
   trialDays: number;
   features: string[];
   priceId?: string;
+  isLoggedIn: boolean;
+  hasSubscription: boolean;
+  isRecommended?: boolean;
 }) {
   return (
-    <div className="p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+    <div className={`p-6 border ${isRecommended ? 'border-orange-500 border-2' : 'border-gray-200'} rounded-lg shadow-sm hover:shadow-md transition-shadow relative`}>
+      {isRecommended && (
+        <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold py-1 px-3 transform translate-x-2 -translate-y-2 rounded">
+          RECOMMENDED
+        </div>
+      )}
       <h2 className="text-2xl font-medium text-gray-900 mb-2">{name}</h2>
       <p className="text-sm text-gray-600 mb-4">
         with {trialDays} day free trial
@@ -140,16 +265,65 @@ function PricingCard({
           </li>
         ))}
       </ul>
-      <form id="subscription-form">
-        <input type="hidden" name="priceId" value={priceId} />
-        <SubmitButton 
-          className="w-full flex items-center justify-center"
-          formAction={handleSubscription}
+      
+      {hasSubscription ? (
+        <button
+          className="w-full flex items-center justify-center bg-gray-200 text-gray-600 py-2 px-4 rounded-md"
+          disabled
         >
-          <CreditCard className="mr-2 h-4 w-4" />
-          Subscribe Now
-        </SubmitButton>
-      </form>
+          <Check className="mr-2 h-4 w-4" />
+          Currently Subscribed
+        </button>
+      ) : isLoggedIn ? (
+        <form id="subscription-form">
+          <input type="hidden" name="priceId" value={priceId} />
+          <SubmitButton 
+            className={`w-full flex items-center justify-center ${isRecommended ? 'bg-orange-600 hover:bg-orange-700' : ''}`}
+            formAction={handleSubscription}
+          >
+            <CreditCard className="mr-2 h-4 w-4" />
+            Subscribe Now
+          </SubmitButton>
+        </form>
+      ) : (
+        <a href="/sign-in?redirect=/pricing" className="block w-full">
+          <button
+            className={`w-full flex items-center justify-center bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-md ${isRecommended ? 'bg-orange-600 hover:bg-orange-700' : ''}`}
+          >
+            <CreditCard className="mr-2 h-4 w-4" />
+            Sign In to Subscribe
+          </button>
+        </a>
+      )}
     </div>
+  );
+}
+
+function FeatureRow({ 
+  feature, 
+  free, 
+  base, 
+  plus 
+}: { 
+  feature: string; 
+  free: string | React.ReactNode; 
+  base: string | React.ReactNode; 
+  plus: string | React.ReactNode; 
+}) {
+  return (
+    <tr>
+      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+        {feature}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+        {free}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center bg-orange-50">
+        {base}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center bg-orange-100">
+        {plus}
+      </td>
+    </tr>
   );
 }

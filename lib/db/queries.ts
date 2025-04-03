@@ -160,8 +160,6 @@ export async function getAppVersion() {
 }
 
 export async function updateAppVersion(version: string, userId: number) {
-  console.log(`Actualizando versión en la BD a: ${version} por usuario: ${userId}`);
-  
   const settings = await db
     .select()
     .from(appSettings)
@@ -171,7 +169,6 @@ export async function updateAppVersion(version: string, userId: number) {
   try {
     if (settings.length === 0) {
       // Si no existe, crear nuevo registro
-      console.log("No existe configuración, creando nueva...");
       const result = await db
         .insert(appSettings)
         .values({
@@ -181,11 +178,9 @@ export async function updateAppVersion(version: string, userId: number) {
         })
         .returning();
       
-      console.log("Registro creado:", result[0]);
       return result[0].appVersion;
     } else {
       // Si existe, actualizar
-      console.log(`Actualizando registro existente ID: ${settings[0].id} de ${settings[0].appVersion} a ${version}`);
       const result = await db
         .update(appSettings)
         .set({
@@ -197,10 +192,8 @@ export async function updateAppVersion(version: string, userId: number) {
         .returning();
       
       if (result.length > 0) {
-        console.log("Actualización exitosa:", result[0]);
         return result[0].appVersion;
       } else {
-        console.log("No se aplicaron cambios en la BD, obteniendo versión actual");
         // Si no se actualizó nada (quizás porque la versión es la misma), devolver la versión actual
         const currentSettings = await db
           .select()
@@ -212,7 +205,6 @@ export async function updateAppVersion(version: string, userId: number) {
       }
     }
   } catch (error) {
-    console.error("Error al actualizar versión:", error);
     throw error;
   }
 }
@@ -235,9 +227,6 @@ export async function updateUserById(
   }>
 ) {
   try {
-    console.log(`Actualizando usuario ID: ${userId} con datos:`, userData);
-    
-    // Añadir updatedAt al conjunto de datos a actualizar
     const dataToUpdate = {
       ...userData,
       updatedAt: new Date(),
@@ -250,14 +239,11 @@ export async function updateUserById(
       .returning();
     
     if (result.length === 0) {
-      console.error(`❌ Error: No se encontró el usuario con ID ${userId}`);
       throw new Error(`Usuario con ID ${userId} no encontrado`);
     }
     
-    console.log(`✅ Usuario ID: ${userId} actualizado correctamente`);
     return result[0];
   } catch (error) {
-    console.error(`❌ Error al actualizar usuario ID: ${userId}:`, error);
     throw error;
   }
 }

@@ -315,6 +315,27 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
               <div className="mb-4 sm:mb-0">
+                <div className="flex items-center space-x-4 mb-4">
+                  <Avatar>
+                    <AvatarImage
+                      alt={getUserDisplayName(user)}
+                    />
+                    <AvatarFallback>
+                      {getUserDisplayName(user)
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">
+                      {getUserDisplayName(user)}
+                    </p>
+                    <p className="text-sm text-muted-foreground capitalize">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
                 <p className="font-medium">
                   Current Plan: {user.planName || 'Free'}
                 </p>
@@ -688,35 +709,6 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
         </Card>
       )}
       
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-4">
-            <Avatar>
-              <AvatarImage
-                alt={getUserDisplayName(user)}
-              />
-              <AvatarFallback>
-                {getUserDisplayName(user)
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-medium">
-                {getUserDisplayName(user)}
-              </p>
-              <p className="text-sm text-muted-foreground capitalize">
-                {user.email}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Sección de administrador para actualización de versiones */}
       {user.role === 'admin' && (
         <div className="space-y-4 p-4 pt-8 border-t">
