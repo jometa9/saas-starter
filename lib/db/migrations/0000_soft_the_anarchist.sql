@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"password_hash" text NOT NULL,
 	"role" varchar(20) DEFAULT 'member' NOT NULL,
 	"api_key" text,
+	"reset_token" text,
+	"reset_token_expiry" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"deleted_at" timestamp,

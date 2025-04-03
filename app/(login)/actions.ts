@@ -12,7 +12,7 @@ import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createCheckoutSession } from '@/lib/payments/stripe';
-import { getUser } from '@/lib/db/queries';
+import { getUser, createPasswordResetToken, validateResetToken } from '@/lib/db/queries';
 import {
   validatedAction,
   validatedActionWithUser,
@@ -209,4 +209,73 @@ export const updateAccount = validatedActionWithUser(
 
     return { success: 'Account updated successfully.' };
   },
+);
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email('Invalid email address'),
+});
+
+export const forgotPassword = validatedAction(
+  forgotPasswordSchema,
+  async (data) => {
+    const { email } = data;
+
+    // Esto enviaría un correo electrónico en una implementación real
+    // Aquí simplemente generamos el token y devolvemos success
+    const result = await createPasswordResetToken(email);
+
+    if (!result) {
+      // Para evitar enumerar usuarios, siempre devolvemos éxito, incluso si el correo no existe
+      return { success: 'If an account exists with that email, a password reset link has been sent.' };
+    }
+
+    // En una implementación real, enviarías un correo electrónico con un enlace como:
+    // ${process.env.BASE_URL}/reset-password?token=${result.resetToken}
+    
+    console.log(`Reset token for ${email}: ${result.resetToken}`);
+
+    return { 
+      success: 'If an account exists with that email, a password reset link has been sent.',
+      // Solo para desarrollo/debugging, NO incluir en producción:
+      resetLink: `/reset-password?token=${result.resetToken}`
+    };
+  }
+);
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Token is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string().min(8, 'Please confirm your password'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
+});
+
+export const resetPasswordAction = validatedAction(
+  resetPasswordSchema,
+  async (data) => {
+    const { token, password } = data;
+
+    // Validar el token
+    const user = await validateResetToken(token);
+
+    if (!user) {
+      return { error: 'Invalid or expired token. Please request a new password reset.' };
+    }
+
+    // Actualizar la contraseña
+    const passwordHash = await hashPassword(password);
+
+    await db
+      .update(users)
+      .set({
+        passwordHash,
+        resetToken: null,
+        resetTokenExpiry: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, user.id));
+
+    return { success: 'Password updated successfully. Please sign in with your new password.' };
+  }
 );

@@ -12,3 +12,15 @@ export function generateApiKey(): string {
   // Convertir a string hexadecimal y añadir prefijo para identificar
   return `sk_${randomBytes.toString("hex")}`
 }
+
+export function generateResetToken(): string {
+  // Generar un token aleatorio para restablecer contraseña
+  return crypto.randomBytes(32).toString('hex');
+}
+
+export function getResetTokenExpiry(): Date {
+  // El token expira en 24 horas
+  const expiry = new Date();
+  expiry.setHours(expiry.getHours() + 24);
+  return expiry;
+}

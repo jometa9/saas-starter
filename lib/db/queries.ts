@@ -1,8 +1,9 @@
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq, gt, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
 import { users } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
+import { generateResetToken, getResetTokenExpiry } from '@/lib/utils';
 
 export async function getUser() {
   const sessionCookie = (await cookies()).get('session');
@@ -72,4 +73,64 @@ export async function getUserByApiKey(apiKey: string) {
     .limit(1);
 
   return result.length > 0 ? result[0] : null;
+}
+
+export async function createPasswordResetToken(email: string) {
+  const user = await db
+    .select()
+    .from(users)
+    .where(and(eq(users.email, email), isNull(users.deletedAt)))
+    .limit(1);
+
+  if (user.length === 0) {
+    return null;
+  }
+
+  const resetToken = generateResetToken();
+  const resetTokenExpiry = getResetTokenExpiry();
+
+  await db
+    .update(users)
+    .set({
+      resetToken,
+      resetTokenExpiry,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, user[0].id));
+
+  return {
+    user: user[0],
+    resetToken,
+  };
+}
+
+export async function validateResetToken(token: string) {
+  const now = new Date();
+  
+  const result = await db
+    .select()
+    .from(users)
+    .where(
+      and(
+        eq(users.resetToken, token),
+        gt(users.resetTokenExpiry!, now),
+        isNull(users.deletedAt)
+      )
+    )
+    .limit(1);
+
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  const user = await validateResetToken(token);
+  
+  if (!user) {
+    return null;
+  }
+  
+  // Esta función será implementada en el archivo actions.ts
+  // usando la función hashPassword
+  
+  return user;
 }
