@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CreditCard, Database } from 'lucide-react';
+import { ArrowRight, CreditCard, Database, BookOpen } from 'lucide-react';
 import { Terminal } from './terminal';
 
 export default function HomePage() {
@@ -18,7 +18,7 @@ export default function HomePage() {
                 ready-to-use template. Packed with modern technologies and
                 essential integrations.
               </p>
-              <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
+              <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0 flex flex-col sm:flex-row gap-4">
                 <a
                   href="https://vercel.com/templates/next.js/next-js-saas-starter"
                   target="_blank"
@@ -26,6 +26,12 @@ export default function HomePage() {
                   <Button className="bg-white hover:bg-gray-100 text-black border border-gray-200 rounded-full text-lg px-8 py-4 inline-flex items-center justify-center">
                     Deploy your own
                     <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </a>
+                <a href="/docs">
+                  <Button variant="outline" className="rounded-full text-lg px-8 py-4 inline-flex items-center justify-center">
+                    Read the Docs
+                    <BookOpen className="ml-2 h-5 w-5" />
                   </Button>
                 </a>
               </div>
