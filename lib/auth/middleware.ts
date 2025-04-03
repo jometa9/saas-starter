@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { TeamDataWithMembers, User } from '@/lib/db/schema';
-import { getTeamForUser, getUser } from '@/lib/db/queries';
+import { User } from '@/lib/db/schema';
+import { getUser } from '@/lib/db/queries';
 import { redirect } from 'next/navigation';
 
 export type ActionState = {
@@ -9,67 +9,64 @@ export type ActionState = {
   [key: string]: any; // This allows for additional properties
 };
 
-type ValidatedActionFunction<S extends z.ZodType<any, any>, T> = (
-  data: z.infer<S>,
-  formData: FormData
-) => Promise<T>;
+type ActionResult<T> = Promise<T>;
 
-export function validatedAction<S extends z.ZodType<any, any>, T>(
-  schema: S,
-  action: ValidatedActionFunction<S, T>
-) {
-  return async (prevState: ActionState, formData: FormData): Promise<T> => {
-    const result = schema.safeParse(Object.fromEntries(formData));
+type ActionWithFormData<T> = (prevState: unknown, formData: FormData) => ActionResult<T>;
+
+type ActionWithData<T, D> = (
+  data: D,
+  formData: FormData,
+) => ActionResult<T>;
+
+type ActionWithUserFunction<T, D> = (
+  data: D,
+  formData: FormData,
+  user: User,
+) => ActionResult<T>;
+
+export function validatedAction<T, D>(
+  schema: z.ZodType<D>,
+  action: ActionWithData<T, D>,
+): ActionWithFormData<T> {
+  return async (prevState: unknown, formData: FormData) => {
+    if (!formData || typeof formData.entries !== 'function') {
+      return { error: 'Invalid form data' } as T;
+    }
+
+    const obj = Object.fromEntries(formData.entries());
+    const result = schema.safeParse(obj);
+
     if (!result.success) {
-      return { error: result.error.errors[0].message } as T;
+      const error = result.error.errors[0]?.message ?? 'Invalid data';
+      return { error } as T;
     }
 
     return action(result.data, formData);
   };
 }
 
-type ValidatedActionWithUserFunction<S extends z.ZodType<any, any>, T> = (
-  data: z.infer<S>,
-  formData: FormData,
-  user: User
-) => Promise<T>;
-
-export function validatedActionWithUser<S extends z.ZodType<any, any>, T>(
-  schema: S,
-  action: ValidatedActionWithUserFunction<S, T>
-) {
-  return async (prevState: ActionState, formData: FormData): Promise<T> => {
-    const user = await getUser();
-    if (!user) {
-      throw new Error('User is not authenticated');
+export function validatedActionWithUser<T, D>(
+  schema: z.ZodType<D>,
+  action: ActionWithUserFunction<T, D>,
+): ActionWithFormData<T> {
+  return async (prevState: unknown, formData: FormData) => {
+    if (!formData || typeof formData.entries !== 'function') {
+      return { error: 'Invalid form data' } as T;
     }
 
-    const result = schema.safeParse(Object.fromEntries(formData));
-    if (!result.success) {
-      return { error: result.error.errors[0].message } as T;
-    }
-
-    return action(result.data, formData, user);
-  };
-}
-
-type ActionWithTeamFunction<T> = (
-  formData: FormData,
-  team: TeamDataWithMembers
-) => Promise<T>;
-
-export function withTeam<T>(action: ActionWithTeamFunction<T>) {
-  return async (formData: FormData): Promise<T> => {
     const user = await getUser();
     if (!user) {
       redirect('/sign-in');
     }
 
-    const team = await getTeamForUser(user.id);
-    if (!team) {
-      throw new Error('Team not found');
+    const obj = Object.fromEntries(formData.entries());
+    const result = schema.safeParse(obj);
+
+    if (!result.success) {
+      const error = result.error.errors[0]?.message ?? 'Invalid data';
+      return { error } as T;
     }
 
-    return action(formData, team);
+    return action(result.data, formData, user);
   };
 }
