@@ -63,3 +63,13 @@ export async function updateUserSubscription(
     })
     .where(eq(users.id, userId));
 }
+
+export async function getUserByApiKey(apiKey: string) {
+  const result = await db
+    .select()
+    .from(users)
+    .where(and(eq(users.apiKey, apiKey), isNull(users.deletedAt)))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : null;
+}

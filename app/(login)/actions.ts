@@ -17,6 +17,7 @@ import {
   validatedAction,
   validatedActionWithUser,
 } from '@/lib/auth/middleware';
+import { generateApiKey } from '@/lib/utils';
 
 const signInSchema = z.object({
   email: z.string().email().min(3).max(255),
@@ -89,10 +90,12 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   }
 
   const passwordHash = await hashPassword(password);
+  const apiKey = generateApiKey();
 
   const newUser: NewUser = {
     email,
     passwordHash,
+    apiKey,
     role: 'owner',
   };
 

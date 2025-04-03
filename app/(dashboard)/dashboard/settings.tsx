@@ -48,6 +48,32 @@ export function Settings({ user }: { user: User }) {
           </div>
         </CardContent>
       </Card>
+      
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>API Key</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Use this API key to validate your subscription from external applications.
+              Add it as a URL parameter: <code className="bg-gray-100 p-1 rounded">?apiKey=your_key</code>
+            </p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+              <div className="font-mono bg-gray-100 p-2 rounded w-full overflow-auto">
+                {user.apiKey || 'No API key generated'}
+              </div>
+            </div>
+            <div className="text-sm text-muted-foreground mt-2">
+              <strong>Example usage:</strong>
+              <pre className="bg-gray-100 p-2 rounded mt-1 overflow-auto">
+                {`${window.location.origin}/api/validate-subscription?apiKey=${user.apiKey || 'your_api_key'}`}
+              </pre>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>Profile</CardTitle>

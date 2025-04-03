@@ -2,6 +2,7 @@ import { stripe } from '../payments/stripe';
 import { db } from './drizzle';
 import { users } from './schema';
 import { hashPassword } from '../auth/session';
+import { generateApiKey } from '../utils';
 
 async function createStripeProducts() {
   console.log('Creating Stripe products and prices...');
@@ -47,12 +48,14 @@ async function main() {
 
   // Create a test user
   const passwordHash = await hashPassword('password');
+  const apiKey = generateApiKey();
   const [user] = await db
     .insert(users)
     .values({
       name: 'Test User',
       email: 'test@example.com',
       passwordHash,
+      apiKey,
       role: 'owner',
     })
     .returning();
