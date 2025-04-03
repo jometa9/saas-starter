@@ -10,8 +10,13 @@ export const checkoutAction = async (formData: FormData) => {
     redirect('/sign-in');
   }
   
-  const priceId = formData.get('priceId') as string;
-  await createCheckoutSession({ user, priceId });
+  try {
+    const priceId = formData.get('priceId') as string;
+    await createCheckoutSession({ user, priceId });
+  } catch (error) {
+    console.error('Error en checkoutAction:', error);
+    redirect('/dashboard?error=payment-error');
+  }
 };
 
 export const customerPortalAction = async () => {
@@ -20,6 +25,11 @@ export const customerPortalAction = async () => {
     redirect('/sign-in');
   }
   
-  const session = await createCustomerPortalSession(user);
-  redirect(session.url);
+  try {
+    const session = await createCustomerPortalSession(user);
+    redirect(session.url);
+  } catch (error) {
+    console.error('Error en customerPortalAction:', error);
+    redirect('/dashboard?error=portal-access');
+  }
 };

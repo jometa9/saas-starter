@@ -6,10 +6,54 @@ import {
   getUser,
   updateUserSubscription
 } from '@/lib/db/queries';
+import { sendSubscriptionChangeEmail } from '@/lib/email';
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-02-24.acacia'
-});
+// Variable para almacenar la instancia de Stripe
+let stripeInstance: Stripe | null = null;
+
+// Función para obtener la instancia de Stripe de forma segura
+export function getStripe(): Stripe {
+  if (stripeInstance) return stripeInstance;
+  
+  const apiKey = process.env.STRIPE_SECRET_KEY;
+  
+  if (!apiKey) {
+    // Crear una instancia mock para desarrollo que no realice solicitudes reales
+    console.warn('⚠️ STRIPE_SECRET_KEY no está configurado. Las funciones de pago no estarán disponibles.');
+    
+    // Devolvemos un objeto que actúa como Stripe pero que no hace nada real
+    // @ts-ignore - Creamos un proxy que simula la API de Stripe
+    return new Proxy({}, {
+      get: (target, prop) => {
+        // Devuelve un objeto para cualquier propiedad solicitada
+        if (prop === 'checkout' || prop === 'customers' || prop === 'billingPortal' || 
+            prop === 'products' || prop === 'prices' || prop === 'subscriptions') {
+          return new Proxy({}, {
+            get: () => {
+              // Devuelve una función que lanza un error cuando se intenta usar
+              return () => {
+                throw new Error('Stripe no está configurado. Añade STRIPE_SECRET_KEY a tu archivo .env.local');
+              };
+            }
+          });
+        }
+        return () => {
+          throw new Error('Stripe no está configurado. Añade STRIPE_SECRET_KEY a tu archivo .env.local');
+        };
+      }
+    });
+  }
+  
+  // Creamos la instancia real de Stripe
+  stripeInstance = new Stripe(apiKey, {
+    apiVersion: '2025-02-24.acacia'
+  });
+  
+  return stripeInstance;
+}
+
+// Obtenemos Stripe solo cuando se necesita
+export const stripe = getStripe();
 
 export async function createCheckoutSession({
   user,
@@ -110,35 +154,109 @@ export async function createCustomerPortalSession(user: User) {
 }
 
 export async function handleSubscriptionChange(
-  subscription: Stripe.Subscription
+  subscription: Stripe.Subscription,
+  eventType?: string
 ) {
+  console.log(`🔍 Processing subscription change: ${subscription.id}, Event: ${eventType || 'unknown'}, Status: ${subscription.status}`);
+  
   const customerId = subscription.customer as string;
   const subscriptionId = subscription.id;
   const status = subscription.status;
 
+  console.log(`🔄 Looking up user for Stripe customer: ${customerId}`);
   const user = await getUserByStripeCustomerId(customerId);
 
   if (!user) {
-    console.error('User not found for Stripe customer:', customerId);
+    console.error(`❌ User not found for Stripe customer: ${customerId}`);
     return;
   }
+  
+  console.log(`✅ Found user: ${user.id} (${user.email})`);
 
+  let planName = null;
+  const plan = subscription.items.data[0]?.plan;
+  
+  // Obtener el nombre del plan y otros datos para el email
+  if (plan && typeof plan.product === 'string') {
+    try {
+      console.log(`🔄 Retrieving product details for: ${plan.product}`);
+      const product = await stripe.products.retrieve(plan.product);
+      planName = product.name;
+      console.log(`✅ Retrieved product: ${planName}`);
+    } catch (error) {
+      console.error(`❌ Error retrieving product: ${plan.product}`, error);
+    }
+  } else if (plan && typeof plan.product === 'object') {
+    planName = plan.product.name;
+    console.log(`✅ Using product from plan object: ${planName}`);
+  }
+
+  // Manejar más estados de suscripción
   if (status === 'active' || status === 'trialing') {
-    const plan = subscription.items.data[0]?.plan;
+    console.log(`🔄 Updating user subscription to: ${status}, Plan: ${planName}`);
+    
     await updateUserSubscription(user.id, {
       stripeSubscriptionId: subscriptionId,
-      stripeProductId: plan?.product as string,
-      planName: (plan?.product as Stripe.Product).name,
+      stripeProductId: typeof plan?.product === 'string' 
+        ? plan?.product 
+        : plan?.product?.id,
+      planName,
       subscriptionStatus: status
     });
-  } else if (status === 'canceled' || status === 'unpaid') {
+    
+    // Calcular fecha de expiración de la suscripción
+    const expiryDate = subscription.current_period_end 
+      ? new Date(subscription.current_period_end * 1000).toISOString().split('T')[0]
+      : undefined;
+    
+    // Enviar email notificando la suscripción activa o trial
+    try {
+      console.log(`📧 Sending subscription email to: ${user.email}, Status: ${status}, Plan: ${planName}`);
+      
+      await sendSubscriptionChangeEmail({
+        email: user.email,
+        name: user.name || user.email.split('@')[0],
+        planName: planName || 'Desconocido',
+        status,
+        expiryDate,
+        dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000'}/dashboard`
+      });
+      
+      console.log(`✅ Email sent successfully`);
+    } catch (error) {
+      console.error(`❌ Error sending subscription change email:`, error);
+    }
+  } else if (status === 'canceled' || status === 'unpaid' || status === 'incomplete_expired' || status === 'incomplete') {
+    console.log(`🔄 Updating user subscription to: ${status} (removal)`);
+    
     await updateUserSubscription(user.id, {
       stripeSubscriptionId: null,
       stripeProductId: null,
       planName: null,
       subscriptionStatus: status
     });
+    
+    // Enviar email notificando la cancelación o falta de pago
+    try {
+      console.log(`📧 Sending subscription cancellation email to: ${user.email}, Status: ${status}`);
+      
+      await sendSubscriptionChangeEmail({
+        email: user.email,
+        name: user.name || user.email.split('@')[0],
+        planName: planName || 'Plan cancelado',
+        status,
+        dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000'}/dashboard`
+      });
+      
+      console.log(`✅ Cancellation email sent successfully`);
+    } catch (error) {
+      console.error(`❌ Error sending subscription cancellation email:`, error);
+    }
+  } else {
+    console.log(`⚠️ Unhandled subscription status: ${status}`);
   }
+  
+  console.log(`✅ Subscription processing completed for: ${subscriptionId}`);
 }
 
 export async function getStripePrices() {

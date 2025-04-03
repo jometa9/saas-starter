@@ -18,6 +18,7 @@ import {
   validatedActionWithUser,
 } from '@/lib/auth/middleware';
 import { generateApiKey } from '@/lib/utils';
+import { sendWelcomeEmail, sendPasswordResetEmail } from '@/lib/email';
 
 const signInSchema = z.object({
   email: z.string().email().min(3).max(255),
@@ -60,8 +61,15 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
 
   const redirectTo = formData.get('redirect') as string | null;
   if (redirectTo === 'checkout') {
-    const priceId = formData.get('priceId') as string;
-    return createCheckoutSession({ user, priceId });
+    try {
+      const priceId = formData.get('priceId') as string;
+      return createCheckoutSession({ user, priceId });
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      return {
+        error: 'Error al conectar con el servicio de pagos. Por favor intenta de nuevo más tarde.',
+      };
+    }
   }
 
   redirect('/dashboard');
@@ -109,12 +117,28 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     };
   }
 
+  // Enviar email de bienvenida
+  try {
+    await sendWelcomeEmail({
+      email: createdUser.email,
+      name: createdUser.name || createdUser.email.split('@')[0],
+    });
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
+    // No bloqueamos el registro si falla el envío del email
+  }
+
   await setSession(createdUser);
 
   const redirectTo = formData.get('redirect') as string | null;
   if (redirectTo === 'checkout') {
-    const priceId = formData.get('priceId') as string;
-    return createCheckoutSession({ user: createdUser, priceId });
+    try {
+      const priceId = formData.get('priceId') as string;
+      return createCheckoutSession({ user: createdUser, priceId });
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      redirect('/dashboard?error=payment-setup');
+    }
   }
 
   redirect('/dashboard');
@@ -220,8 +244,7 @@ export const forgotPassword = validatedAction(
   async (data) => {
     const { email } = data;
 
-    // Esto enviaría un correo electrónico en una implementación real
-    // Aquí simplemente generamos el token y devolvemos success
+    // Generamos el token de recuperación de contraseña
     const result = await createPasswordResetToken(email);
 
     if (!result) {
@@ -229,15 +252,27 @@ export const forgotPassword = validatedAction(
       return { success: 'If an account exists with that email, a password reset link has been sent.' };
     }
 
-    // En una implementación real, enviarías un correo electrónico con un enlace como:
-    // ${process.env.BASE_URL}/reset-password?token=${result.resetToken}
-    
-    console.log(`Reset token for ${email}: ${result.resetToken}`);
+    // Enviar email con el token de recuperación
+    try {
+      await sendPasswordResetEmail({
+        email,
+        name: result.user.name || email.split('@')[0],
+        token: result.resetToken,
+        expiryMinutes: 60, // 1 hora de validez
+      });
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      // Aun en caso de error al enviar el email, seguimos devolviendo success
+      // para evitar enumerar usuarios
+    }
 
     return { 
       success: 'If an account exists with that email, a password reset link has been sent.',
       // Solo para desarrollo/debugging, NO incluir en producción:
-      resetLink: `/reset-password?token=${result.resetToken}`
+      ...(process.env.NEXT_PUBLIC_EMAIL_MODE === 'development' && { 
+        resetLink: `/reset-password?token=${result.resetToken}`,
+        message: "Email enviado a una dirección de prueba (modo desarrollo)"
+      })
     };
   }
 );

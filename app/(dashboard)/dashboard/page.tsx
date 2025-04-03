@@ -16,7 +16,5 @@ export default async function SettingsPage() {
   // Obtener la versión actual de la aplicación
   const currentVersion = await getAppVersion();
   
-  console.log("Versión cargada en la página:", currentVersion);
-
   return <Settings user={user} currentVersion={currentVersion} />;
 }
