@@ -205,7 +205,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
                 ) : (
                   <Button 
                     onClick={goToPricing} 
-                    className="w-full bg-gradient-to-r from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800 text-white"
+                    className="w-full bg-black hover:bg-gray-800 text-white"
                   >
                     <CreditCard className="h-4 w-4 mr-2" />
                     Subscribe Now
@@ -230,7 +230,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
               
               <div className="space-y-3">
                 <div className="flex items-start">
-                  <Zap className="h-5 w-5 mr-3 text-orange-500 flex-shrink-0" />
+                  <Zap className="h-5 w-5 mr-3 text-black flex-shrink-0" />
                   <div>
                     <p className="font-medium">Performance</p>
                     <p className="text-sm text-muted-foreground">
@@ -242,7 +242,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
                 </div>
                 
                 <div className="flex items-start">
-                  <Shield className="h-5 w-5 mr-3 text-orange-500 flex-shrink-0" />
+                  <Shield className="h-5 w-5 mr-3 text-black flex-shrink-0" />
                   <div>
                     <p className="font-medium">Security</p>
                     <p className="text-sm text-muted-foreground">
@@ -254,7 +254,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
                 </div>
                 
                 <div className="flex items-start">
-                  <Award className="h-5 w-5 mr-3 text-orange-500 flex-shrink-0" />
+                  <Award className="h-5 w-5 mr-3 text-black flex-shrink-0" />
                   <div>
                     <p className="font-medium">Support</p>
                     <p className="text-sm text-muted-foreground">
@@ -267,7 +267,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
               </div>
               
               <div className="mt-6">
-                <Button variant="ghost" size="sm" onClick={goToPricing} className="text-orange-600 hover:text-orange-700 hover:bg-orange-50">
+                <Button variant="ghost" size="sm" onClick={goToPricing} className="text-black hover:text-gray-700 hover:bg-gray-50">
                   View all plan features
                 </Button>
               </div>

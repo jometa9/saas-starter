@@ -41,7 +41,7 @@ export default function ResetPasswordPage() {
         </CardHeader>
         <CardFooter>
           <Link href="/forgot-password" className="w-full">
-            <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+            <Button className="w-full bg-black hover:bg-gray-800 text-white">
               Request Password Reset
             </Button>
           </Link>
@@ -92,7 +92,7 @@ export default function ResetPasswordPage() {
         <CardFooter className="flex flex-col space-y-2">
           <Button
             type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+            className="w-full bg-black hover:bg-gray-800 text-white"
             disabled={isSubmitting || !!state.success}
           >
             {isSubmitting ? (

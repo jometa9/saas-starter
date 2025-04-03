@@ -121,10 +121,10 @@ export default async function PricingPage() {
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Free
                 </th>
-                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-orange-50">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
                   Base
                 </th>
-                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-orange-100">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-100">
                   Plus
                 </th>
               </tr>
@@ -241,9 +241,9 @@ function PricingCard({
   isRecommended?: boolean;
 }) {
   return (
-    <div className={`p-6 border ${isRecommended ? 'border-orange-500 border-2' : 'border-gray-200'} rounded-lg shadow-sm hover:shadow-md transition-shadow relative`}>
+    <div className={`p-6 border ${isRecommended ? 'border-black border-2' : 'border-gray-200'} rounded-lg shadow-sm hover:shadow-md transition-shadow relative`}>
       {isRecommended && (
-        <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold py-1 px-3 transform translate-x-2 -translate-y-2 rounded">
+        <div className="absolute top-0 right-0 bg-black text-white text-xs font-bold py-1 px-3 transform translate-x-2 -translate-y-2 rounded">
           RECOMMENDED
         </div>
       )}
@@ -260,7 +260,7 @@ function PricingCard({
       <ul className="space-y-4 mb-8">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start">
-            <Check className="h-5 w-5 text-orange-500 mr-2 mt-0.5 flex-shrink-0" />
+            <Check className="h-5 w-5 text-black mr-2 mt-0.5 flex-shrink-0" />
             <span className="text-gray-700">{feature}</span>
           </li>
         ))}
@@ -278,7 +278,7 @@ function PricingCard({
         <form id="subscription-form">
           <input type="hidden" name="priceId" value={priceId} />
           <SubmitButton 
-            className={`w-full flex items-center justify-center ${isRecommended ? 'bg-orange-600 hover:bg-orange-700' : ''}`}
+            className={`w-full flex items-center justify-center ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
             formAction={handleSubscription}
           >
             <CreditCard className="mr-2 h-4 w-4" />
@@ -288,7 +288,7 @@ function PricingCard({
       ) : (
         <a href="/sign-in?redirect=/pricing" className="block w-full">
           <button
-            className={`w-full flex items-center justify-center bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-md ${isRecommended ? 'bg-orange-600 hover:bg-orange-700' : ''}`}
+            className={`w-full flex items-center justify-center bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-md ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Sign In to Subscribe
@@ -318,10 +318,10 @@ function FeatureRow({
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
         {free}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center bg-orange-50">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center bg-gray-50">
         {base}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center bg-orange-100">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center bg-gray-100">
         {plus}
       </td>
     </tr>

@@ -464,7 +464,7 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
                     // Redirección directa sin mensajes de espera
                     router.push('/pricing');
                   }}
-                  className="bg-gradient-to-r from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800 text-white"
+                  className="bg-black hover:bg-gray-800 text-white"
                 >
                   <CreditCard className="mr-2 h-4 w-4" />
                   Subscribe Now
@@ -650,10 +650,10 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
                     
                     {/* Advertencia de entorno de desarrollo */}
                     {process.env.NEXT_PUBLIC_EMAIL_MODE !== 'production' && (
-                      <div className="p-4 mb-4 text-sm bg-orange-100 border border-orange-200 rounded text-orange-800">
-                        <p className="font-medium">⚠️ Modo de desarrollo activo</p>
-                        <p>Los emails serán enviados a direcciones de prueba seguras.</p>
-                        <p>Dominios como test.com, example.com y otros similares serán redirigidos a: {process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev'}</p>
+                      <div className="p-4 mb-4 text-sm bg-gray-100 border border-gray-200 rounded text-gray-800">
+                        <p className="font-medium">⚠️ Development mode active</p>
+                        <p>Emails will be sent to safe test addresses.</p>
+                        <p>Domains like test.com, example.com and other similar ones will be redirected to: {process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev'}</p>
                       </div>
                     )}
                   </div>
@@ -831,10 +831,10 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
           
           {/* Advertencia de entorno de desarrollo */}
           {process.env.NEXT_PUBLIC_EMAIL_MODE !== 'production' && (
-            <div className="p-4 mb-4 text-sm bg-orange-100 border border-orange-200 rounded text-orange-800">
-              <p className="font-medium">⚠️ Modo de desarrollo activo</p>
-              <p>Los emails serán enviados a direcciones de prueba seguras.</p>
-              <p>Dominios como test.com, example.com y otros similares serán redirigidos a: {process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev'}</p>
+            <div className="p-4 mb-4 text-sm bg-gray-100 border border-gray-200 rounded text-gray-800">
+              <p className="font-medium">⚠️ Development mode active</p>
+              <p>Emails will be sent to safe test addresses.</p>
+              <p>Domains like test.com, example.com and other similar ones will be redirected to: {process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev'}</p>
             </div>
           )}
         </div>

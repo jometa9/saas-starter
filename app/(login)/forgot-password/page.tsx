@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
         <CardFooter className="flex flex-col space-y-2">
           <Button
             type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+            className="w-full bg-black hover:bg-gray-800 text-white"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
           <div className="text-sm text-center">
             <Link
               href="/sign-in"
-              className="text-orange-500 hover:text-orange-600 font-medium"
+              className="text-black hover:text-gray-700 font-medium"
             >
               Back to Sign In
             </Link>

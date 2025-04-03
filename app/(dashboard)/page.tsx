@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CreditCard, Database, BookOpen, Check } from 'lucide-react';
+import { ArrowRight, CreditCard, Database, BookOpen, Check, Download } from 'lucide-react';
 import { Terminal } from './terminal';
 import Link from 'next/link';
 
@@ -12,7 +12,7 @@ export default function HomePage() {
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
               <h1 className="text-4xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
                 Build Your SaaS
-                <span className="block text-orange-500">Faster Than Ever</span>
+                <span className="block text-black">Faster Than Ever</span>
               </h1>
               <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                 Launch your SaaS product in record time with our powerful,
@@ -44,11 +44,71 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Software Download Section */}
+      <section className="py-16 bg-gray-50 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Download Our Software</h2>
+            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
+              Get started with our software today. Available for all major platforms.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-medium text-lg">Windows Version</h3>
+                  <p className="text-sm text-muted-foreground">v1.0.0</p>
+                </div>
+                <Button variant="outline" className="ml-auto">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
+              <p className="text-sm text-gray-500">Compatible with Windows 10 and above. Includes all features and functionality.</p>
+            </div>
+            
+            <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-medium text-lg">macOS Version</h3>
+                  <p className="text-sm text-muted-foreground">v1.0.0</p>
+                </div>
+                <Button variant="outline" className="ml-auto">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
+              <p className="text-sm text-gray-500">Compatible with macOS Monterey and above. Optimized for Apple Silicon.</p>
+            </div>
+            
+            <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-medium text-lg">Linux Version</h3>
+                  <p className="text-sm text-muted-foreground">v1.0.0</p>
+                </div>
+                <Button variant="outline" className="ml-auto">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
+              <p className="text-sm text-gray-500">Compatible with major Linux distributions. Available as .deb and .rpm packages.</p>
+            </div>
+          </div>
+          
+          <div className="text-center mt-8">
+            <p className="text-sm text-gray-500">Need help installing? Check our <Link href="/dashboard/documents" className="text-black font-medium">documentation</Link> for detailed instructions.</p>
+          </div>
+        </div>
+      </section>
+
       <section className="py-16 bg-white w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-3 lg:gap-8">
             <div>
-              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-orange-500 text-white">
+              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-black text-white">
                 <svg viewBox="0 0 24 24" className="h-6 w-6">
                   <path
                     fill="currentColor"
@@ -68,7 +128,7 @@ export default function HomePage() {
             </div>
 
             <div className="mt-10 lg:mt-0">
-              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-orange-500 text-white">
+              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-black text-white">
                 <Database className="h-6 w-6" />
               </div>
               <div className="mt-5">
@@ -83,7 +143,7 @@ export default function HomePage() {
             </div>
 
             <div className="mt-10 lg:mt-0">
-              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-orange-500 text-white">
+              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-black text-white">
                 <CreditCard className="h-6 w-6" />
               </div>
               <div className="mt-5">
@@ -156,7 +216,7 @@ export default function HomePage() {
                 </p>
                 <Button
                   asChild
-                  className="mt-8 block w-full bg-orange-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-orange-700"
+                  className="mt-8 block w-full bg-black border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-gray-800"
                 >
                   <Link href="/pricing">Go Premium</Link>
                 </Button>
@@ -185,7 +245,7 @@ export default function HomePage() {
             </div>
 
             {/* Premium Plan */}
-            <div className="border-2 border-orange-500 rounded-lg shadow-sm divide-y divide-gray-200 bg-white">
+            <div className="border-2 border-black rounded-lg shadow-sm divide-y divide-gray-200 bg-white">
               <div className="p-6">
                 <h3 className="text-lg font-medium text-gray-900">Premium</h3>
                 <p className="mt-4 text-sm text-gray-500">Advanced features for enterprise needs and large teams.</p>
@@ -195,7 +255,7 @@ export default function HomePage() {
                 </p>
                 <Button
                   asChild
-                  className="mt-8 block w-full bg-orange-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-orange-700"
+                  className="mt-8 block w-full bg-black border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-gray-800"
                 >
                   <Link href="/pricing">Go Premium</Link>
                 </Button>

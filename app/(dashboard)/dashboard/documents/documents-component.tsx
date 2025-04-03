@@ -18,7 +18,7 @@ export function Documents({ user }: { user: User }) {
             <ol className="space-y-6">
               <li className="flex">
                 <div className="flex-shrink-0 mr-4">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-black">
                     <Download className="h-4 w-4" />
                   </div>
                 </div>
@@ -27,7 +27,7 @@ export function Documents({ user }: { user: User }) {
                   <p className="text-muted-foreground mb-2">
                     Begin by downloading the latest version of our software from the Dashboard tab. Choose the version that matches your operating system (Windows, macOS, or Linux).
                   </p>
-                  <div className="pl-4 border-l-2 border-orange-200 text-sm">
+                  <div className="pl-4 border-l-2 border-gray-200 text-sm">
                     <p className="mb-1"><strong>Tip:</strong> Always use the latest version to ensure you have all the features and security updates.</p>
                   </div>
                 </div>
@@ -35,7 +35,7 @@ export function Documents({ user }: { user: User }) {
               
               <li className="flex">
                 <div className="flex-shrink-0 mr-4">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-black">
                     <Key className="h-4 w-4" />
                   </div>
                 </div>
@@ -44,7 +44,7 @@ export function Documents({ user }: { user: User }) {
                   <p className="text-muted-foreground mb-2">
                     Copy your license key from the Dashboard tab. This key is required to activate the full features of the software.
                   </p>
-                  <div className="pl-4 border-l-2 border-orange-200 text-sm">
+                  <div className="pl-4 border-l-2 border-gray-200 text-sm">
                     <p className="mb-1"><strong>Note:</strong> Your license key is tied to your subscription. Make sure to keep it private and secure.</p>
                   </div>
                 </div>
@@ -52,7 +52,7 @@ export function Documents({ user }: { user: User }) {
               
               <li className="flex">
                 <div className="flex-shrink-0 mr-4">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-black">
                     <Settings className="h-4 w-4" />
                   </div>
                 </div>
@@ -72,7 +72,7 @@ export function Documents({ user }: { user: User }) {
               
               <li className="flex">
                 <div className="flex-shrink-0 mr-4">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-black">
                     <Book className="h-4 w-4" />
                   </div>
                 </div>
@@ -128,7 +128,7 @@ export function Documents({ user }: { user: User }) {
             <div className="space-y-4">
               <div>
                 <h3 className="font-medium mb-2 flex items-center">
-                  <ChevronRight className="h-4 w-4 mr-2 text-orange-500" />
+                  <ChevronRight className="h-4 w-4 mr-2 text-black" />
                   How do I update my software?
                 </h3>
                 <p className="text-sm text-muted-foreground pl-6">
@@ -138,7 +138,7 @@ export function Documents({ user }: { user: User }) {
               
               <div>
                 <h3 className="font-medium mb-2 flex items-center">
-                  <ChevronRight className="h-4 w-4 mr-2 text-orange-500" />
+                  <ChevronRight className="h-4 w-4 mr-2 text-black" />
                   Can I use my license on multiple devices?
                 </h3>
                 <p className="text-sm text-muted-foreground pl-6">
@@ -148,7 +148,7 @@ export function Documents({ user }: { user: User }) {
               
               <div>
                 <h3 className="font-medium mb-2 flex items-center">
-                  <ChevronRight className="h-4 w-4 mr-2 text-orange-500" />
+                  <ChevronRight className="h-4 w-4 mr-2 text-black" />
                   What happens if my subscription expires?
                 </h3>
                 <p className="text-sm text-muted-foreground pl-6">
@@ -158,7 +158,7 @@ export function Documents({ user }: { user: User }) {
               
               <div>
                 <h3 className="font-medium mb-2 flex items-center">
-                  <ChevronRight className="h-4 w-4 mr-2 text-orange-500" />
+                  <ChevronRight className="h-4 w-4 mr-2 text-black" />
                   How do I get technical support?
                 </h3>
                 <p className="text-sm text-muted-foreground pl-6">
