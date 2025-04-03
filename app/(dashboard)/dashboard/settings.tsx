@@ -10,7 +10,9 @@ import { Input } from '@/components/ui/input';
 import { useState, useEffect, useRef, useTransition } from 'react';
 import { updateAppVersionAction } from '@/lib/db/actions';
 import { useRouter } from 'next/navigation';
-import { EyeIcon, EyeOffIcon, CopyIcon, CheckIcon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, CopyIcon, CheckIcon, Lock, Loader2 } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { updatePassword } from '@/app/(login)/actions';
 
 type ActionState = {
   error?: string;
@@ -31,6 +33,10 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
   const [actionState, setActionState] = useState<ActionState>({});
   const [isLicenseVisible, setIsLicenseVisible] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  
+  // Estado para el cambio de contraseña
+  const [passwordState, setPasswordState] = useState<ActionState>({});
+  const [isPasswordPending, setIsPasswordPending] = useState(false);
 
   useEffect(() => {
     if (currentVersion) {
@@ -104,6 +110,28 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
         .catch(err => {
           console.error('Error al copiar al portapapeles:', err);
         });
+    }
+  };
+  
+  // Manejo del formulario de cambio de contraseña
+  const handlePasswordSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsPasswordPending(true);
+    
+    try {
+      const formData = new FormData(event.currentTarget);
+      const result = await updatePassword(formData);
+      setPasswordState(result || {});
+      
+      // Limpiar el formulario si hay éxito
+      if (result.success) {
+        (event.target as HTMLFormElement).reset();
+      }
+    } catch (error) {
+      console.error("Error al actualizar la contraseña:", error);
+      setPasswordState({ error: "Error al actualizar la contraseña" });
+    } finally {
+      setIsPasswordPending(false);
     }
   };
 
@@ -186,6 +214,75 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
               )}
             </div>
           </div>
+        </CardContent>
+      </Card>
+      
+      {/* Sección de seguridad integrada */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Security Settings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4" onSubmit={handlePasswordSubmit}>
+            <div>
+              <Label htmlFor="current-password">Current Password</Label>
+              <Input
+                id="current-password"
+                name="currentPassword"
+                type="password"
+                autoComplete="current-password"
+                required
+                minLength={8}
+                maxLength={100}
+              />
+            </div>
+            <div>
+              <Label htmlFor="new-password">New Password</Label>
+              <Input
+                id="new-password"
+                name="newPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                maxLength={100}
+              />
+            </div>
+            <div>
+              <Label htmlFor="confirm-password">Confirm New Password</Label>
+              <Input
+                id="confirm-password"
+                name="confirmPassword"
+                type="password"
+                required
+                minLength={8}
+                maxLength={100}
+              />
+            </div>
+            {passwordState.error && (
+              <p className="text-red-500 text-sm">{passwordState.error}</p>
+            )}
+            {passwordState.success && (
+              <p className="text-green-500 text-sm">{passwordState.success}</p>
+            )}
+            <Button
+              type="submit"
+              className="bg-black hover:bg-gray-800 text-white"
+              disabled={isPasswordPending}
+            >
+              {isPasswordPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <Lock className="mr-2 h-4 w-4" />
+                  Update Password
+                </>
+              )}
+            </Button>
+          </form>
         </CardContent>
       </Card>
       
