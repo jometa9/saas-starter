@@ -122,6 +122,13 @@ export default function SecurityPage() {
         </CardContent>
       </Card>
 
+      
+
+    </section>
+  );
+}
+
+/*
       <Card>
         <CardHeader>
           <CardTitle>Delete Account</CardTitle>
@@ -166,6 +173,4 @@ export default function SecurityPage() {
           </form>
         </CardContent>
       </Card>
-    </section>
-  );
-}
+*/

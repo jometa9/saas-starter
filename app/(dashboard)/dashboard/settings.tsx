@@ -19,7 +19,7 @@ export function Settings({ user }: { user: User }) {
 
   return (
     <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium mb-6">Account Settings</h1>
+      <h1 className="text-lg lg:text-2xl font-medium mb-6">Dashboard</h1>
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>Subscription</CardTitle>
@@ -51,24 +51,17 @@ export function Settings({ user }: { user: User }) {
       
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>API Key</CardTitle>
+          <CardTitle>License Key</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Use this API key to validate your subscription from external applications.
-              Add it as a URL parameter: <code className="bg-gray-100 p-1 rounded">?apiKey=your_key</code>
+              Use this license key to validate your subscription from application.
             </p>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
               <div className="font-mono bg-gray-100 p-2 rounded w-full overflow-auto">
-                {user.apiKey || 'No API key generated'}
+                {user.apiKey || 'No License key generated'}
               </div>
-            </div>
-            <div className="text-sm text-muted-foreground mt-2">
-              <strong>Example usage:</strong>
-              <pre className="bg-gray-100 p-2 rounded mt-1 overflow-auto">
-                {`${window.location.origin}/api/validate-subscription?apiKey=${user.apiKey || 'your_api_key'}`}
-              </pre>
             </div>
           </div>
         </CardContent>
@@ -82,7 +75,6 @@ export function Settings({ user }: { user: User }) {
           <div className="flex items-center space-x-4">
             <Avatar>
               <AvatarImage
-                src={`/placeholder.svg?height=32&width=32`}
                 alt={getUserDisplayName(user)}
               />
               <AvatarFallback>
