@@ -49,27 +49,41 @@ export async function initializeEmailTransporter() {
       throw new Error('Failed to configure email transport');
     }
   } else {
-    try {
-      // En producción, usa SMTP configurado o un servicio externo
-      if (!process.env.SMTP_HOST && !process.env.RESEND_API_KEY) {
-        console.warn('⚠️ No email configuration found. Set SMTP_* or RESEND_API_KEY env variables.');
+    // En producción, usa SMTP configurado o un servicio externo
+    if (!process.env.SMTP_HOST && !process.env.RESEND_API_KEY) {
+      console.warn('⚠️ No email configuration found. Set SMTP_* or RESEND_API_KEY env variables.');
+    }
+    
+    if (process.env.SMTP_HOST) {
+      try {
+        console.log(`🔄 Setting up SMTP transport with: ${process.env.SMTP_HOST}:${process.env.SMTP_PORT}`);
+        transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT) || 587,
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD,
+          },
+        });
+        
+        console.log('✅ Nodemailer configured with SMTP server');
+      } catch (error) {
+        console.error('❌ Failed to configure SMTP transport:', error);
+        throw new Error('Failed to configure email transport');
       }
-      
-      console.log(`🔄 Setting up SMTP transport with: ${process.env.SMTP_HOST}:${process.env.SMTP_PORT}`);
+    } else {
+      // Si no hay SMTP configurado, creamos un transporter "dummy" que lanza errores
+      // Esto evita errores innecesarios en la aplicación, pero el envío fallará
+      console.log('⚠️ No SMTP configuration found, creating fallback transport');
       transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASSWORD,
-        },
-      });
-      
-      console.log('✅ Nodemailer configured with SMTP server');
-    } catch (error) {
-      console.error('❌ Failed to configure SMTP transport:', error);
-      throw new Error('Failed to configure email transport');
+        name: 'no-reply',
+        version: '1.0.0',
+        send: (mail, callback) => {
+          const error = new Error('No SMTP configuration found, email not sent');
+          callback(error);
+        }
+      } as any);
     }
   }
   
@@ -226,47 +240,70 @@ export async function testEmailConfiguration() {
   console.log(`🔄 Email mode: ${isProduction() ? 'PRODUCTION' : 'DEVELOPMENT'}`);
   
   try {
+    let resendConfigured = false;
+    let nodemailerConfigured = false;
+    
     // Probar si Resend está configurado
     if (process.env.RESEND_API_KEY) {
       console.log('🔍 Resend API key found, testing Resend...');
       try {
         const domains = await resend.domains.list();
         console.log(`✅ Resend connection successful. Found ${domains.data?.length || 0} domains.`);
+        resendConfigured = true;
       } catch (error) {
         console.error('❌ Resend test failed:', error);
-        throw new Error('Resend configuration test failed');
+        // No lanzamos error aquí, dejamos que Nodemailer sea la alternativa
       }
     } else {
       console.log('ℹ️ No Resend API key found, skipping Resend test');
     }
     
-    // Probar Nodemailer
-    console.log('🔍 Testing Nodemailer configuration...');
-    const transport = await initializeEmailTransporter();
+    // Probar Nodemailer solo si hay configuración SMTP o estamos en desarrollo
+    const hasSmtpConfig = !!process.env.SMTP_HOST && !!process.env.SMTP_PORT;
     
-    try {
-      // Verificar la conexión
-      await transport.verify();
-      console.log('✅ Nodemailer connection verified successfully');
-      
-      // Si estamos en desarrollo, enviar un email de prueba
-      if (!isProduction()) {
-        const info = await transport.sendMail({
-          from: process.env.EMAIL_FROM || 'test@example.com',
-          to: 'test@example.com',
-          subject: 'Test Email',
-          text: 'This is a test email to verify configuration',
-          html: '<p>This is a test email to verify configuration</p>',
-        });
+    if (hasSmtpConfig || !isProduction()) {
+      console.log('🔍 Testing Nodemailer configuration...');
+      try {
+        const transport = await initializeEmailTransporter();
         
-        console.log(`✅ Test email sent. Preview: ${nodemailer.getTestMessageUrl(info)}`);
+        // Verificar la conexión
+        await transport.verify();
+        console.log('✅ Nodemailer connection verified successfully');
+        nodemailerConfigured = true;
+        
+        // Si estamos en desarrollo, enviar un email de prueba
+        if (!isProduction()) {
+          const info = await transport.sendMail({
+            from: process.env.EMAIL_FROM || 'test@example.com',
+            to: 'test@example.com',
+            subject: 'Test Email',
+            text: 'This is a test email to verify configuration',
+            html: '<p>This is a test email to verify configuration</p>',
+          });
+          
+          console.log(`✅ Test email sent. Preview: ${nodemailer.getTestMessageUrl(info)}`);
+        }
+      } catch (error) {
+        console.error('❌ Nodemailer test failed:', error);
+        // No lanzamos error aquí a menos que Resend también haya fallado
       }
-    } catch (error) {
-      console.error('❌ Nodemailer test failed:', error);
-      throw new Error('Nodemailer configuration test failed');
+    } else {
+      console.log('ℹ️ No SMTP configuration found and in production mode, skipping Nodemailer test');
     }
     
-    return { success: true, message: 'Email configuration test passed' };
+    // Verificar si al menos un método de envío está configurado
+    if (!resendConfigured && !nodemailerConfigured) {
+      throw new Error('No email service configured. Please configure either Resend or SMTP.');
+    }
+    
+    return { 
+      success: true, 
+      message: 'Email configuration test passed',
+      services: {
+        resend: resendConfigured ? 'configured' : 'not configured',
+        nodemailer: nodemailerConfigured ? 'configured' : 'not configured',
+      }
+    };
   } catch (error) {
     console.error('❌ Email configuration test failed:', error);
     return { 

@@ -17,9 +17,10 @@ export function getStripe(): Stripe {
   
   const apiKey = process.env.STRIPE_SECRET_KEY;
   
-  if (!apiKey) {
-    // Crear una instancia mock para desarrollo que no realice solicitudes reales
-    console.warn('⚠️ STRIPE_SECRET_KEY no está configurado. Las funciones de pago no estarán disponibles.');
+  if (!apiKey || !apiKey.startsWith('sk_')) {
+    // La clave API no está configurada o no tiene el formato correcto
+    console.warn('⚠️ STRIPE_SECRET_KEY no es válida. Para usar Stripe, debes configurar una clave válida en .env.local');
+    console.warn('⚠️ Las claves de prueba válidas comienzan con "sk_test_" y las de producción con "sk_live_"');
     
     // Devolvemos un objeto que actúa como Stripe pero que no hace nada real
     // @ts-ignore - Creamos un proxy que simula la API de Stripe
@@ -32,13 +33,13 @@ export function getStripe(): Stripe {
             get: () => {
               // Devuelve una función que lanza un error cuando se intenta usar
               return () => {
-                throw new Error('Stripe no está configurado. Añade STRIPE_SECRET_KEY a tu archivo .env.local');
+                throw new Error('Stripe no está configurado correctamente. Añade una clave válida de Stripe en tu archivo .env.local');
               };
             }
           });
         }
         return () => {
-          throw new Error('Stripe no está configurado. Añade STRIPE_SECRET_KEY a tu archivo .env.local');
+          throw new Error('Stripe no está configurado correctamente. Añade una clave válida de Stripe en tu archivo .env.local');
         };
       }
     });
@@ -63,94 +64,313 @@ export async function createCheckoutSession({
   priceId: string;
 }) {
   if (!user) {
-    redirect(`/sign-up?redirect=checkout&priceId=${priceId}`);
+    return `/sign-up?redirect=checkout&priceId=${priceId}`;
   }
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1
+  try {
+    console.log(`🔄 Iniciando checkout para usuario: ${user.id} (${user.email}), priceId: ${priceId}`);
+    console.log(`🔄 Estado de usuario:
+      - stripeCustomerId: ${user.stripeCustomerId || 'No tiene'}
+      - stripeSubscriptionId: ${user.stripeSubscriptionId || 'No tiene'}
+      - stripeProductId: ${user.stripeProductId || 'No tiene'}
+      - subscriptionStatus: ${user.subscriptionStatus || 'No tiene'}
+    `);
+    
+    // Verificar que tengamos un customerId válido
+    if (!user.stripeCustomerId) {
+      console.log(`🔄 Usuario sin customerId, creando uno nuevo...`);
+      try {
+        // Crear un cliente en Stripe
+        const customer = await stripe.customers.create({
+          email: user.email,
+          name: user.name || undefined,
+          metadata: {
+            userId: user.id.toString()
+          }
+        });
+        
+        console.log(`✅ Cliente creado exitosamente en Stripe: ${customer.id}`);
+        
+        // Actualizar el usuario con el nuevo ID de cliente
+        await updateUserById(user.id, {
+          stripeCustomerId: customer.id
+        });
+        
+        // Actualizar el customerId para usarlo en la sesión
+        user.stripeCustomerId = customer.id;
+        console.log(`✅ Usuario actualizado con nuevo customerId: ${customer.id}`);
+      } catch (createError) {
+        console.error(`❌ Error al crear cliente en Stripe:`, createError);
+        throw new Error('No se pudo crear un cliente en Stripe. Por favor intenta nuevamente más tarde.');
       }
-    ],
-    mode: 'subscription',
-    success_url: `${process.env.BASE_URL}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.BASE_URL}/pricing`,
-    customer: user.stripeCustomerId || undefined,
-    client_reference_id: user.id.toString(),
-    allow_promotion_codes: true,
-    subscription_data: {
-      trial_period_days: 14
+    } else {
+      // Verificar que el cliente exista en Stripe
+      try {
+        // Intentar recuperar el cliente de Stripe para verificar que existe
+        await stripe.customers.retrieve(user.stripeCustomerId);
+        console.log(`✅ Cliente verificado en Stripe: ${user.stripeCustomerId}`);
+      } catch (customerError) {
+        console.error(`❌ Error: El cliente ${user.stripeCustomerId} no existe en Stripe:`, customerError);
+        console.log(`🔄 Creando un nuevo cliente en Stripe...`);
+        
+        try {
+          // El cliente no existe, crear uno nuevo
+          const customer = await stripe.customers.create({
+            email: user.email,
+            name: user.name || undefined,
+            metadata: {
+              userId: user.id.toString()
+            }
+          });
+          
+          console.log(`✅ Cliente creado exitosamente en Stripe: ${customer.id}`);
+          
+          // Actualizar el usuario con el nuevo ID de cliente
+          await updateUserById(user.id, {
+            stripeCustomerId: customer.id
+          });
+          
+          // Actualizar el customerId para usarlo en la sesión
+          user.stripeCustomerId = customer.id;
+          console.log(`✅ Usuario actualizado con nuevo customerId: ${customer.id}`);
+        } catch (createError) {
+          console.error(`❌ Error al crear nuevo cliente en Stripe:`, createError);
+          return '/dashboard?error=customer-error';
+        }
+      }
     }
-  });
 
-  redirect(session.url!);
+    // Verificar que el precio exista en Stripe
+    try {
+      // Intentar recuperar el precio para verificar que existe
+      const price = await stripe.prices.retrieve(priceId);
+      console.log(`✅ Precio verificado en Stripe: ${priceId}, ${price.currency} ${price.unit_amount}`);
+    } catch (priceError) {
+      console.error(`❌ Error: El precio ${priceId} no existe en Stripe:`, priceError);
+      return '/dashboard?error=invalid-price';
+    }
+
+    // Intentar crear la sesión de checkout con el customerId existente
+    try {
+      console.log(`🔄 Creando sesión de checkout en Stripe...`);
+      
+      // Si el usuario ya tiene una suscripción activa, mostrar mensaje
+      if (user.stripeSubscriptionId && user.subscriptionStatus === 'active') {
+        console.log(`⚠️ Usuario ya tiene una suscripción activa: ${user.stripeSubscriptionId}`);
+        return '/dashboard?error=subscription-exists';
+      }
+      
+      // Construir URLs absolutas para success y cancel
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000';
+      const successUrl = `${baseUrl}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = `${baseUrl}/pricing`;
+      
+      console.log(`🔄 URLs de redirección:
+        - Success: ${successUrl}
+        - Cancel: ${cancelUrl}
+      `);
+      
+      // Configuración simplificada de la sesión de checkout
+      const sessionConfig = {
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1
+          }
+        ],
+        mode: 'subscription',
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        customer: user.stripeCustomerId,
+        client_reference_id: user.id.toString(),
+        subscription_data: {
+          trial_period_days: 14
+        }
+      };
+      
+      console.log(`🔄 Configuración de sesión:`, JSON.stringify(sessionConfig, null, 2));
+      
+      const session = await stripe.checkout.sessions.create(sessionConfig);
+
+      console.log(`✅ Sesión de checkout creada: ${session.id}`);
+      
+      if (!session.url) {
+        console.error('❌ Error: La sesión de checkout no tiene URL');
+        throw new Error('No se pudo crear la URL de checkout');
+      }
+      
+      console.log(`✅ URL generada: ${session.url}`);
+      
+      // Retornar la URL en lugar de redirigir
+      return session.url;
+    } catch (stripeError) {
+      console.error('❌ Error al crear sesión en Stripe:', stripeError);
+      
+      // Obtener detalles completos del error
+      if (stripeError instanceof Error) {
+        const errorMsg = stripeError.message;
+        console.error(`❌ Mensaje de error completo: ${errorMsg}`);
+        console.error(`❌ Stack trace: ${stripeError.stack}`);
+        
+        // Verificar errores comunes específicos de Stripe
+        if (errorMsg.includes('No such customer') || errorMsg.includes('customer')) {
+          return '/dashboard?error=invalid-customer-id';
+        }
+        
+        if (errorMsg.includes('No such price') || errorMsg.includes('price')) {
+          return '/dashboard?error=invalid-price-id';
+        }
+        
+        if (errorMsg.includes('API key') || errorMsg.includes('Invalid API Key')) {
+          return '/dashboard?error=invalid-api-key';
+        }
+        
+        // Problema con la URL de redirección
+        if (errorMsg.includes('success_url') || errorMsg.includes('cancel_url')) {
+          return '/dashboard?error=invalid-redirect-url';
+        }
+      }
+      
+      // Cualquier otro error de Stripe
+      throw stripeError;
+    }
+  } catch (error) {
+    console.error('❌ Error en createCheckoutSession:', error);
+    
+    // Mapear el error a un código amigable para el usuario
+    if (error instanceof Error) {
+      const errorMsg = error.message;
+      console.error(`❌ Mensaje de error completo: ${errorMsg}`);
+      
+      if (errorMsg.includes('API key') || errorMsg.includes('configuración')) {
+        return '/dashboard?error=stripe-config';
+      } else if (errorMsg.includes('customer') || errorMsg.includes('cliente')) {
+        return '/dashboard?error=customer-error';
+      } else if (errorMsg.includes('price') || errorMsg.includes('precio')) {
+        return '/dashboard?error=price-error';
+      } else if (errorMsg.includes('session') || errorMsg.includes('checkout')) {
+        return '/dashboard?error=session-error';
+      } else if (errorMsg.includes('network') || errorMsg.includes('connection')) {
+        return '/dashboard?error=network-error';
+      } else if (errorMsg.includes('URL') || errorMsg.includes('url')) {
+        return '/dashboard?error=url-error';
+      }
+    }
+    
+    // Error genérico
+    return '/dashboard?error=checkout-error';
+  }
 }
 
 export async function createCustomerPortalSession(user: User) {
-  if (!user.stripeCustomerId || !user.stripeProductId) {
+  // Verificar que el usuario tenga la información necesaria
+  if (!user.stripeCustomerId) {
+    console.error(`❌ Error: Usuario sin stripeCustomerId`);
     redirect('/pricing');
   }
-
-  let configuration: Stripe.BillingPortal.Configuration;
-  const configurations = await stripe.billingPortal.configurations.list();
-
-  if (configurations.data.length > 0) {
-    configuration = configurations.data[0];
-  } else {
-    const product = await stripe.products.retrieve(user.stripeProductId);
-    if (!product.active) {
-      throw new Error("User's product is not active in Stripe");
-    }
-
-    const prices = await stripe.prices.list({
-      product: product.id,
-      active: true
-    });
-    if (prices.data.length === 0) {
-      throw new Error("No active prices found for the user's product");
-    }
-
-    configuration = await stripe.billingPortal.configurations.create({
-      business_profile: {
-        headline: 'Manage your subscription'
-      },
-      features: {
-        subscription_update: {
-          enabled: true,
-          default_allowed_updates: ['price', 'quantity', 'promotion_code'],
-          proration_behavior: 'create_prorations',
-          products: [
-            {
-              product: product.id,
-              prices: prices.data.map((price) => price.id)
-            }
-          ]
-        },
-        subscription_cancel: {
-          enabled: true,
-          mode: 'at_period_end',
-          cancellation_reason: {
-            enabled: true,
-            options: [
-              'too_expensive',
-              'missing_features',
-              'switched_service',
-              'unused',
-              'other'
-            ]
-          }
-        }
-      }
-    });
+  
+  if (!user.stripeSubscriptionId || user.subscriptionStatus !== 'active') {
+    console.error(`❌ Error: Usuario sin suscripción activa (Status: ${user.subscriptionStatus})`);
+    redirect('/dashboard?error=no-active-subscription');
+  }
+  
+  if (!user.stripeProductId) {
+    console.error(`❌ Error: Usuario sin stripeProductId`);
+    redirect('/dashboard?error=no-product-id');
   }
 
-  return stripe.billingPortal.sessions.create({
-    customer: user.stripeCustomerId,
-    return_url: `${process.env.BASE_URL}/dashboard`,
-    configuration: configuration.id
-  });
+  try {
+    console.log(`🔄 Creando sesión de portal para usuario: ${user.id}, customerId: ${user.stripeCustomerId}`);
+    
+    // Buscar configuración existente o crear una nueva
+    let configuration: Stripe.BillingPortal.Configuration;
+    const configurations = await stripe.billingPortal.configurations.list();
+
+    if (configurations.data.length > 0) {
+      configuration = configurations.data[0];
+      console.log(`✅ Usando configuración existente: ${configuration.id}`);
+    } else {
+      console.log(`🔄 No se encontró configuración existente, creando nueva...`);
+      
+      // Verificar que el producto existe antes de crear la configuración
+      try {
+        const product = await stripe.products.retrieve(user.stripeProductId);
+        if (!product.active) {
+          console.error(`❌ Error: El producto ${user.stripeProductId} no está activo en Stripe`);
+          throw new Error("User's product is not active in Stripe");
+        }
+        
+        console.log(`✅ Producto verificado: ${product.id} (${product.name})`);
+
+        // Obtener precios asociados al producto
+        const prices = await stripe.prices.list({
+          product: product.id,
+          active: true
+        });
+        
+        if (prices.data.length === 0) {
+          console.error(`❌ Error: No se encontraron precios activos para el producto ${product.id}`);
+          throw new Error("No active prices found for the user's product");
+        }
+        
+        console.log(`✅ Se encontraron ${prices.data.length} precios para el producto`);
+
+        // Crear nueva configuración
+        configuration = await stripe.billingPortal.configurations.create({
+          business_profile: {
+            headline: 'Manage your subscription'
+          },
+          features: {
+            subscription_update: {
+              enabled: true,
+              default_allowed_updates: ['price', 'quantity', 'promotion_code'],
+              proration_behavior: 'create_prorations',
+              products: [
+                {
+                  product: product.id,
+                  prices: prices.data.map((price) => price.id)
+                }
+              ]
+            },
+            subscription_cancel: {
+              enabled: true,
+              mode: 'at_period_end',
+              cancellation_reason: {
+                enabled: true,
+                options: [
+                  'too_expensive',
+                  'missing_features',
+                  'switched_service',
+                  'unused',
+                  'other'
+                ]
+              }
+            }
+          }
+        });
+        
+        console.log(`✅ Nueva configuración creada: ${configuration.id}`);
+      } catch (error) {
+        console.error(`❌ Error al verificar producto o crear configuración:`, error);
+        throw error;
+      }
+    }
+
+    // Crear la sesión del portal
+    console.log(`🔄 Creando sesión del portal con configuración: ${configuration.id}`);
+    const session = await stripe.billingPortal.sessions.create({
+      customer: user.stripeCustomerId,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000'}/dashboard`,
+      configuration: configuration.id
+    });
+    
+    console.log(`✅ Sesión del portal creada: ${session.id}`);
+    return session;
+  } catch (error) {
+    console.error(`❌ Error al crear sesión del portal:`, error);
+    throw error;
+  }
 }
 
 export async function handleSubscriptionChange(
@@ -292,4 +512,10 @@ export async function getStripeProducts() {
         ? product.default_price
         : product.default_price?.id
   }));
+}
+
+// Función para verificar si estamos en modo de prueba de Stripe
+export function isTestMode(): boolean {
+  const apiKey = process.env.STRIPE_SECRET_KEY;
+  return !!apiKey && apiKey.startsWith('sk_test_');
 }

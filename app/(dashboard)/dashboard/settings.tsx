@@ -9,7 +9,7 @@ import { User } from '@/lib/db/schema';
 import { Input } from '@/components/ui/input';
 import { useState, useEffect, useRef, useTransition } from 'react';
 import { updateAppVersionAction } from '@/lib/db/actions';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { EyeIcon, EyeOffIcon, CopyIcon, CheckIcon, Lock, Loader2, CircleSlash, CreditCard, ShieldAlert, BadgeCheck, ShieldQuestion, Wrench, Timer } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { updatePassword } from '@/app/(login)/actions';
@@ -29,6 +29,8 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
   };
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get('error');
   const [version, setVersion] = useState(currentVersion || '1.0.0');
   const [displayedVersion, setDisplayedVersion] = useState(currentVersion || '1.0.0');
   const formRef = useRef<HTMLFormElement>(null);
@@ -67,6 +69,152 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
       }
     }
   }, [actionState.success, router]);
+  
+  useEffect(() => {
+    if (errorParam) {
+      let errorMessage = "Ha ocurrido un error inesperado";
+      
+      // Mapear códigos de error a mensajes más descriptivos
+      switch (errorParam) {
+        case 'payment-error':
+          errorMessage = "Ha ocurrido un error al procesar el pago. Por favor intenta de nuevo más tarde.";
+          break;
+        case 'stripe-api-key':
+          errorMessage = "La clave API de Stripe no es válida. Por favor configura una clave de prueba válida en el archivo .env.local.";
+          break;
+        case 'invalid-price':
+          errorMessage = "El precio seleccionado no es válido o no existe en Stripe. Por favor configura productos y precios en tu cuenta de Stripe.";
+          break;
+        case 'missing-price':
+          errorMessage = "No se ha especificado un precio para la suscripción. Por favor selecciona un plan.";
+          break;
+        case 'customer-error':
+          errorMessage = "No se pudo crear o actualizar tu perfil de cliente en el sistema de pagos. Por favor intenta de nuevo.";
+          break;
+        case 'update-error':
+          errorMessage = "No se pudo actualizar tu información de usuario. Por favor intenta de nuevo más tarde.";
+          break;
+        case 'profile-setup-error':
+          errorMessage = "No se pudo configurar tu perfil de cliente. Por favor contacta a soporte técnico.";
+          break;
+        case 'user-data-error':
+          errorMessage = "Tu sesión de usuario no tiene datos suficientes. Por favor cierra sesión, vuelve a iniciar sesión e intenta de nuevo.";
+          break;
+        case 'checkout-error':
+          errorMessage = "Error en el proceso de pago. Por favor intenta de nuevo o contacta a soporte si el problema persiste.";
+          break;
+        case 'portal-access':
+          errorMessage = "No se pudo acceder al portal de gestión de suscripciones. Verifica tu conexión a internet o inténtalo más tarde.";
+          break;
+        case 'no-customer-id':
+          errorMessage = "No tienes una suscripción activa. Por favor suscríbete primero para acceder al portal de facturación.";
+          break;
+        case 'no-product-id':
+          errorMessage = "No hay un producto asociado a tu cuenta. Por favor contacta a soporte.";
+          break;
+        case 'invalid-customer':
+          errorMessage = "Tu información de cliente no es válida en nuestro sistema de pagos. Por favor contacta a soporte.";
+          break;
+        case 'portal-config':
+          errorMessage = "El portal de facturación no está correctamente configurado. Por favor contacta a soporte.";
+          break;
+        case 'setup-failed':
+          errorMessage = "No se pudo configurar tu perfil de pago. Por favor intenta de nuevo o contacta a soporte.";
+          break;
+        case 'invalid-customer-id':
+          errorMessage = "Tu ID de cliente no es válido en el sistema de pagos. Por favor contacta a soporte.";
+          break;
+        case 'invalid-price-id':
+          errorMessage = "El plan seleccionado no es válido. Por favor selecciona otro plan.";
+          break;
+        case 'stripe-config':
+          errorMessage = "Error en la configuración del sistema de pagos. Por favor contacta a soporte.";
+          break;
+        case 'price-error':
+          errorMessage = "Error con el precio seleccionado. Por favor elige otro plan.";
+          break;
+        case 'stripe-create-customer':
+          errorMessage = "No se pudo crear tu perfil de cliente en Stripe. Verifica que la configuración de Stripe es correcta o contacta a soporte.";
+          break;
+        case 'invalid-api-key':
+          errorMessage = "La clave API de Stripe no es válida o no está configurada correctamente. Por favor contacta con el administrador.";
+          break;
+        case 'invalid-price-format':
+          errorMessage = "El formato del ID de precio seleccionado no es válido. Debe comenzar con 'price_'.";
+          break;
+        case 'stripe-verification':
+          errorMessage = "No se pudo verificar la información de tu cuenta en Stripe. Por favor intenta más tarde.";
+          break;
+        case 'network-error':
+          errorMessage = "Error de conexión al procesar el pago. Verifica tu conexión a internet e intenta nuevamente.";
+          break;
+        case 'session-error':
+          errorMessage = "Error al crear la sesión de pago. Por favor intenta nuevamente o contacta a soporte.";
+          break;
+        case 'no-active-subscription':
+          errorMessage = "No tienes una suscripción activa. Por favor suscríbete primero para acceder al portal de gestión.";
+          break;
+        case 'subscription-exists':
+          errorMessage = "Ya tienes una suscripción activa. Puedes gestionar tu suscripción desde tu dashboard.";
+          break;
+        case 'invalid-redirect-url':
+          errorMessage = "Error con las URLs de redirección en el proceso de pago. Por favor contacta al administrador.";
+          break;
+        case 'url-error':
+          errorMessage = "Error en las URLs del proceso de pago. Por favor contacta al administrador.";
+          break;
+        case 'missing-customer':
+          errorMessage = "No se pudo encontrar la información de cliente en la sesión de pago.";
+          break;
+        case 'missing-subscription':
+          errorMessage = "No se pudo encontrar la información de suscripción en la sesión de pago.";
+          break;
+        case 'missing-price-data':
+          errorMessage = "No se pudo encontrar la información de precio en la suscripción creada.";
+          break;
+      }
+      
+      // Mostrar toast de error
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
+      
+      // Limpiar el parámetro de error de la URL
+      const params = new URLSearchParams(window.location.search);
+      params.delete('error');
+      router.replace(`/dashboard/settings${params.toString() ? `?${params.toString()}` : ''}`);
+    }
+    
+    // Mostrar mensaje de éxito si hay uno
+    const successParam = searchParams.get('success');
+    if (successParam) {
+      let successMessage = "Operación completada correctamente";
+      
+      // Mapear códigos de éxito a mensajes más descriptivos
+      switch (successParam) {
+        case 'subscription-activated':
+          successMessage = "¡Tu suscripción ha sido activada correctamente! Ya puedes disfrutar de todas las funcionalidades premium.";
+          break;
+        case 'subscription-simulated':
+          successMessage = "Simulación de suscripción completada. En un entorno real, ahora tendrías acceso a todas las funcionalidades premium.";
+          break;
+      }
+      
+      // Mostrar toast de éxito
+      toast({
+        title: "¡Éxito!",
+        description: successMessage,
+        variant: "default"
+      });
+      
+      // Limpiar el parámetro de éxito de la URL
+      const params = new URLSearchParams(window.location.search);
+      params.delete('success');
+      router.replace(`/dashboard/settings${params.toString() ? `?${params.toString()}` : ''}`);
+    }
+  }, [errorParam, router, searchParams]);
   
   const validateVersionFormat = (value: string) => {
     const versionRegex = /^\d+\.\d+\.\d+$/;
@@ -178,22 +326,60 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
                       : 'No active subscription'}
                 </p>
               </div>
-              <form action={async (formData) => {
-                try {
-                  await customerPortalAction();
-                } catch (error) {
-                  console.error('Error accessing customer portal:', error);
-                  toast({
-                    title: "Error",
-                    description: "No se pudo acceder al portal de gestión de suscripciones. Verifica tu conexión a internet o inténtalo más tarde.",
-                    variant: "destructive"
-                  });
-                }
-              }}>
-                <Button type="submit" variant="outline">
-                  Manage Subscription
+              
+              {/* Mostrar botones diferentes según si el usuario tiene suscripción o no */}
+              {user.stripeSubscriptionId && user.subscriptionStatus === 'active' ? (
+                // Si tiene suscripción activa, mostrar el botón para gestionarla
+                <form action={async () => {
+                  try {
+                    // Mostrar mensaje de espera mientras se procesa
+                    toast({
+                      title: "Procesando...",
+                      description: "Preparando el portal de gestión...",
+                    });
+                    
+                    // Intentar acceder al portal de cliente
+                    const result = await customerPortalAction();
+                    
+                    if (result?.redirect) {
+                      // Si se obtiene una URL de redirección, navegar a ella
+                      window.location.href = result.redirect;
+                    } else {
+                      // Si no hay redirección pero tampoco error, usar modo de simulación
+                      window.location.href = "/dashboard?success=portal-simulated";
+                    }
+                  } catch (error) {
+                    console.error('Error al acceder al portal:', error);
+                    // Mostrar mensaje de error más descriptivo
+                    toast({
+                      title: "No se pudo acceder al portal",
+                      description: "Se ha producido un error al intentar acceder al portal de gestión. Tu suscripción sigue activa.",
+                      variant: "destructive"
+                    });
+                  }
+                }}>
+                  <Button type="submit" variant="outline">
+                    Manage Subscription
+                  </Button>
+                </form>
+              ) : (
+                // Si no tiene suscripción activa, mostrar botón para suscribirse
+                <Button 
+                  variant="default" 
+                  onClick={() => {
+                    // Mensaje de carga
+                    toast({
+                      title: "Preparando suscripción...",
+                      description: "Estamos preparando el proceso de suscripción...",
+                    });
+                    router.push('/pricing');
+                  }}
+                  className="bg-gradient-to-r from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800 text-white"
+                >
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Subscribe Now
                 </Button>
-              </form>
+              )}
             </div>
           </div>
         </CardContent>
@@ -467,12 +653,12 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
         <div className="space-y-4 p-4 pt-8 border-t">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div>
-              <h3 className="text-lg font-medium">Administrador - Actualización de versiones</h3>
-              <p className="text-sm text-gray-500">Actualizar la versión de la aplicación</p>
+              <h3 className="text-lg font-medium">Administrador - Herramientas</h3>
+              <p className="text-sm text-gray-500">Herramientas para administradores del sistema</p>
             </div>
             
-            {/* Botón para probar configuración de email */}
-            <div className="mt-2 sm:mt-0">
+            <div className="mt-2 sm:mt-0 flex space-x-2">
+              {/* Botón para probar configuración de email */}
               <Button
                 variant="outline"
                 size="sm"
@@ -505,7 +691,79 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
                   }
                 }}
               >
-                Probar configuración de email
+                Probar email
+              </Button>
+              
+              {/* Botón para diagnosticar configuración de Stripe */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  try {
+                    toast({
+                      title: "Verificando Stripe...",
+                      description: "Comprobando configuración de Stripe y acceso a la API..."
+                    });
+                    
+                    const response = await fetch('/api/debug/payment', {
+                      method: 'GET',
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                      // Determinar estado general del sistema de pagos
+                      let statusTitle = "Estado del sistema de pagos";
+                      let statusDescription = "";
+                      let statusVariant: "default" | "destructive" = "default";
+                      
+                      // Análisis del resultado
+                      if (result.stripe.status === 'no-key' || result.stripe.status === 'invalid-key') {
+                        statusTitle = "⚠️ Configuración de Stripe inválida";
+                        statusDescription = result.stripe.message + ". No se pueden procesar pagos.";
+                        statusVariant = "destructive";
+                      } else if (result.pricesError) {
+                        statusTitle = "⚠️ Error al conectar con Stripe";
+                        statusDescription = "La clave API parece válida, pero no se pudo obtener la lista de precios: " + result.pricesError;
+                        statusVariant = "destructive";
+                      } else if (!result.prices || result.prices.length === 0) {
+                        statusTitle = "⚠️ No hay precios configurados";
+                        statusDescription = "Stripe está configurado, pero no hay productos o precios definidos. Configúralos en tu dashboard de Stripe.";
+                        statusVariant = "destructive";
+                      } else if (result.customerError && result.user.stripeCustomerId) {
+                        statusTitle = "⚠️ Error de cliente en Stripe";
+                        statusDescription = `El ID de cliente almacenado (${result.user.stripeCustomerId}) no es válido en Stripe: ${result.customerError}`;
+                        statusVariant = "destructive";
+                      } else {
+                        statusTitle = "✅ Configuración de Stripe correcta";
+                        statusDescription = `Modo: ${result.stripe.status}. Se encontraron ${result.prices?.length || 0} precios.`;
+                      }
+                      
+                      toast({
+                        title: statusTitle,
+                        description: statusDescription,
+                        variant: statusVariant
+                      });
+                      
+                      // Mostrar detalles completos en la consola para depuración
+                      console.log("🔍 Diagnóstico de Stripe:", result);
+                    } else {
+                      toast({
+                        title: "Error en diagnóstico",
+                        description: result.error || "No se pudo realizar el diagnóstico de Stripe",
+                        variant: "destructive"
+                      });
+                    }
+                  } catch (error) {
+                    toast({
+                      title: "Error al verificar",
+                      description: "No se pudo contactar con el servidor para diagnosticar Stripe",
+                      variant: "destructive"
+                    });
+                  }
+                }}
+              >
+                Diagnosticar Stripe
               </Button>
             </div>
           </div>

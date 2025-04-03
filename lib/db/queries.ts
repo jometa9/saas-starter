@@ -216,3 +216,48 @@ export async function updateAppVersion(version: string, userId: number) {
     throw error;
   }
 }
+
+// Nueva función para actualizar datos de usuario por ID
+export async function updateUserById(
+  userId: number,
+  userData: Partial<{
+    stripeCustomerId: string | null;
+    stripeSubscriptionId: string | null;
+    stripeProductId: string | null;
+    planName: string | null;
+    subscriptionStatus: string | null;
+    name: string | null;
+    email: string | null;
+    role: string | null;
+    apiKey: string | null;
+    resetToken: string | null;
+    resetTokenExpiry: Date | null;
+  }>
+) {
+  try {
+    console.log(`Actualizando usuario ID: ${userId} con datos:`, userData);
+    
+    // Añadir updatedAt al conjunto de datos a actualizar
+    const dataToUpdate = {
+      ...userData,
+      updatedAt: new Date(),
+    };
+    
+    const result = await db
+      .update(users)
+      .set(dataToUpdate)
+      .where(eq(users.id, userId))
+      .returning();
+    
+    if (result.length === 0) {
+      console.error(`❌ Error: No se encontró el usuario con ID ${userId}`);
+      throw new Error(`Usuario con ID ${userId} no encontrado`);
+    }
+    
+    console.log(`✅ Usuario ID: ${userId} actualizado correctamente`);
+    return result[0];
+  } catch (error) {
+    console.error(`❌ Error al actualizar usuario ID: ${userId}:`, error);
+    throw error;
+  }
+}
