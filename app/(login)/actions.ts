@@ -6,10 +6,7 @@ import { db } from '@/lib/db/drizzle';
 import {
   User,
   users,
-  activityLogs,
   type NewUser,
-  type NewActivityLog,
-  ActivityType,
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
@@ -20,19 +17,6 @@ import {
   validatedAction,
   validatedActionWithUser,
 } from '@/lib/auth/middleware';
-
-async function logActivity(
-  userId: number,
-  type: ActivityType,
-  ipAddress?: string,
-) {
-  const newActivity: NewActivityLog = {
-    userId,
-    action: type,
-    ipAddress: ipAddress || '',
-  };
-  await db.insert(activityLogs).values(newActivity);
-}
 
 const signInSchema = z.object({
   email: z.string().email().min(3).max(255),
@@ -71,10 +55,7 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
     };
   }
 
-  await Promise.all([
-    setSession(user),
-    logActivity(user.id, ActivityType.SIGN_IN),
-  ]);
+  await setSession(user);
 
   const redirectTo = formData.get('redirect') as string | null;
   if (redirectTo === 'checkout') {
@@ -125,10 +106,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     };
   }
 
-  await Promise.all([
-    logActivity(createdUser.id, ActivityType.SIGN_UP),
-    setSession(createdUser),
-  ]);
+  await setSession(createdUser);
 
   const redirectTo = formData.get('redirect') as string | null;
   if (redirectTo === 'checkout') {
@@ -140,9 +118,8 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 });
 
 export async function signOut() {
-  const user = (await getUser()) as User;
-  await logActivity(user.id, ActivityType.SIGN_OUT);
   (await cookies()).delete('session');
+  redirect('/sign-in');
 }
 
 const updatePasswordSchema = z
@@ -178,13 +155,10 @@ export const updatePassword = validatedActionWithUser(
 
     const newPasswordHash = await hashPassword(newPassword);
 
-    await Promise.all([
-      db
-        .update(users)
-        .set({ passwordHash: newPasswordHash })
-        .where(eq(users.id, user.id)),
-      logActivity(user.id, ActivityType.UPDATE_PASSWORD),
-    ]);
+    await db
+      .update(users)
+      .set({ passwordHash: newPasswordHash })
+      .where(eq(users.id, user.id));
 
     return { success: 'Password updated successfully.' };
   },
@@ -203,8 +177,6 @@ export const deleteAccount = validatedActionWithUser(
     if (!isPasswordValid) {
       return { error: 'Incorrect password. Account deletion failed.' };
     }
-
-    await logActivity(user.id, ActivityType.DELETE_ACCOUNT);
 
     // Soft delete
     await db
@@ -230,10 +202,7 @@ export const updateAccount = validatedActionWithUser(
   async (data, _, user) => {
     const { name, email } = data;
 
-    await Promise.all([
-      db.update(users).set({ name, email }).where(eq(users.id, user.id)),
-      logActivity(user.id, ActivityType.UPDATE_ACCOUNT),
-    ]);
+    await db.update(users).set({ name, email }).where(eq(users.id, user.id));
 
     return { success: 'Account updated successfully.' };
   },

@@ -1,6 +1,6 @@
-import { desc, and, eq, isNull } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { activityLogs, users } from './schema';
+import { users } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 
@@ -62,13 +62,4 @@ export async function updateUserSubscription(
       updatedAt: new Date(),
     })
     .where(eq(users.id, userId));
-}
-
-export async function getRecentActivity(userId: number, limit = 10) {
-  return db
-    .select()
-    .from(activityLogs)
-    .where(eq(activityLogs.userId, userId))
-    .orderBy(desc(activityLogs.timestamp))
-    .limit(limit);
 }
