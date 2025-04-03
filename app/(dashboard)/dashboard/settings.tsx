@@ -367,11 +367,7 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
                 <Button 
                   variant="default" 
                   onClick={() => {
-                    // Mensaje de carga
-                    toast({
-                      title: "Preparando suscripción...",
-                      description: "Estamos preparando el proceso de suscripción...",
-                    });
+                    // Redirección directa sin mensajes de espera
                     router.push('/pricing');
                   }}
                   className="bg-gradient-to-r from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800 text-white"

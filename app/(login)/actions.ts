@@ -100,11 +100,36 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   const passwordHash = await hashPassword(password);
   const apiKey = generateApiKey();
 
+  // Crear un customer en Stripe primero
+  let stripeCustomerId = null;
+  try {
+    console.log(`🔄 Creando cliente de Stripe para usuario nuevo: ${email}`);
+    
+    // Importar el módulo de stripe solo cuando lo necesitamos
+    const { stripe } = await import('@/lib/payments/stripe');
+    
+    // Crear el cliente en Stripe
+    const customer = await stripe.customers.create({
+      email,
+      metadata: {
+        source: 'signup_flow'
+      }
+    });
+    
+    stripeCustomerId = customer.id;
+    console.log(`✅ Cliente Stripe creado exitosamente: ${stripeCustomerId}`);
+  } catch (stripeError) {
+    console.error('Error al crear cliente en Stripe durante registro:', stripeError);
+    // No bloqueamos el registro si falla la creación en Stripe
+    // Lo intentaremos más tarde cuando se suscriba
+  }
+
   const newUser: NewUser = {
     email,
     passwordHash,
     apiKey,
     role: 'owner',
+    stripeCustomerId, // Añadir el ID del cliente de Stripe (puede ser null si falló)
   };
 
   const [createdUser] = await db.insert(users).values(newUser).returning();

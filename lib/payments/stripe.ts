@@ -76,7 +76,7 @@ export async function createCheckoutSession({
       - subscriptionStatus: ${user.subscriptionStatus || 'No tiene'}
     `);
     
-    // Verificar que tengamos un customerId válido
+    // Verificar que tengamos un customerId válido o crear uno
     if (!user.stripeCustomerId) {
       console.log(`🔄 Usuario sin customerId, creando uno nuevo...`);
       try {
@@ -85,7 +85,8 @@ export async function createCheckoutSession({
           email: user.email,
           name: user.name || undefined,
           metadata: {
-            userId: user.id.toString()
+            userId: user.id.toString(),
+            source: 'checkout_flow'
           }
         });
         
@@ -101,14 +102,24 @@ export async function createCheckoutSession({
         console.log(`✅ Usuario actualizado con nuevo customerId: ${customer.id}`);
       } catch (createError) {
         console.error(`❌ Error al crear cliente en Stripe:`, createError);
-        throw new Error('No se pudo crear un cliente en Stripe. Por favor intenta nuevamente más tarde.');
+        return '/dashboard?error=customer-error';
       }
     } else {
       // Verificar que el cliente exista en Stripe
       try {
         // Intentar recuperar el cliente de Stripe para verificar que existe
-        await stripe.customers.retrieve(user.stripeCustomerId);
+        const customer = await stripe.customers.retrieve(user.stripeCustomerId);
         console.log(`✅ Cliente verificado en Stripe: ${user.stripeCustomerId}`);
+        
+        // Asegurarse de que el correo esté actualizado en Stripe
+        if (customer.email !== user.email) {
+          console.log(`🔄 Actualizando email del cliente en Stripe de ${customer.email} a ${user.email}`);
+          await stripe.customers.update(user.stripeCustomerId, {
+            email: user.email,
+            name: user.name || undefined
+          });
+          console.log(`✅ Email del cliente actualizado en Stripe`);
+        }
       } catch (customerError) {
         console.error(`❌ Error: El cliente ${user.stripeCustomerId} no existe en Stripe:`, customerError);
         console.log(`🔄 Creando un nuevo cliente en Stripe...`);
@@ -119,7 +130,8 @@ export async function createCheckoutSession({
             email: user.email,
             name: user.name || undefined,
             metadata: {
-              userId: user.id.toString()
+              userId: user.id.toString(),
+              source: 'checkout_recovery'
             }
           });
           
