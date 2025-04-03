@@ -8,13 +8,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import { resetPasswordAction } from '../actions';
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token') || '';
-  const [state, formAction] = useFormState(resetPasswordAction, { error: '', success: '' });
+  const [state, formAction] = useActionState(resetPasswordAction, { error: '', success: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (formData: FormData) => {

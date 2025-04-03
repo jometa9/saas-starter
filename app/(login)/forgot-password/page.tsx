@@ -7,11 +7,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import { forgotPassword } from '../actions';
 
 export default function ForgotPasswordPage() {
-  const [state, formAction] = useFormState(forgotPassword, { error: '', success: '' });
+  const [state, formAction] = useActionState(forgotPassword, { error: '', success: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (formData: FormData) => {
