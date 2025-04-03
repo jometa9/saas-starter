@@ -1,8 +1,14 @@
+import { eq } from 'drizzle-orm';
+import { db } from '@/lib/db/drizzle';
+import { users } from '@/lib/db/schema';
+import { setSession } from '@/lib/auth/session';
 import { NextRequest, NextResponse } from 'next/server';
-import { getUser, updateUserById } from '@/lib/db/queries';
 import { stripe } from '@/lib/payments/stripe';
+import Stripe from 'stripe';
+import { getUser, updateUserById } from '@/lib/db/queries';
 import { cookies } from 'next/headers';
 import { lucia } from '@/lib/auth/lucia';
+import { sendSubscriptionChangeEmail } from '@/lib/email';
 
 export async function GET(req: NextRequest) {
   const sessionId = req.nextUrl.searchParams.get('session_id');
@@ -69,7 +75,7 @@ export async function GET(req: NextRequest) {
     
     const priceId = item.price.id;
     const productId = typeof item.price.product === 'string' ? item.price.product : item.price.product.id;
-    const productName = typeof item.price.product === 'string' ? null : item.price.product.name;
+    const productName = typeof item.price.product === 'string' ? 'Suscripción Premium' : item.price.product.name;
     
     // Determinar el estado de la suscripción
     const status = subscription.status;
@@ -89,6 +95,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL('/sign-in?error=no-session', req.url));
     }
     
+    // Obtener información de fecha de finalización para la suscripción
+    let expiryDate: string | undefined = undefined;
+    if (subscription.current_period_end) {
+      expiryDate = new Date(subscription.current_period_end * 1000).toISOString().split('T')[0];
+    }
+    
     // Actualizar el usuario con los datos de Stripe
     console.log(`🔄 Actualizando usuario ${user.id} con datos de suscripción`);
     
@@ -102,6 +114,24 @@ export async function GET(req: NextRequest) {
       });
       
       console.log(`✅ Usuario actualizado correctamente con datos de suscripción`);
+      
+      // Enviar email de confirmación de suscripción
+      try {
+        console.log(`🔄 Enviando email de confirmación de suscripción a ${user.email}`);
+        
+        await sendSubscriptionChangeEmail({
+          email: user.email,
+          name: user.name || user.email.split('@')[0],
+          planName: productName || 'Plan Premium',
+          status: status,
+          expiryDate: expiryDate
+        });
+        
+        console.log(`✅ Email de confirmación de suscripción enviado correctamente`);
+      } catch (emailError) {
+        // No bloqueamos el flujo principal si falla el envío de email
+        console.error(`⚠️ Error al enviar email de confirmación:`, emailError);
+      }
     } catch (updateError) {
       console.error(`❌ Error al actualizar usuario:`, updateError);
       return NextResponse.redirect(new URL('/dashboard?error=update-error', req.url));
@@ -143,7 +173,7 @@ export async function POST(req: NextRequest) {
     const simulatedCustomerId = `cus_sim_${Math.random().toString(36).substring(2, 15)}`;
     const simulatedSubscriptionId = `sub_sim_${Math.random().toString(36).substring(2, 15)}`;
     const simulatedProductId = productId || `prod_sim_${Math.random().toString(36).substring(2, 15)}`;
-    const simulatedProductName = productName || 'Plan Simulado';
+    const simulatedProductName = productName || 'Plan Premium (Simulado)';
     
     console.log(`🔧 Simulando suscripción: 
       - CustomerId: ${simulatedCustomerId}
@@ -161,6 +191,24 @@ export async function POST(req: NextRequest) {
     });
     
     console.log(`✅ Usuario actualizado con datos simulados: ${user.id}`);
+    
+    // Enviar email de confirmación de suscripción simulada
+    try {
+      console.log(`🔄 Enviando email de confirmación de suscripción simulada a ${user.email}`);
+      
+      await sendSubscriptionChangeEmail({
+        email: user.email,
+        name: user.name || user.email.split('@')[0],
+        planName: simulatedProductName,
+        status: 'active',
+        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 30 días desde hoy
+      });
+      
+      console.log(`✅ Email de confirmación de suscripción simulada enviado correctamente`);
+    } catch (emailError) {
+      // No bloqueamos el flujo principal si falla el envío de email
+      console.error(`⚠️ Error al enviar email de confirmación simulada:`, emailError);
+    }
     
     return NextResponse.json({ 
       success: true, 

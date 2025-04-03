@@ -275,21 +275,21 @@ export async function createCheckoutSession({
   }
 }
 
-export async function createCustomerPortalSession(user: User) {
+export async function createCustomerPortalSession(user: User): Promise<{ url: string } | { error: string }> {
   // Verificar que el usuario tenga la información necesaria
   if (!user.stripeCustomerId) {
     console.error(`❌ Error: Usuario sin stripeCustomerId`);
-    redirect('/pricing');
+    return { error: 'no-customer-id' };
   }
   
-  if (!user.stripeSubscriptionId || user.subscriptionStatus !== 'active') {
-    console.error(`❌ Error: Usuario sin suscripción activa (Status: ${user.subscriptionStatus})`);
-    redirect('/dashboard?error=no-active-subscription');
+  if (!user.stripeSubscriptionId || (user.subscriptionStatus !== 'active' && user.subscriptionStatus !== 'trialing')) {
+    console.error(`❌ Error: Usuario sin suscripción activa o en prueba (Status: ${user.subscriptionStatus})`);
+    return { error: 'no-active-subscription' };
   }
   
   if (!user.stripeProductId) {
     console.error(`❌ Error: Usuario sin stripeProductId`);
-    redirect('/dashboard?error=no-product-id');
+    return { error: 'no-product-id' };
   }
 
   try {
@@ -378,10 +378,24 @@ export async function createCustomerPortalSession(user: User) {
     });
     
     console.log(`✅ Sesión del portal creada: ${session.id}`);
-    return session;
+    return { url: session.url };
   } catch (error) {
     console.error(`❌ Error al crear sesión del portal:`, error);
-    throw error;
+    
+    if (error instanceof Error) {
+      console.error(`❌ Mensaje de error: ${error.message}`);
+      
+      // Mapear errores comunes a códigos más amigables
+      if (error.message.includes('API key') || error.message.includes('stripe')) {
+        return { error: 'stripe-api-key' };
+      } else if (error.message.includes('configuration')) {
+        return { error: 'portal-config' };
+      } else if (error.message.includes('customer')) {
+        return { error: 'invalid-customer' };
+      }
+    }
+    
+    return { error: 'portal-access' };
   }
 }
 

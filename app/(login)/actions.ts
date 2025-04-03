@@ -144,12 +144,15 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 
   // Enviar email de bienvenida
   try {
+    console.log(`🔄 Enviando email de bienvenida a: ${createdUser.email}`);
     await sendWelcomeEmail({
       email: createdUser.email,
       name: createdUser.name || createdUser.email.split('@')[0],
+      loginUrl: process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000'
     });
+    console.log(`✅ Email de bienvenida enviado correctamente`);
   } catch (error) {
-    console.error('Error sending welcome email:', error);
+    console.error('❌ Error sending welcome email:', error);
     // No bloqueamos el registro si falla el envío del email
   }
 

@@ -39,7 +39,6 @@
     "nodemailer": "^6.10.0",
     "postcss": "^8.5.3",
     "postgres": "^3.4.5",
-    "prettier": "^3.5.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "server-only": "^0.0.1",
@@ -50,5 +49,9 @@
     "tailwindcss-react-aria-components": "2.0.0",
     "typescript": "^5.8.2",
     "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "plugins-html@latest": "link:prettier/plugins-html@latest",
+    "prettier": "^3.4.2"
   }
 }

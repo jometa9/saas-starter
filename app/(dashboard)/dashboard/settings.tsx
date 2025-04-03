@@ -152,7 +152,7 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
           errorMessage = "Error al crear la sesión de pago. Por favor intenta nuevamente o contacta a soporte.";
           break;
         case 'no-active-subscription':
-          errorMessage = "No tienes una suscripción activa. Por favor suscríbete primero para acceder al portal de gestión.";
+          errorMessage = "No tienes una suscripción activa o en período de prueba. Debes suscribirte primero.";
           break;
         case 'subscription-exists':
           errorMessage = "Ya tienes una suscripción activa. Puedes gestionar tu suscripción desde tu dashboard.";
@@ -320,16 +320,26 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {user.subscriptionStatus === 'active'
-                    ? 'Billed monthly'
+                    ? 'Suscripción activa'
                     : user.subscriptionStatus === 'trialing'
-                      ? 'Trial period'
-                      : 'No active subscription'}
+                      ? 'Período de prueba'
+                      : user.subscriptionStatus === 'canceled'
+                        ? 'Suscripción cancelada'
+                        : user.subscriptionStatus === 'past_due'
+                          ? 'Pago pendiente'
+                          : user.subscriptionStatus === 'unpaid'
+                            ? 'Suscripción impaga'
+                            : user.subscriptionStatus === 'incomplete'
+                              ? 'Suscripción incompleta'
+                              : user.stripeSubscriptionId
+                                ? `Estado: ${user.subscriptionStatus || 'desconocido'}`
+                                : 'No hay suscripción activa'}
                 </p>
               </div>
               
               {/* Mostrar botones diferentes según si el usuario tiene suscripción o no */}
-              {user.stripeSubscriptionId && user.subscriptionStatus === 'active' ? (
-                // Si tiene suscripción activa, mostrar el botón para gestionarla
+              {user.stripeSubscriptionId ? (
+                // Si tiene cualquier tipo de suscripción, mostrar el botón para gestionarla
                 <form action={async () => {
                   try {
                     // Mostrar mensaje de espera mientras se procesa
@@ -341,12 +351,75 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
                     // Intentar acceder al portal de cliente
                     const result = await customerPortalAction();
                     
+                    if (result?.error) {
+                      // Si hay un error, mostrar el mensaje adecuado
+                      console.error('Error al acceder al portal:', result.error);
+                      let errorMessage = "No se pudo acceder al portal de gestión.";
+                      
+                      // Mapear códigos de error a mensajes más descriptivos
+                      switch (result.error) {
+                        case 'no-customer-id':
+                          errorMessage = "No tienes un perfil de cliente configurado. Contacta con soporte.";
+                          break;
+                        case 'no-active-subscription':
+                          errorMessage = "No tienes una suscripción activa o en período de prueba. Debes suscribirte primero.";
+                          break;
+                        case 'no-product-id':
+                          errorMessage = "Tu suscripción no tiene un producto asignado. Contacta con soporte.";
+                          break;
+                        case 'stripe-api-key':
+                          errorMessage = "Error de configuración de Stripe. Contacta con el administrador.";
+                          break;
+                        case 'portal-config':
+                          errorMessage = "Error en la configuración del portal. Contacta con soporte.";
+                          break;
+                        case 'invalid-customer':
+                          errorMessage = "Tu perfil de cliente no es válido. Contacta con soporte.";
+                          break;
+                      }
+                      
+                      toast({
+                        title: "Error",
+                        description: errorMessage,
+                        variant: "destructive"
+                      });
+                      
+                      // Si es un error de conexión, ofrecer modo de simulación
+                      if (result.error === 'stripe-api-key' || result.error === 'portal-config') {
+                        setTimeout(() => {
+                          toast({
+                            title: "Modo de demostración",
+                            description: "¿Quieres ver una simulación del portal?",
+                            action: (
+                              <div className="flex space-x-2">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => window.location.href = "/dashboard?success=portal-simulated"}
+                                >
+                                  Sí, simular
+                                </Button>
+                              </div>
+                            )
+                          });
+                        }, 1500);
+                      }
+                      
+                      return;
+                    }
+                    
                     if (result?.redirect) {
                       // Si se obtiene una URL de redirección, navegar a ella
                       window.location.href = result.redirect;
                     } else {
                       // Si no hay redirección pero tampoco error, usar modo de simulación
-                      window.location.href = "/dashboard?success=portal-simulated";
+                      toast({
+                        title: "Simulación",
+                        description: "Redirigiendo a modo simulado debido a limitaciones del entorno.",
+                      });
+                      setTimeout(() => {
+                        window.location.href = "/dashboard?success=portal-simulated";
+                      }, 1500);
                     }
                   } catch (error) {
                     console.error('Error al acceder al portal:', error);

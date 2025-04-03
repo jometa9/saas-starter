@@ -112,9 +112,9 @@ export async function customerPortalAction(): Promise<{ error?: string; redirect
       return { error: 'no-customer-id' };
     }
     
-    // Verificar si el usuario tiene una suscripción activa
-    if (!user.stripeSubscriptionId || user.subscriptionStatus !== 'active') {
-      console.error(`❌ El usuario no tiene una suscripción activa (Status: ${user.subscriptionStatus})`);
+    // Verificar si el usuario tiene una suscripción activa o en prueba
+    if (!user.stripeSubscriptionId || (user.subscriptionStatus !== 'active' && user.subscriptionStatus !== 'trialing')) {
+      console.error(`❌ El usuario no tiene una suscripción activa o en prueba (Status: ${user.subscriptionStatus})`);
       return { error: 'no-active-subscription' };
     }
     
@@ -127,6 +127,12 @@ export async function customerPortalAction(): Promise<{ error?: string; redirect
     console.log(`🔄 Conectando directamente con Stripe para crear sesión de portal...`);
     
     const session = await createCustomerPortalSession(user);
+    
+    // Manejar si createCustomerPortalSession devuelve un error
+    if ('error' in session) {
+      console.error(`❌ Error de la sesión del portal: ${session.error}`);
+      return { error: session.error };
+    }
     
     if (!session.url) {
       console.error('❌ La sesión del portal no tiene URL');
