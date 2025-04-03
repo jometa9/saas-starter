@@ -1,6 +1,6 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { users } from './schema';
+import { users, appSettings } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 import { generateResetToken, getResetTokenExpiry } from '@/lib/utils';
@@ -133,4 +133,86 @@ export async function resetPassword(token: string, newPassword: string) {
   // usando la función hashPassword
   
   return user;
+}
+
+// Funciones para la gestión de versión de la aplicación
+export async function getAppVersion() {
+  const settings = await db
+    .select()
+    .from(appSettings)
+    .orderBy(appSettings.id)
+    .limit(1);
+
+  // Si no hay configuración, crea una por defecto
+  if (settings.length === 0) {
+    const defaultSettings = await db
+      .insert(appSettings)
+      .values({
+        appVersion: '1.0.0',
+        updatedAt: new Date(),
+      })
+      .returning();
+    
+    return defaultSettings[0].appVersion;
+  }
+
+  return settings[0].appVersion;
+}
+
+export async function updateAppVersion(version: string, userId: number) {
+  console.log(`Actualizando versión en la BD a: ${version} por usuario: ${userId}`);
+  
+  const settings = await db
+    .select()
+    .from(appSettings)
+    .orderBy(appSettings.id)
+    .limit(1);
+
+  try {
+    if (settings.length === 0) {
+      // Si no existe, crear nuevo registro
+      console.log("No existe configuración, creando nueva...");
+      const result = await db
+        .insert(appSettings)
+        .values({
+          appVersion: version,
+          updatedAt: new Date(),
+          updatedBy: userId,
+        })
+        .returning();
+      
+      console.log("Registro creado:", result[0]);
+      return result[0].appVersion;
+    } else {
+      // Si existe, actualizar
+      console.log(`Actualizando registro existente ID: ${settings[0].id} de ${settings[0].appVersion} a ${version}`);
+      const result = await db
+        .update(appSettings)
+        .set({
+          appVersion: version,
+          updatedAt: new Date(),
+          updatedBy: userId,
+        })
+        .where(eq(appSettings.id, settings[0].id))
+        .returning();
+      
+      if (result.length > 0) {
+        console.log("Actualización exitosa:", result[0]);
+        return result[0].appVersion;
+      } else {
+        console.log("No se aplicaron cambios en la BD, obteniendo versión actual");
+        // Si no se actualizó nada (quizás porque la versión es la misma), devolver la versión actual
+        const currentSettings = await db
+          .select()
+          .from(appSettings)
+          .where(eq(appSettings.id, settings[0].id))
+          .limit(1);
+          
+        return currentSettings[0].appVersion;
+      }
+    }
+  } catch (error) {
+    console.error("Error al actualizar versión:", error);
+    throw error;
+  }
 }

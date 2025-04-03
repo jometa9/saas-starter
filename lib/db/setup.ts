@@ -199,8 +199,8 @@ async function main() {
   const POSTGRES_URL = await getPostgresURL();
   const STRIPE_SECRET_KEY = await getStripeSecretKey();
   const STRIPE_WEBHOOK_SECRET = await createStripeWebhook();
-  const BASE_URL = 'http://localhost:3000';
   const AUTH_SECRET = generateAuthSecret();
+  const BASE_URL = 'http://localhost:3000';
 
   await writeEnvFile({
     POSTGRES_URL,
@@ -210,7 +210,20 @@ async function main() {
     AUTH_SECRET,
   });
 
-  console.log('🎉 Setup completed successfully!');
+  console.log('Environment setup complete. Now running database migrations...');
+  
+  // Importar y ejecutar la migración de app_settings
+  try {
+    const { migrateAppSettings } = await import('./migrations/add_app_settings_table');
+    await migrateAppSettings();
+    console.log('App Settings table migration complete.');
+  } catch (error) {
+    console.error('Failed to run app_settings migration:', error);
+  }
+
+  console.log(
+    'Setup complete! You can now start the development server with "pnpm dev".'
+  );
 }
 
 main().catch(console.error);

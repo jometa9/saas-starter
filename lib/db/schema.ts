@@ -27,5 +27,14 @@ export const users = pgTable('users', {
   subscriptionStatus: varchar('subscription_status', { length: 20 }),
 });
 
+export const appSettings = pgTable('app_settings', {
+  id: serial('id').primaryKey(),
+  appVersion: varchar('app_version', { length: 20 }).notNull().default('1.0.0'),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  updatedBy: integer('updated_by').references(() => users.id),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+export type AppSettings = typeof appSettings.$inferSelect;
+export type NewAppSettings = typeof appSettings.$inferInsert;
