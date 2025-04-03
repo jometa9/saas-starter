@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { useState, useEffect, useRef, useTransition } from 'react';
 import { updateAppVersionAction } from '@/lib/db/actions';
 import { useRouter } from 'next/navigation';
+import { EyeIcon, EyeOffIcon, CopyIcon, CheckIcon } from 'lucide-react';
 
 type ActionState = {
   error?: string;
@@ -28,6 +29,8 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
   const [isPending, startTransition] = useTransition();
   const [isValidFormat, setIsValidFormat] = useState(true);
   const [actionState, setActionState] = useState<ActionState>({});
+  const [isLicenseVisible, setIsLicenseVisible] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     if (currentVersion) {
@@ -87,6 +90,23 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
     });
   };
 
+  const toggleLicenseVisibility = () => {
+    setIsLicenseVisible(!isLicenseVisible);
+  };
+  
+  const copyToClipboard = () => {
+    if (user.apiKey) {
+      navigator.clipboard.writeText(user.apiKey)
+        .then(() => {
+          setIsCopied(true);
+          setTimeout(() => setIsCopied(false), 2000);
+        })
+        .catch(err => {
+          console.error('Error al copiar al portapapeles:', err);
+        });
+    }
+  };
+
   return (
     <section className="flex-1 p-4 lg:p-8">
       <h1 className="text-lg lg:text-2xl font-medium mb-6">Dashboard</h1>
@@ -128,10 +148,42 @@ export function Settings({ user, currentVersion }: { user: User, currentVersion:
             <p className="text-sm text-muted-foreground">
               Use this license key to validate your subscription from application.
             </p>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-              <div className="font-mono bg-gray-100 p-2 rounded w-full overflow-auto">
-                {user.apiKey || 'No License key generated'}
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center space-x-2 w-full">
+                <div className="font-mono bg-gray-100 p-2 rounded w-full overflow-hidden relative">
+                  {user.apiKey ? (
+                    isLicenseVisible ? (
+                      user.apiKey
+                    ) : (
+                      "•".repeat(user.apiKey.length > 12 ? 12 : user.apiKey.length)
+                    )
+                  ) : (
+                    'No License key generated'
+                  )}
+                </div>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={toggleLicenseVisibility} 
+                  title={isLicenseVisible ? "Hide License Key" : "Show License Key"}
+                >
+                  {isLicenseVisible ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={copyToClipboard} 
+                  disabled={!user.apiKey}
+                  title="Copy to Clipboard"
+                >
+                  {isCopied ? <CheckIcon className="h-4 w-4 text-green-500" /> : <CopyIcon className="h-4 w-4" />}
+                </Button>
               </div>
+              {isCopied && (
+                <p className="text-xs text-green-500">License key copied to clipboard!</p>
+              )}
             </div>
           </div>
         </CardContent>
