@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { Profile } from './profile-component';
-import { getUser } from '@/lib/db/queries';
+import { Subscription } from '../subscription/subscription-component';
+import { getUser, getAppVersion } from '@/lib/db/queries';
 
 // Indicar que la página no debe ser cacheada
 export const dynamic = 'force-dynamic';
@@ -13,5 +14,13 @@ export default async function ProfilePage() {
     redirect('/sign-in');
   }
   
-  return <Profile user={user} />;
+  // Obtener la versión actual de la aplicación
+  const currentVersion = await getAppVersion();
+  
+  return (
+    <div className="flex flex-col space-y-8">
+      <Profile user={user} />
+      <Subscription user={user} currentVersion={currentVersion} />
+    </div>
+  );
 } 

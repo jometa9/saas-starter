@@ -4,30 +4,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "@/lib/db/schema";
 import {
-  EyeIcon,
-  EyeOffIcon,
-  CopyIcon,
-  CheckIcon,
   Download,
   BookOpen,
   Link,
   LifeBuoy,
-  ShieldCheck,
-  Zap,
   ArrowUpRight,
   CreditCard,
-  Shield,
   AlertCircle,
   CheckCircle,
   Clock,
   XCircle,
   Info,
-  Sparkles,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { getAvatarBgColor, getAvatarTextColor } from "@/lib/utils";
-import { CircleCheckIcon } from "@/components/icons/circle-check";
 import { customerPortalAction } from "@/lib/payments/actions";
 import { useRouter } from "next/navigation";
 
@@ -45,13 +38,10 @@ export function Dashboard({
     return user.name || user.email || "Unknown User";
   };
   const router = useRouter();
-
   const [showLicense, setShowLicense] = useState(false);
-
-  const licenseKey = user?.stripeSubscriptionId
-    ? `IP-${user.stripeCustomerId ? String(user.stripeCustomerId).substring(0, 8) : "NOID"}-${user.id ? String(user.id).substring(0, 6) : "NOID"}`
-    : "No active license";
-  const isLatestVersion = true; // Simulating this is the latest version
+  const [isLicenseVisible, setIsLicenseVisible] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const [isMainLicenseCopied, setIsMainLicenseCopied] = useState(false);
 
   // Función para acceder al portal de cliente de Stripe
   const handleCustomerPortal = async () => {
@@ -196,8 +186,6 @@ export function Dashboard({
         return <Info className="h-5 w-5 text-gray-500" />;
     }
   };
-  const [isLicenseVisible, setIsLicenseVisible] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
 
   const toggleLicenseVisibility = () => {
     setIsLicenseVisible(!isLicenseVisible);
@@ -221,6 +209,29 @@ export function Dashboard({
         })
         .catch((err) => {
           console.error("Error al copiar al portapapeles:", err);
+          toast({
+            title: "Error",
+            description: "Could not copy to clipboard",
+            variant: "destructive",
+          });
+        });
+    }
+  };
+
+  const copyMainLicenseToClipboard = () => {
+    if (user.apiKey) {
+      navigator.clipboard
+        .writeText(user.apiKey)
+        .then(() => {
+          setIsMainLicenseCopied(true);
+          setTimeout(() => setIsMainLicenseCopied(false), 2000);
+          toast({
+            title: "Success",
+            description: "License key copied to clipboard!",
+          });
+        })
+        .catch((err) => {
+          console.error("Error copying to clipboard:", err);
           toast({
             title: "Error",
             description: "Could not copy to clipboard",
@@ -260,14 +271,14 @@ export function Dashboard({
           <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
             {user.subscriptionStatus === "active" ? (
               <Button
-                className="bg-black hover:bg-gray-800 text-white w-full md:w-auto"
+                className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
                 onClick={handleCustomerPortal}
               >
                 Manage Subscription
               </Button>
             ) : (
               <Button
-                className="bg-black hover:bg-gray-800 text-white w-full md:w-auto"
+                className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
                 onClick={goToPricing}
               >
                 <CreditCard className="mr-2 h-4 w-4" />
@@ -278,7 +289,7 @@ export function Dashboard({
               user.subscriptionStatus === "active" && (
                 <Button
                   variant="outline"
-                  className="border-black text-black hover:bg-gray-100 w-full md:w-auto"
+                  className="border-black text-black hover:bg-gray-100 w-full md:w-auto cursor-pointer"
                   onClick={goToPricing}
                 >
                   <ArrowUpRight className="mr-2 h-4 w-4" />
@@ -311,333 +322,101 @@ export function Dashboard({
                 {getSubscriptionStatusIcon()}
               </div>
             </div>
-            <div className="flex flex-col w-full gap-2">
-              <Label>Your License Key</Label>
-              <div className="flex h-10">
-                <Input
-                  className="rounded-r-none text-xs h-10 bg-muted"
-                  value={user.apiKey ||""}
-                  readOnly
-                  type={showLicense ? "text" : "password"}
-                  disabled={!user?.stripeSubscriptionId}
-                />
-                <Button
-                  variant="outline"
-                  className="rounded-l-none border-l-0 h-10 flex items-center"
-                  onClick={toggleShowLicense}
-                  disabled={!user?.stripeSubscriptionId}
-                >
-                  {showLicense ? "Hide" : "Show"}
-                </Button>
-              </div>
-              <div className="text-xs text-gray-500 mt-1">
-                {user.subscriptionStatus === "active" ? (
-                  <div>
-                    <p>
-                      This license key allows you to activate the IPTRADE
-                      software on your computer.
-                    </p>
-                    <p className="mt-1">
-                      Current Plan:{" "}
-                      <span className="font-semibold">
-                        {user.planName || "Basic"}
-                      </span>
-                    </p>
-                  </div>
-                ) : (
-                  <p>
-                    <span className="text-red-500 font-medium">No active license available.</span> Subscribe to get your license key and access premium
-                    features.
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="border shadow-sm">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-black" />
-                    <CardTitle className="text-base font-medium">
-                      Account Limits
-                    </CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center text-sm">
-                      <span>Master Accounts:</span>
-                      <span className="font-medium">
-                        {user.planName === "Professional"
-                          ? "Unlimited"
-                          : user.planName === "Trader"
-                            ? "3"
-                            : "1"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span>Slave Accounts:</span>
-                      <span className="font-medium">
-                        {user.planName === "Professional"
-                          ? "Unlimited"
-                          : user.planName === "Trader"
-                            ? "5"
-                            : "2"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span>Cross-platform Support:</span>
-                      <span className="font-medium">
-                        {user.subscriptionStatus === "active"
-                          ? "Yes"
-                          : "Limited"}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border shadow-sm">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-black" />
-                    <CardTitle className="text-base font-medium">
-                      Performance
-                    </CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center text-sm">
-                      <span>Latency Mode:</span>
-                      <span className="font-medium">
-                        {user.planName === "Professional"
-                          ? "Ultra-low (<10ms)"
-                          : "Standard (<50ms)"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span>Symbol Mapping:</span>
-                      <span className="font-medium">
-                        {user.planName === "Basic" ? "Basic" : "Advanced"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span>Trade Volume Control:</span>
-                      <span className="font-medium">
-                        {user.planName === "Basic" ? "Limited" : "Full Control"}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              {user.subscriptionStatus === "active" ? (
-                <Button
-                  className="bg-black hover:bg-gray-800 text-white"
-                  onClick={handleCustomerPortal}
-                >
-                  Manage Subscription
-                </Button>
-              ) : (
-                <Button
-                  className="bg-black hover:bg-gray-800 text-white"
-                  onClick={goToPricing}
-                >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Subscribe Now
-                </Button>
-              )}
-              {user.planName !== "Professional" &&
-                user.subscriptionStatus === "active" && (
+            <div className="flex flex-col md:flex-row gap-4 w-full items-center">
+              <div className="flex flex-col w-full md:max-w-[100%] gap-2">
+                <Label>Your License Key</Label>
+                <div className="flex h-10">
+                  <Input
+                    className="rounded-r-none text-xs h-10 bg-muted"
+                    value={user.apiKey || ""}
+                    readOnly
+                    type={showLicense ? "text" : "password"}
+                    disabled={!user?.stripeSubscriptionId}
+                  />
                   <Button
                     variant="outline"
-                    className="border-black text-black hover:bg-gray-100"
+                    className="rounded-l-none rounded-r-none border-l-0 h-10 flex items-center cursor-pointer"
+                    onClick={toggleShowLicense}
+                    disabled={!user?.stripeSubscriptionId}
+                  >
+                    {showLicense ? "Hide" : "Show"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="rounded-l-none border-l-0 h-10 flex items-center cursor-pointer"
+                    onClick={copyMainLicenseToClipboard}
+                    disabled={!user?.stripeSubscriptionId || !user.apiKey}
+                    title="Copy to clipboard"
+                  >
+                    {isMainLicenseCopied ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {user.subscriptionStatus === "active" ? (
+                    <div>
+                      <p>
+                        This license key allows you to activate the IPTRADE
+                        software on your computer.
+                      </p>
+                      <p className="mt-1">
+                        Current Plan:{" "}
+                        <span className="font-semibold">
+                          {user.planName || "Basic"}
+                        </span>
+                      </p>
+                    </div>
+                  ) : (
+                    <p>
+                      <span className="text-red-500 font-medium">
+                        No active license available.
+                      </span>{" "}
+                      Subscribe to get your license key and access premium
+                      features.
+                    </p>
+                  )}
+                </div>
+              </div>
+              {/* License Key Input 
+              
+              <div className="flex flex-col w-full md:max-w-[20%]">
+                {user.subscriptionStatus === "active" ? (
+                  <Button
+                    className="bg-black hover:bg-gray-800 text-white w-full cursor-pointer"
+                    onClick={handleCustomerPortal}
+                  >
+                    Manage Subscription
+                  </Button>
+                ) : (
+                  <Button
+                    className="bg-black hover:bg-gray-800 text-white w-full cursor-pointer"
                     onClick={goToPricing}
                   >
-                    <ArrowUpRight className="mr-2 h-4 w-4" />
-                    Upgrade Plan
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Subscribe Now
                   </Button>
                 )}
+                {user.planName !== "Professional" &&
+                  user.subscriptionStatus === "active" && (
+                    <Button
+                      variant="outline"
+                      className="border-black text-black hover:bg-gray-100 w-full cursor-pointer"
+                      onClick={goToPricing}
+                    >
+                      <ArrowUpRight className="mr-2 h-4 w-4" />
+                      Upgrade Plan
+                    </Button>
+                  )}
+              </div>
+            */}
             </div>
           </div>
         </div>
 
-        <div className="rounded-lg border bg-card shadow-sm">
-          <div className="p-6 flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <h2 className="text-xl font-semibold leading-none tracking-tight">
-                  Software Version
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Current installed version and available updates
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 border rounded-lg p-4">
-              <div className="rounded-full bg-green-50 p-2">
-                <CircleCheckIcon className="h-4 w-4 text-green-500" />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium">
-                  IPTRADE v{currentVersion}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {isLatestVersion
-                    ? "You have the latest version installed"
-                    : "Update available. Please download the latest version."}
-                </div>
-              </div>
-              <div>
-                <Link href="/#download">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-8 border-black text-black hover:bg-gray-100"
-                  >
-                    <Download className="mr-1 h-3 w-3" />
-                    {isLatestVersion ? "Download" : "Update Now"}
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            <div className="mt-2">
-              <h3 className="text-sm font-medium">Why Update Regularly?</h3>
-              <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-start">
-                  <Zap className="mr-2 h-4 w-4 text-black flex-shrink-0 mt-0.5" />
-                  <span>Performance improvements for faster trade copying</span>
-                </li>
-                <li className="flex items-start">
-                  <ShieldCheck className="mr-2 h-4 w-4 text-black flex-shrink-0 mt-0.5" />
-                  <span>
-                    Enhanced compatibility with the latest MetaTrader updates
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Sparkles className="mr-2 h-4 w-4 text-black flex-shrink-0 mt-0.5" />
-                  <span>
-                    New features and improvements to the user interface
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-          <div className="p-6">
-            <h3 className="text-lg font-medium">Need Help?</h3>
-            <p className="text-sm text-muted-foreground mt-2">
-              If you need assistance with your IPTRADE software, our support
-              team is ready to help.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <Card className="border">
-                <CardContent className="pt-6">
-                  <div className="flex flex-col items-start gap-2">
-                    <BookOpen className="h-5 w-5 text-black" />
-                    <h4 className="font-medium">Read Documentation</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Get detailed instructions on how to configure and use the
-                      IPTRADE software.
-                    </p>
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto text-black"
-                      asChild
-                    >
-                      <Link href="/docs">View Documentation</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border">
-                <CardContent className="pt-6">
-                  <div className="flex flex-col items-start gap-2">
-                    <LifeBuoy className="h-5 w-5 text-black" />
-                    <h4 className="font-medium">Technical Support</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Contact our support team for personalized assistance with
-                      any issues.
-                    </p>
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto text-black"
-                      asChild
-                    >
-                      <Link href="mailto:support@iptrade.com">
-                        Contact Support
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
       </div>
-      {/* License Key Card */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>License Key</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Use this license key to activate your subscription in the
-              application.
-            </p>
-            <div className="flex flex-col space-y-2">
-              <div className="flex items-center space-x-2 w-full">
-                <div className="bg-gray-100 p-2 rounded w-full overflow-hidden relative">
-                  {user.apiKey
-                    ? isLicenseVisible
-                      ? user.apiKey
-                      : "•".repeat(
-                          user.apiKey.length > 12 ? 12 : user.apiKey.length
-                        )
-                    : "No License key generated"}
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={toggleLicenseVisibility}
-                  title={
-                    isLicenseVisible ? "Hide License Key" : "Show License Key"
-                  }
-                >
-                  {isLicenseVisible ? (
-                    <EyeOffIcon className="h-4 w-4" />
-                  ) : (
-                    <EyeIcon className="h-4 w-4" />
-                  )}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={copyToClipboard}
-                  disabled={!user.apiKey}
-                  title="Copy to Clipboard"
-                >
-                  {isCopied ? (
-                    <CheckIcon className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <CopyIcon className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              {isCopied && (
-                <p className="text-xs text-green-500">
-                  License key copied to clipboard!
-                </p>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Downloads Card */}
       <Card className="mb-8">
@@ -726,6 +505,58 @@ export function Dashboard({
           </div>
         </CardContent>
       </Card>
+
+      <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div className="p-6">
+          <h3 className="text-lg font-medium">Need Help?</h3>
+          <p className="text-sm text-muted-foreground mt-2">
+            If you need assistance with your IPTRADE software, our support team
+            is ready to help.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <Card className="border">
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-start gap-2">
+                  <BookOpen className="h-5 w-5 text-black" />
+                  <h4 className="font-medium">Read Documentation</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Get detailed instructions on how to configure and use the
+                    IPTRADE software.
+                  </p>
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto text-black"
+                    asChild
+                  >
+                    <Link href="/docs">View Documentation</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border">
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-start gap-2">
+                  <LifeBuoy className="h-5 w-5 text-black" />
+                  <h4 className="font-medium">Technical Support</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Contact our support team for personalized assistance with
+                    any issues.
+                  </p>
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto text-black"
+                    asChild
+                  >
+                    <Link href="mailto:support@iptrade.com">
+                      Contact Support
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

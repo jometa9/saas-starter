@@ -23,8 +23,6 @@ export default function DashboardLayout({
       setActiveTab("documents");
     } else if (path === "profile") {
       setActiveTab("profile");
-    } else if (path === "subscription") {
-      setActiveTab("subscription");
     }
   }, [pathname]);
 
@@ -58,15 +56,7 @@ export default function DashboardLayout({
           className="flex items-center rounded-xl border shadow mb-4 pr-5 mr-4"
         >
           <User className="h-4 w-4 mr-2" />
-          Profile
-        </Button>
-        <Button
-          variant={activeTab === "subscription" ? "default" : "ghost"}
-          onClick={() => navigateTo("subscription")}
-          className="flex items-center rounded-xl border shadow mb-4 pr-5 mr-4"
-        >
-          <CreditCard className="h-4 w-4 mr-2" />
-          Subscription
+          Account
         </Button>
       </div>
 
