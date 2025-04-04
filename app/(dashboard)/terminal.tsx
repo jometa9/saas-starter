@@ -40,7 +40,7 @@ export function Terminal() {
           <div className="w-3 h-3 bg-green-500 rounded-full"></div>
         </div>
         <div className="overflow-hidden rounded-lg border border-gray-300 shadow-xl">
-          <div className="p-4 h-80 overflow-auto bg-gray-900 font-mono text-xs text-gray-100">
+          <div className="p-4 h-80 overflow-auto bg-gray-900 text-xs text-gray-100">
             <pre>{text}</pre>
             <div className="inline-block h-4 w-1.5 -mb-0.5 bg-gray-100 animate-pulse"></div>
           </div>

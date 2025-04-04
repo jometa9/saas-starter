@@ -23,9 +23,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="min-h-[100dvh] font-mono text-black dark:text-white font-mono"
+      className="min-h-[100dvh] text-black dark:text-white"
     >
-      <body className="max-w-[1000px] mx-auto">
+      <body className="max-w-[1200px] mx-auto">
         <UserProvider userPromise={userPromise}>
           {children}
           <Toaster />

@@ -15,20 +15,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="flex flex-col min-h-screen">
-          <main className="flex-1 flex flex-col items-center justify-center p-4">
-            {children}
-          </main>
-          <footer className="py-6 border-t bg-gray-50">
-            <div className="container mx-auto text-center text-sm text-gray-500">
-              <p>© {new Date().getFullYear()} IPTRADE. All rights reserved.</p>
-            </div>
-          </footer>
+    <div className={`${inter.className} flex flex-col min-h-screen`}>
+      <main className="flex-1 flex flex-col items-center justify-center p-4">
+        {children}
+      </main>
+      <footer className="py-6 border-t bg-gray-50">
+        <div className="container mx-auto text-center text-sm text-gray-500">
+          <p>© {new Date().getFullYear()} IPTRADE. All rights reserved.</p>
         </div>
-        <Toaster />
-      </body>
-    </html>
+      </footer>
+      <Toaster />
+    </div>
   );
-} 
+}

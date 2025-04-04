@@ -70,8 +70,8 @@ function UserMenu() {
 
 function Header() {
   return (
-    <header className="border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex justify-between items-center">
+    <header>
+      <div className="mx-auto p-4 flex justify-between items-center">
         <Link href="/" className="flex items-center cursor-pointer">
           <span className="text-xl font-semibold text-gray-900">IPTRADE</span>
         </Link>
@@ -88,7 +88,7 @@ function Header() {
 function Footer() {
   return (
     <footer className="bg-gray-100 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto p-4 flex justify-between items-center">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-sm font-semibold text-gray-900 mb-4">

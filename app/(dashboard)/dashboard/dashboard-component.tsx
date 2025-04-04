@@ -99,7 +99,7 @@ export function Dashboard({ user, currentVersion }: { user: User, currentVersion
             </p>
             <div className="flex flex-col space-y-2">
               <div className="flex items-center space-x-2 w-full">
-                <div className="font-mono bg-gray-100 p-2 rounded w-full overflow-hidden relative">
+                <div className="bg-gray-100 p-2 rounded w-full overflow-hidden relative">
                   {user.apiKey ? (
                     isLicenseVisible ? (
                       user.apiKey
