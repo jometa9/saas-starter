@@ -25,11 +25,13 @@ import {
   Wrench,
   Timer,
 } from "lucide-react";
-import { Label } from "@/components/ui/label";
+import { Label as UILabel } from "@/components/ui/label";
 import { updatePassword } from "@/app/(login)/actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
+import { getAvatarBgColor, getAvatarTextColor } from '@/lib/utils';
+import { Badge } from "@/components/ui/badge";
 
 type ActionState = {
   error?: string;
@@ -383,7 +385,7 @@ export function Settings({
                 <div className="flex items-center space-x-4 mb-4">
                   <Avatar>
                     <AvatarImage alt={getUserDisplayName(user)} />
-                    <AvatarFallback>
+                    <AvatarFallback className={`${getAvatarBgColor(getUserDisplayName(user))} ${getAvatarTextColor(getAvatarBgColor(getUserDisplayName(user)))}`}>
                       {getUserDisplayName(user)
                         .split(" ")
                         .map((n) => n[0])
@@ -627,7 +629,7 @@ export function Settings({
         <CardContent>
           <form className="space-y-4" onSubmit={handlePasswordSubmit}>
             <div>
-              <Label htmlFor="current-password">Current Password</Label>
+              <UILabel htmlFor="current-password">Current Password</UILabel>
               <Input
                 id="current-password"
                 name="currentPassword"
@@ -639,7 +641,7 @@ export function Settings({
               />
             </div>
             <div>
-              <Label htmlFor="new-password">New Password</Label>
+              <UILabel htmlFor="new-password">New Password</UILabel>
               <Input
                 id="new-password"
                 name="newPassword"
@@ -651,7 +653,7 @@ export function Settings({
               />
             </div>
             <div>
-              <Label htmlFor="confirm-password">Confirm New Password</Label>
+              <UILabel htmlFor="confirm-password">Confirm New Password</UILabel>
               <Input
                 id="confirm-password"
                 name="confirmPassword"
@@ -706,7 +708,7 @@ export function Settings({
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="version">Version Number</Label>
+                    <UILabel htmlFor="version">Version Number</UILabel>
                     <Input
                       id="version"
                       type="text"
@@ -723,9 +725,9 @@ export function Settings({
                     )}
 
                     <div className="mt-4">
-                      <Label htmlFor="downloadUrl">
+                      <UILabel htmlFor="downloadUrl">
                         Download URL (optional)
-                      </Label>
+                      </UILabel>
                       <Input
                         id="downloadUrl"
                         type="url"
@@ -748,7 +750,7 @@ export function Settings({
                           setIsCritical(checked === true)
                         }
                       />
-                      <Label htmlFor="isCritical">Critical Update</Label>
+                      <UILabel htmlFor="isCritical">Critical Update</UILabel>
                     </div>
 
                     {/* Advertencia de entorno de desarrollo */}
@@ -769,9 +771,9 @@ export function Settings({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="releaseNotes">
+                    <UILabel htmlFor="releaseNotes">
                       Release Notes (optional)
-                    </Label>
+                    </UILabel>
                     <Textarea
                       id="releaseNotes"
                       name="releaseNotes"

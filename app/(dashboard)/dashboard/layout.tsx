@@ -35,11 +35,11 @@ export default function DashboardLayout({
 
   return (
     <div className="width-full">
-      <div className="flex flex-wrap gap-2 pt-4 pb-4 px-4">
+      <div className="flex flex-wrap px-4">
         <Button
           variant={activeTab === "dashboard" ? "default" : "ghost"}
           onClick={() => navigateTo("dashboard")}
-          className="flex items-center rounded-xl border shadow mb-4"
+          className="flex items-center rounded-xl border shadow mb-4 pr-5 mr-4"
         >
           <Home className="h-4 w-4 mr-2" />
           Dashboard
@@ -47,7 +47,7 @@ export default function DashboardLayout({
         <Button
           variant={activeTab === "documents" ? "default" : "ghost"}
           onClick={() => navigateTo("documents")}
-          className="flex items-center rounded-xl border shadow mb-4"
+          className="flex items-center rounded-xl border shadow mb-4 pr-5 mr-4"
         >
           <FileText className="h-4 w-4 mr-2" />
           Guide
@@ -55,7 +55,7 @@ export default function DashboardLayout({
         <Button
           variant={activeTab === "profile" ? "default" : "ghost"}
           onClick={() => navigateTo("profile")}
-          className="flex items-center rounded-xl border shadow mb-4"
+          className="flex items-center rounded-xl border shadow mb-4 pr-5 mr-4"
         >
           <User className="h-4 w-4 mr-2" />
           Profile
@@ -63,7 +63,7 @@ export default function DashboardLayout({
         <Button
           variant={activeTab === "subscription" ? "default" : "ghost"}
           onClick={() => navigateTo("subscription")}
-          className="flex items-center rounded-xl border shadow mb-4"
+          className="flex items-center rounded-xl border shadow mb-4 pr-5 mr-4"
         >
           <CreditCard className="h-4 w-4 mr-2" />
           Subscription

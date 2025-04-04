@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { updatePassword } from '@/app/(login)/actions';
 import { toast } from '@/components/ui/use-toast';
 import { Lock, Mail, Loader2, User as UserIcon } from 'lucide-react';
+import { getAvatarBgColor, getAvatarTextColor } from '@/lib/utils';
 
 type ActionState = {
   error?: string;
@@ -101,7 +102,7 @@ export function Profile({ user }: { user: User }) {
               <AvatarImage
                 alt={getUserDisplayName(user)}
               />
-              <AvatarFallback>
+              <AvatarFallback className={`${getAvatarBgColor(getUserDisplayName(user))} ${getAvatarTextColor(getAvatarBgColor(getUserDisplayName(user)))}`}>
                 {getUserDisplayName(user)
                   .split(' ')
                   .map((n) => n[0])
