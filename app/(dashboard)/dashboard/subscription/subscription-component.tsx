@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { customerPortalAction } from '@/lib/payments/actions';
 import { toast } from '@/components/ui/use-toast';
 import { CalendarDays, CreditCard, CheckCircle, XCircle, Clock, AlertCircle, Info, TrendingUp, Award, Shield, Zap, ArrowUpRight, Download, BookOpen, LifeBuoy } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
@@ -18,7 +19,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
   const router = useRouter();
   const [showLicense, setShowLicense] = useState(false);
   const licenseKey = user?.stripeSubscriptionId 
-    ? `IP-${user.stripeCustomerId ? user.stripeCustomerId.substring(0, 8) : 'NOID'}-${user.id ? user.id.substring(0, 6) : 'NOID'}` 
+    ? `IP-${user.stripeCustomerId ? String(user.stripeCustomerId).substring(0, 8) : 'NOID'}-${user.id ? String(user.id).substring(0, 6) : 'NOID'}` 
     : 'No active license';
   const isLatestVersion = true; // Simulating this is the latest version
 
@@ -182,7 +183,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
                       <CalendarDays className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
                       <div>
                         <p className="text-muted-foreground">Next billing date:</p>
-                        <p>{new Date(user.currentPeriodEnd).toLocaleDateString()}</p>
+                        <p>{new Date(user.currentPeriodEnd as any).toLocaleDateString()}</p>
                       </div>
                     </div>
                   )}

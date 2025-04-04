@@ -15,7 +15,6 @@ export default function DashboardLayout({
   const [activeTab, setActiveTab] = useState('dashboard');
 
   useEffect(() => {
-    // Extraer la última parte de la ruta para determinar la pestaña activa
     const path = pathname.split('/').pop();
     
     if (path === 'dashboard' || path === '') {
@@ -29,17 +28,16 @@ export default function DashboardLayout({
     }
   }, [pathname]);
 
-  // Función para navegar y establecer la pestaña activa
   const navigateTo = (tab: string) => {
     setActiveTab(tab);
     router.push(`/dashboard/${tab === 'dashboard' ? '' : tab}`);
   };
 
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-68px)] max-w-7xl mx-auto w-full">
+    <div className="width-full">
       {/* Navegación por pestañas */}
-      <div className="border-b px-4 lg:px-6">
-        <div className="flex overflow-x-auto py-4 no-scrollbar">
+      <div className="border-b">
+        <div className="flex overflow-x-auto py-6 no-scrollbar">
           <Button
             variant={activeTab === 'dashboard' ? "default" : "ghost"}
             onClick={() => navigateTo('dashboard')}
@@ -75,8 +73,7 @@ export default function DashboardLayout({
         </div>
       </div>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-y-auto p-4">{children}</main>
+      <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
   );
 }

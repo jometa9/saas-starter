@@ -75,12 +75,6 @@
   }
 }
 
-@layer utilities {
-  body {
-    font-family: monospace;
-  }
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;

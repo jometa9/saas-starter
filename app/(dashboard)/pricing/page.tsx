@@ -110,7 +110,7 @@ export default async function PricingPage() {
             "Trade notifications",
             "Automated retries"
           ]}
-          priceId="price_trader"
+          priceId={basePrice?.id}
           isLoggedIn={!!user}
           hasSubscription={hasSubscription}
           isRecommended={true}
@@ -131,7 +131,7 @@ export default async function PricingPage() {
             "Custom order type filtering",
             "Trading hours filter"
           ]}
-          priceId="price_professional"
+          priceId={plusPrice?.id}
           isLoggedIn={!!user}
           hasSubscription={hasSubscription}
         />
@@ -237,22 +237,32 @@ export default async function PricingPage() {
 async function handleSubscription(formData: FormData) {
   'use server';
   
+  console.log('Ejecutando handleSubscription, formData:', Object.fromEntries(formData.entries()));
+  
   const priceId = formData.get('priceId') as string;
-  if (!priceId) return { error: 'No price ID provided' };
+  if (!priceId) {
+    console.log('No se encontró priceId en formData');
+    return { error: 'No price ID provided' };
+  }
   
   try {
+    console.log('Llamando a checkoutAction con priceId:', priceId);
     const result = await checkoutAction(priceId);
+    console.log('Resultado de checkoutAction:', result);
     
     // Si tenemos una URL de redirección, devolverla para que el cliente redirija
     if (result.redirect) {
+      console.log('Redirigiendo a:', result.redirect);
       return { redirect: result.redirect };
     }
     
     // Si tenemos un error, devolverlo para manejo en el cliente
     if (result.error) {
+      console.log('Error en checkoutAction:', result.error);
       return { error: result.error };
     }
     
+    console.log('Checkout exitoso');
     return { success: true };
   } catch (error) {
     console.error('Error en checkout:', error);
