@@ -22,6 +22,11 @@ import {
   CircleCheckIcon,
   ShieldCheck,
   Sparkles,
+  Apple,
+  Monitor,
+  HelpCircle,
+  MessageCircle,
+  ExternalLink,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
@@ -47,7 +52,6 @@ export function Dashboard({
   const [isLicenseVisible, setIsLicenseVisible] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isMainLicenseCopied, setIsMainLicenseCopied] = useState(false);
-  const isLatestVersion = true; // Simulating this is the latest version
 
   // Función para acceder al portal de cliente de Stripe
   const handleCustomerPortal = async () => {
@@ -379,144 +383,33 @@ export function Dashboard({
               )}
             </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border shadow-sm">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-black" />
-                  <CardTitle className="text-base font-medium">
-                    Account Limits
-                  </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-2">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm">
-                    <span>Master Accounts:</span>
-                    <span className="font-medium">
-                      {user.planName === "Professional"
-                        ? "Unlimited"
-                        : user.planName === "Trader"
-                          ? "3"
-                          : "1"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span>Slave Accounts:</span>
-                    <span className="font-medium">
-                      {user.planName === "Professional"
-                        ? "Unlimited"
-                        : user.planName === "Trader"
-                          ? "5"
-                          : "2"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span>Cross-platform Support:</span>
-                    <span className="font-medium">
-                      {user.subscriptionStatus === "active" ? "Yes" : "Limited"}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border shadow-sm">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-black" />
-                  <CardTitle className="text-base font-medium">
-                    Performance
-                  </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-2">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm">
-                    <span>Latency Mode:</span>
-                    <span className="font-medium">
-                      {user.planName === "Professional"
-                        ? "Ultra-low (<10ms)"
-                        : "Standard (<50ms)"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span>Symbol Mapping:</span>
-                    <span className="font-medium">
-                      {user.planName === "Basic" ? "Basic" : "Advanced"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span>Trade Volume Control:</span>
-                    <span className="font-medium">
-                      {user.planName === "Basic" ? "Limited" : "Full Control"}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </CardContent>
       </Card>
       {/* Downloads Card */}
       <Card>
         <CardHeader>
           <CardTitle>Software Downloads</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Download IPTRADE v{currentVersion} for your operating system
+          </p>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            Download the latest version of our software to use with your license
-            key.
-          </p>
-
-          <p className="text-sm mb-4">
-            Current Version:{" "}
-            <span className="font-medium">{currentVersion}</span>
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border border-gray-200">
+        <CardContent className="flex flex-col gap-4 p-4 pt-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-0">
+            <Card className="border border-gray-200 hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium">Windows Version</h3>
-                    <p className="text-sm text-muted-foreground">
-                      v{currentVersion}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full">
+                      <Monitor className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Windows Version</h3>
+                      <p className="text-sm text-muted-foreground">
+                        v{currentVersion} - 64-bit installer
+                      </p>
+                    </div>
                   </div>
-                  <Button variant="outline" className="ml-auto">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border border-gray-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium">macOS Version</h3>
-                    <p className="text-sm text-muted-foreground">
-                      v{currentVersion}
-                    </p>
-                  </div>
-                  <Button variant="outline" className="ml-auto">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border border-gray-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium">Linux Version</h3>
-                    <p className="text-sm text-muted-foreground">
-                      v{currentVersion}
-                    </p>
-                  </div>
-                  <Button variant="outline" className="ml-auto">
+                  <Button variant="outline" className="ml-auto cursor-pointer">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -524,16 +417,21 @@ export function Dashboard({
               </CardContent>
             </Card>
 
-            <Card className="border border-gray-200">
+            <Card className="border border-gray-200 hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium">User Manual</h3>
-                    <p className="text-sm text-muted-foreground">
-                      PDF Documentation
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full">
+                      <Apple className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">macOS Version</h3>
+                      <p className="text-sm text-muted-foreground">
+                        v{currentVersion} - Universal Binary
+                      </p>
+                    </div>
                   </div>
-                  <Button variant="outline" className="ml-auto">
+                  <Button variant="outline" className="ml-auto cursor-pointer">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -543,52 +441,53 @@ export function Dashboard({
           </div>
         </CardContent>
       </Card>
+
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-0">
           <CardTitle>Need Help?</CardTitle>
           <p className="text-sm text-muted-foreground">
-            If you need assistance with your IPTRADE software, our support team
-            is ready to help.
+            Find answers to your questions or contact support
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border">
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-start gap-2">
-                  <BookOpen className="h-5 w-5 text-black" />
-                  <h4 className="font-medium">Read Documentation</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Get detailed instructions on how to configure and use the
-                    IPTRADE software.
-                  </p>
-                  <Button
-                    variant="link"
-                    className="p-0 h-auto text-black"
-                    asChild
-                  >
-                    <Link href="/docs">View Documentation</Link>
+            <Card className="border border-gray-200 hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-50 p-2 rounded-full">
+                      <BookOpen className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Documentation</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Setup guides and tutorials
+                      </p>
+                    </div>
+                  </div>
+                  <Button variant="outline" className="ml-auto">
+                    View Docs
                   </Button>
                 </div>
               </CardContent>
             </Card>
-            <Card className="border">
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-start gap-2">
-                  <LifeBuoy className="h-5 w-5 text-black" />
-                  <h4 className="font-medium">Technical Support</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Contact our support team for personalized assistance with
-                    any issues.
-                  </p>
-                  <Button
-                    variant="link"
-                    className="p-0 h-auto text-black"
-                    asChild
-                  >
-                    <Link href="mailto:support@iptrade.com">
-                      Contact Support
-                    </Link>
+
+            <Card className="border border-gray-200 hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-green-50 p-2 rounded-full">
+                      <LifeBuoy className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Technical Support</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Get help with any issues
+                      </p>
+                    </div>
+                  </div>
+                  <Button variant="outline" className="ml-auto">
+                    Contact
                   </Button>
                 </div>
               </CardContent>

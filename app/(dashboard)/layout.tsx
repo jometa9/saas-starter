@@ -87,126 +87,81 @@ function Header() {
 
 function Footer() {
   return (
-    <footer className="bg-gray-100 mt-auto">
-      <div className="mx-auto p-4 flex justify-between items-center">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="mt-auto">
+      <div className="mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">
-              Company
-            </h3>
-            <div className="flex items-center space-x-4 mb-4">
+            <div className="mb-4">
               <Link href="/" className="flex items-center">
-                <span className="text-lg font-semibold text-gray-900">
-                  IPTRADE
-                </span>
+                <span className="text-xl font-bold text-black">IPTRADE</span>
               </Link>
+              <p className="text-sm text-gray-600 mt-3">
+                Professional trading solutions for MetaTrader platforms
+              </p>
             </div>
-            <p className="text-sm text-gray-600">
+            <address className="text-sm text-gray-600 not-italic">
               123 Trading Avenue
               <br />
               New York, NY 10001
               <br />
               United States
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">
-              Resources
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/docs"
-                  className="text-sm text-gray-600 hover:text-black"
-                >
-                  Documentation
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/pricing"
-                  className="text-sm text-gray-600 hover:text-black"
-                >
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard"
-                  className="text-sm text-gray-600 hover:text-black"
-                >
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#download"
-                  className="text-sm text-gray-600 hover:text-black"
-                >
-                  Download
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Legal</h3>
-            <ul className="space-y-2 mb-6">
-              <li>
-                <Link
-                  href="/terms"
-                  className="text-sm text-gray-600 hover:text-black"
-                >
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/privacy"
-                  className="text-sm text-gray-600 hover:text-black"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/risk-disclaimer"
-                  className="text-sm text-gray-600 hover:text-black"
-                >
-                  Risk Disclaimer
-                </Link>
-              </li>
-            </ul>
-
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">
-              Connect
-            </h3>
-            <div className="flex space-x-4">
+            </address>
+            <div className="flex space-x-4 mt-6">
               <Link
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-black"
+                className="bg-gray-100 p-2 rounded-full text-gray-600 hover:text-black hover:bg-gray-200 transition-colors"
+                aria-label="Instagram"
               >
                 <Instagram className="h-4 w-4" />
-                <span className="sr-only">Instagram</span>
               </Link>
               <Link
                 href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-black"
+                className="bg-gray-100 p-2 rounded-full text-gray-600 hover:text-black hover:bg-gray-200 transition-colors"
+                aria-label="LinkedIn"
               >
                 <Linkedin className="h-4 w-4" />
-                <span className="sr-only">LinkedIn</span>
               </Link>
+            </div>
+          </div>
+          <div>
+            <div className="mb-6">
+              <h3 className="text-sm font-bold text-black mb-4">Legal</h3>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    href="/terms"
+                    className="text-sm text-gray-600 hover:text-black transition-colors"
+                  >
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/privacy"
+                    className="text-sm text-gray-600 hover:text-black transition-colors"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/risk-disclaimer"
+                    className="text-sm text-gray-600 hover:text-black transition-colors"
+                  >
+                    Risk Disclaimer
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-200 mt-8 pt-8">
-          <p className="text-sm text-gray-600 text-center">
+        <div className="pt-8 text-center">
+          <p className="text-sm text-gray-500">
             &copy; {new Date().getFullYear()} IPTRADE. All rights reserved.
             Trading involves risk.
           </p>
