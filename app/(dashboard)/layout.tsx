@@ -85,7 +85,7 @@ function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
           <CircleIcon className="h-6 w-6 text-black" />
-          <span className="ml-2 text-xl font-semibold text-gray-900">ACME</span>
+          <span className="ml-2 text-xl font-semibold text-gray-900">Trade Copier</span>
         </Link>
         <div className="flex items-center space-x-4">
           <Suspense fallback={<div className="h-9" />}>
@@ -107,12 +107,12 @@ function Footer() {
             <div className="flex items-center space-x-4 mb-4">
               <Link href="/" className="flex items-center">
                 <CircleIcon className="h-6 w-6 text-black" />
-                <span className="ml-2 text-lg font-semibold text-gray-900">ACME</span>
+                <span className="ml-2 text-lg font-semibold text-gray-900">Trade Copier</span>
               </Link>
             </div>
             <p className="text-sm text-gray-600">
-              123 Technology Lane<br />
-              San Francisco, CA 94107<br />
+              123 Trading Avenue<br />
+              New York, NY 10001<br />
               United States
             </p>
           </div>
@@ -135,6 +135,11 @@ function Footer() {
                   Dashboard
                 </Link>
               </li>
+              <li>
+                <Link href="/#download" className="text-sm text-gray-600 hover:text-black">
+                  Download
+                </Link>
+              </li>
             </ul>
           </div>
           
@@ -151,9 +156,14 @@ function Footer() {
                   Privacy Policy
                 </Link>
               </li>
+              <li>
+                <Link href="/risk-disclaimer" className="text-sm text-gray-600 hover:text-black">
+                  Risk Disclaimer
+                </Link>
+              </li>
             </ul>
             
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Social</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-4">Connect</h3>
             <div className="flex space-x-4">
               <Link href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-black">
                 <Instagram className="h-5 w-5" />
@@ -169,7 +179,7 @@ function Footer() {
         
         <div className="border-t border-gray-200 mt-8 pt-8">
           <p className="text-sm text-gray-600 text-center">
-            &copy; {new Date().getFullYear()} ACME Inc. All rights reserved.
+            &copy; {new Date().getFullYear()} Trade Copier. All rights reserved. Trading involves risk.
           </p>
         </div>
       </div>

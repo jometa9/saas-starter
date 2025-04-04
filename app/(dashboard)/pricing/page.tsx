@@ -76,41 +76,70 @@ export default async function PricingPage() {
       </div>
       
       {/* Pricing Cards Grid */}
-      <div className="grid md:grid-cols-2 gap-8 max-w-xl mx-auto mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         <PricingCard
-          name={basePlan?.name || 'Base'}
-          price={basePrice?.unitAmount || 800}
-          interval={basePrice?.interval || 'month'}
-          trialDays={basePrice?.trialPeriodDays || 7}
+          name="Basic"
+          price={0}
+          interval="mo"
+          trialDays={0}
           features={[
-            'Unlimited Usage',
-            'Unlimited Workspace Members',
-            'Email Support',
+            "1 Master Account",
+            "2 Slave Accounts",
+            "Cross-platform support (MT4/MT5)",
+            "Standard execution speed",
+            "Basic symbol mapping",
+            "Fixed lot sizing",
+            "Community support"
           ]}
-          priceId={basePrice?.id}
-          isLoggedIn={isLoggedIn}
+          isLoggedIn={!!user}
           hasSubscription={hasSubscription}
         />
         <PricingCard
-          name={plusPlan?.name || 'Plus'}
-          price={plusPrice?.unitAmount || 1200}
-          interval={plusPrice?.interval || 'month'}
-          trialDays={plusPrice?.trialPeriodDays || 7}
+          name="Trader"
+          price={29}
+          interval="mo"
+          trialDays={14}
           features={[
-            'Everything in Base, and:',
-            'Early Access to New Features',
-            '24/7 Support + Slack Access',
+            "3 Master Accounts",
+            "5 Slave Accounts",
+            "Full cross-platform support",
+            "Standard execution speed",
+            "Advanced symbol mapping",
+            "Percentage-based lot sizing",
+            "Email support",
+            "Trade notifications",
+            "Automated retries"
           ]}
-          priceId={plusPrice?.id}
-          isLoggedIn={isLoggedIn}
+          priceId="price_trader"
+          isLoggedIn={!!user}
           hasSubscription={hasSubscription}
           isRecommended={true}
+        />
+        <PricingCard
+          name="Professional"
+          price={79}
+          interval="mo"
+          trialDays={14}
+          features={[
+            "Unlimited Master Accounts",
+            "Unlimited Slave Accounts",
+            "Full cross-platform support",
+            "Ultra-low latency execution",
+            "Advanced symbol mapping",
+            "Custom formula lot sizing",
+            "Priority 24/7 support",
+            "Custom order type filtering",
+            "Trading hours filter"
+          ]}
+          priceId="price_professional"
+          isLoggedIn={!!user}
+          hasSubscription={hasSubscription}
         />
       </div>
       
       {/* Full Feature Comparison Table */}
       <div className="mt-16">
-        <h2 className="text-2xl font-bold text-center mb-8">Feature Comparison</h2>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Feature Comparison</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -119,70 +148,82 @@ export default async function PricingPage() {
                   Feature
                 </th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Free
+                  Basic
                 </th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
-                  Base
+                  Trader
                 </th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-100">
-                  Plus
+                  Professional
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               <FeatureRow 
-                feature="Number of Projects" 
-                free="3" 
-                base="Unlimited" 
-                plus="Unlimited" 
-              />
-              <FeatureRow 
-                feature="Team Members" 
+                feature="Master Accounts" 
                 free="1" 
-                base="Up to 5" 
+                base="3" 
                 plus="Unlimited" 
               />
               <FeatureRow 
-                feature="Storage" 
-                free="500MB" 
-                base="10GB" 
-                plus="100GB" 
+                feature="Slave Accounts" 
+                free="2" 
+                base="5" 
+                plus="Unlimited" 
               />
               <FeatureRow 
-                feature="API Access" 
-                free={<X className="h-5 w-5 text-red-500 mx-auto" />} 
-                base={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
-                plus={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+                feature="Cross-Platform Support" 
+                free={<Check className="mx-auto h-5 w-5 text-green-500" />} 
+                base={<Check className="mx-auto h-5 w-5 text-green-500" />} 
+                plus={<Check className="mx-auto h-5 w-5 text-green-500" />} 
               />
               <FeatureRow 
-                feature="Priority Support" 
-                free={<X className="h-5 w-5 text-red-500 mx-auto" />} 
-                base={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
-                plus={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+                feature="Execution Speed" 
+                free="Standard (<50ms)" 
+                base="Standard (<50ms)" 
+                plus="Ultra-low (<10ms)" 
               />
               <FeatureRow 
-                feature="Custom Domains" 
-                free={<X className="h-5 w-5 text-red-500 mx-auto" />} 
-                base={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
-                plus={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
-              />
-              <FeatureRow 
-                feature="Analytics Dashboard" 
+                feature="Symbol Mapping" 
                 free="Basic" 
                 base="Advanced" 
-                plus="Premium" 
+                plus="Advanced" 
               />
               <FeatureRow 
-                feature="White Labeling" 
-                free={<X className="h-5 w-5 text-red-500 mx-auto" />} 
-                base={<X className="h-5 w-5 text-red-500 mx-auto" />} 
-                plus={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+                feature="Lot Size Control" 
+                free="Fixed" 
+                base="Percentage" 
+                plus="Custom Formula" 
               />
               <FeatureRow 
-                feature="Dedicated Account Manager" 
-                free={<X className="h-5 w-5 text-red-500 mx-auto" />} 
-                base={<X className="h-5 w-5 text-red-500 mx-auto" />} 
-                plus={<Check className="h-5 w-5 text-green-500 mx-auto" />} 
+                feature="Trade Notifications" 
+                free={<X className="mx-auto h-5 w-5 text-red-500" />} 
+                base={<Check className="mx-auto h-5 w-5 text-green-500" />} 
+                plus={<Check className="mx-auto h-5 w-5 text-green-500" />} 
+              />
+              <FeatureRow 
+                feature="Automated Retries" 
+                free={<X className="mx-auto h-5 w-5 text-red-500" />} 
+                base={<Check className="mx-auto h-5 w-5 text-green-500" />} 
+                plus={<Check className="mx-auto h-5 w-5 text-green-500" />} 
+              />
+              <FeatureRow 
+                feature="Order Type Filtering" 
+                free="Basic" 
+                base="Advanced" 
+                plus="Custom Rules" 
+              />
+              <FeatureRow 
+                feature="Trading Hours Filter" 
+                free={<X className="mx-auto h-5 w-5 text-red-500" />} 
+                base={<Check className="mx-auto h-5 w-5 text-green-500" />} 
+                plus={<Check className="mx-auto h-5 w-5 text-green-500" />} 
+              />
+              <FeatureRow 
+                feature="Technical Support" 
+                free="Community" 
+                base="Email" 
+                plus="Priority 24/7" 
               />
             </tbody>
           </table>
@@ -247,17 +288,17 @@ function PricingCard({
           RECOMMENDED
         </div>
       )}
-      <h2 className="text-2xl font-medium text-gray-900 mb-2">{name}</h2>
-      <p className="text-sm text-gray-600 mb-4">
-        with {trialDays} day free trial
-      </p>
-      <p className="text-4xl font-medium text-gray-900 mb-6">
-        ${price / 100}{' '}
-        <span className="text-xl font-normal text-gray-600">
-          per user / {interval}
-        </span>
-      </p>
-      <ul className="space-y-4 mb-8">
+      <h3 className="text-xl font-bold text-gray-900">{name}</h3>
+      <div className="mt-4 flex items-baseline text-gray-900">
+        <span className="text-4xl font-extrabold tracking-tight">${price}</span>
+        <span className="ml-1 text-xl font-semibold">/{interval}</span>
+      </div>
+      {trialDays > 0 && (
+        <p className="mt-2 text-sm text-gray-500">
+          {trialDays}-day free trial
+        </p>
+      )}
+      <ul className="mt-6 space-y-4">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start">
             <Check className="h-5 w-5 text-black mr-2 mt-0.5 flex-shrink-0" />
@@ -266,32 +307,36 @@ function PricingCard({
         ))}
       </ul>
       
-      {hasSubscription ? (
-        <button
-          className="w-full flex items-center justify-center bg-gray-200 text-gray-600 py-2 px-4 rounded-md"
-          disabled
-        >
-          <Check className="mr-2 h-4 w-4" />
-          Currently Subscribed
-        </button>
-      ) : isLoggedIn ? (
-        <form id="subscription-form">
-          <input type="hidden" name="priceId" value={priceId} />
-          <SubmitButton 
-            className={`w-full flex items-center justify-center ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
-            formAction={handleSubscription}
-          >
-            <CreditCard className="mr-2 h-4 w-4" />
-            Subscribe Now
-          </SubmitButton>
-        </form>
+      {isLoggedIn ? (
+        hasSubscription ? (
+          <form className="mt-8">
+            <input type="hidden" name="priceId" value={priceId} />
+            <SubmitButton 
+              className={`w-full flex items-center justify-center ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
+              formAction={handleSubscription}
+            >
+              Currently Subscribed
+            </SubmitButton>
+          </form>
+        ) : (
+          <form className="mt-8">
+            <input type="hidden" name="priceId" value={priceId} />
+            <SubmitButton 
+              className={`w-full flex items-center justify-center ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
+              formAction={handleSubscription}
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              Subscribe Now
+            </SubmitButton>
+          </form>
+        )
       ) : (
         <a href="/sign-in?redirect=/pricing" className="block w-full">
           <button
             className={`w-full flex items-center justify-center bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-md ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
           >
             <CreditCard className="mr-2 h-4 w-4" />
-            Sign In to Subscribe
+            Sign in to Subscribe
           </button>
         </a>
       )}
@@ -299,12 +344,7 @@ function PricingCard({
   );
 }
 
-function FeatureRow({ 
-  feature, 
-  free, 
-  base, 
-  plus 
-}: { 
+function FeatureRow({ feature, free, base, plus }: { 
   feature: string; 
   free: string | React.ReactNode; 
   base: string | React.ReactNode; 

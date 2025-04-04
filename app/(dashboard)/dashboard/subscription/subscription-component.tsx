@@ -6,10 +6,24 @@ import { User } from '@/lib/db/schema';
 import { useRouter } from 'next/navigation';
 import { customerPortalAction } from '@/lib/payments/actions';
 import { toast } from '@/components/ui/use-toast';
-import { CalendarDays, CreditCard, CheckCircle, XCircle, Clock, AlertCircle, Info, TrendingUp, Award, Shield, Zap } from 'lucide-react';
+import { CalendarDays, CreditCard, CheckCircle, XCircle, Clock, AlertCircle, Info, TrendingUp, Award, Shield, Zap, ArrowUpRight, Download, BookOpen, LifeBuoy } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Link from 'next/link';
+import { CircleCheckIcon } from '@/components/icons/circle-check';
+import { Sparkles, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
 
 export function Subscription({ user, currentVersion }: { user: User; currentVersion: string }) {
   const router = useRouter();
+  const [showLicense, setShowLicense] = useState(false);
+  const licenseKey = user?.stripeSubscriptionId ? `TC-${user.stripeCustomerId?.substring(0, 8)}-${user.id.substring(0, 6)}` : 'No active license';
+  const isLatestVersion = true; // Simulating this is the latest version
+
+  const toggleLicenseVisibility = () => {
+    setShowLicense(prev => !prev);
+  };
 
   // Función para acceder al portal de cliente de Stripe
   const handleCustomerPortal = async () => {
@@ -326,6 +340,240 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
           )}
         </CardContent>
       </Card>
+
+      <div className="grid gap-6">
+        <div className="rounded-lg border bg-card shadow-sm">
+          <div className="p-6 flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <h2 className="text-xl font-semibold leading-none tracking-tight">
+                  Trade Copier License
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Copy trades between MetaTrader platforms with the same IP address
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <Badge className={`px-2 py-1 ${getSubscriptionStatusColor()}`}>
+                  {getSubscriptionStatusText()}
+                </Badge>
+                {getSubscriptionStatusIcon()}
+              </div>
+            </div>
+            <div className="flex flex-col w-full gap-2">
+              <Label>Your License Key</Label>
+              <div className="flex h-10">
+                <Input
+                  className="rounded-r-none font-mono text-xs h-10 bg-muted"
+                  value={licenseKey}
+                  readOnly
+                  type={showLicense ? 'text' : 'password'}
+                />
+                <Button
+                  variant="outline"
+                  className="rounded-l-none border-l-0 h-10 flex items-center"
+                  onClick={toggleLicenseVisibility}
+                >
+                  {showLicense ? 'Hide' : 'Show'}
+                </Button>
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {user.subscriptionStatus === 'active' ? (
+                  <div>
+                    <p>This license key allows you to activate the Trade Copier software on your computer.</p>
+                    <p className="mt-1">Current Plan: <span className="font-semibold">{user.planName || 'Basic'}</span></p>
+                  </div>
+                ) : (
+                  <p>Subscribe to get your license key and access premium features.</p>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="border shadow-sm">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-black" />
+                    <CardTitle className="text-base font-medium">Account Limits</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-2">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-sm">
+                      <span>Master Accounts:</span>
+                      <span className="font-medium">
+                        {user.planName === 'Professional' ? 'Unlimited' : user.planName === 'Trader' ? '3' : '1'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span>Slave Accounts:</span>
+                      <span className="font-medium">
+                        {user.planName === 'Professional' ? 'Unlimited' : user.planName === 'Trader' ? '5' : '2'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span>Cross-platform Support:</span>
+                      <span className="font-medium">
+                        {user.subscriptionStatus === 'active' ? 'Yes' : 'Limited'}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border shadow-sm">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-black" />
+                    <CardTitle className="text-base font-medium">Performance</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-2">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-sm">
+                      <span>Latency Mode:</span>
+                      <span className="font-medium">
+                        {user.planName === 'Professional' ? 'Ultra-low (<10ms)' : 'Standard (<50ms)'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span>Symbol Mapping:</span>
+                      <span className="font-medium">
+                        {user.planName === 'Basic' ? 'Basic' : 'Advanced'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span>Trade Volume Control:</span>
+                      <span className="font-medium">
+                        {user.planName === 'Basic' ? 'Limited' : 'Full Control'}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              {user.subscriptionStatus === 'active' ? (
+                <Button
+                  className="bg-black hover:bg-gray-800 text-white"
+                  onClick={handleCustomerPortal}
+                >
+                  Manage Subscription
+                </Button>
+              ) : (
+                <Button className="bg-black hover:bg-gray-800 text-white" onClick={goToPricing}>
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Subscribe Now
+                </Button>
+              )}
+              {user.planName !== 'Professional' && user.subscriptionStatus === 'active' && (
+                <Button
+                  variant="outline"
+                  className="border-black text-black hover:bg-gray-100"
+                  onClick={goToPricing}
+                >
+                  <ArrowUpRight className="mr-2 h-4 w-4" />
+                  Upgrade Plan
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card shadow-sm">
+          <div className="p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <h2 className="text-xl font-semibold leading-none tracking-tight">
+                  Software Version
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Current installed version and available updates
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 border rounded-lg p-4">
+              <div className="rounded-full bg-green-50 p-2">
+                <CircleCheckIcon className="h-4 w-4 text-green-500" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium">Trade Copier v{currentVersion}</div>
+                <div className="text-xs text-muted-foreground">
+                  {isLatestVersion
+                    ? 'You have the latest version installed'
+                    : 'Update available. Please download the latest version.'}
+                </div>
+              </div>
+              <div>
+                <Link href="/#download">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-8 border-black text-black hover:bg-gray-100"
+                  >
+                    <Download className="mr-1 h-3 w-3" />
+                    {isLatestVersion ? 'Download' : 'Update Now'}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="mt-2">
+              <h3 className="text-sm font-medium">Why Update Regularly?</h3>
+              <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start">
+                  <Zap className="mr-2 h-4 w-4 text-black flex-shrink-0 mt-0.5" />
+                  <span>Performance improvements for faster trade copying</span>
+                </li>
+                <li className="flex items-start">
+                  <ShieldCheck className="mr-2 h-4 w-4 text-black flex-shrink-0 mt-0.5" />
+                  <span>Enhanced compatibility with the latest MetaTrader updates</span>
+                </li>
+                <li className="flex items-start">
+                  <Sparkles className="mr-2 h-4 w-4 text-black flex-shrink-0 mt-0.5" />
+                  <span>New features and improvements to the user interface</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+          <div className="p-6">
+            <h3 className="text-lg font-medium">Need Help?</h3>
+            <p className="text-sm text-muted-foreground mt-2">
+              If you need assistance with your Trade Copier software, our support team is ready to help.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <Card className="border">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-start gap-2">
+                    <BookOpen className="h-5 w-5 text-black" />
+                    <h4 className="font-medium">Read Documentation</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Get detailed instructions on how to configure and use the Trade Copier software.
+                    </p>
+                    <Button variant="link" className="p-0 h-auto text-black" asChild>
+                      <Link href="/docs">View Documentation</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-start gap-2">
+                    <LifeBuoy className="h-5 w-5 text-black" />
+                    <h4 className="font-medium">Technical Support</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Contact our support team for personalized assistance with any issues.
+                    </p>
+                    <Button variant="link" className="p-0 h-auto text-black" asChild>
+                      <Link href="mailto:support@tradecopier.com">Contact Support</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 } 

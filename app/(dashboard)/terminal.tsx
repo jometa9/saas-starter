@@ -1,66 +1,52 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Terminal as LucideTerminal } from 'lucide-react';
 
 export function Terminal() {
-  const [terminalStep, setTerminalStep] = useState(0);
-  const [copied, setCopied] = useState(false);
-  const terminalSteps = [
-    'git clone https://github.com/nextjs/saas-starter',
-    'pnpm install',
-    'pnpm db:setup',
-    'pnpm db:migrate',
-    'pnpm db:seed',
-    'pnpm dev 🎉',
-  ];
+  const [text, setText] = useState('');
+  const [fullText, setFullText] = useState(
+    `> Starting Trade Copier v1.0.0
+> Scanning for MetaTrader terminals...
+> Found: MT4 Terminal (account: 12345678)
+> Found: MT5 Terminal (account: 87654321)
+> Configuring MT4 as MASTER account
+> Configuring MT5 as SLAVE account
+> Connection established successfully
+> Monitoring for trades...
+> MASTER: New order detected (Buy 0.10 EURUSD @ 1.08742)
+> SLAVE: Copying order...
+> SLAVE: Order copied successfully (Buy 0.10 EURUSD @ 1.08742)
+> Trade copied in 7ms - Same IP address confirmed`
+  );
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setTerminalStep((prev) =>
-        prev < terminalSteps.length - 1 ? prev + 1 : prev
-      );
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [terminalStep]);
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(terminalSteps.join('\n'));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    if (index < fullText.length) {
+      const timeout = setTimeout(() => {
+        setText(text + fullText[index]);
+        setIndex(index + 1);
+      }, 25);
+      return () => clearTimeout(timeout);
+    }
+  }, [fullText, index, text]);
 
   return (
-    <div className="w-full rounded-lg shadow-lg overflow-hidden bg-gray-900 text-white font-mono text-sm relative">
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex space-x-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-          </div>
-          <button
-            onClick={copyToClipboard}
-            className="text-gray-400 hover:text-white transition-colors"
-            aria-label="Copy to clipboard"
-          >
-            {copied ? (
-              <Check className="h-5 w-5" />
-            ) : (
-              <Copy className="h-5 w-5" />
-            )}
-          </button>
+    <div className="relative w-full max-w-lg mx-auto lg:max-w-none">
+      <div className="relative">
+        <div className="absolute top-2 left-2 flex h-auto rounded-full p-1 gap-1 z-10 bg-gray-800/90">
+          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+          <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
         </div>
-        <div className="space-y-2">
-          {terminalSteps.map((step, index) => (
-            <div
-              key={index}
-              className={`${index > terminalStep ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-            >
-              <span className="text-green-400">$</span> {step}
-            </div>
-          ))}
+        <div className="overflow-hidden rounded-lg border border-gray-300 shadow-xl">
+          <div className="p-4 h-80 overflow-auto bg-gray-900 font-mono text-xs text-gray-100">
+            <pre>{text}</pre>
+            <div className="inline-block h-4 w-1.5 -mb-0.5 bg-gray-100 animate-pulse"></div>
+          </div>
+        </div>
+        <div className="absolute bottom-3 right-3 z-10 bg-gray-800 bg-opacity-75 rounded-full p-2">
+          <LucideTerminal className="h-5 w-5 text-gray-400" />
         </div>
       </div>
     </div>
