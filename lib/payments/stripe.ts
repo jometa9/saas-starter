@@ -57,165 +57,88 @@ export function getStripe(): Stripe {
 export const stripe = getStripe();
 
 export async function createCheckoutSession({
-  user,
-  priceId
+  priceId,
+  userId,
+  email,
+  customerId
 }: {
-  user: User | null;
   priceId: string;
+  userId: number;
+  email: string;
+  customerId?: string | null;
 }) {
-  if (!user) {
-    return `/sign-up?redirect=checkout&priceId=${priceId}`;
-  }
-
   try {
-    // Verificar que tengamos un customerId válido o crear uno
-    if (!user.stripeCustomerId) {
+    const stripe = getStripe();
+    let customerIdToUse = customerId;
+
+    // Si no hay customerId, crear uno nuevo
+    if (!customerIdToUse) {
       try {
-        // Crear un cliente en Stripe
+        // Crear un nuevo cliente en Stripe
         const customer = await stripe.customers.create({
-          email: user.email,
-          name: user.name || undefined,
+          email: email,
           metadata: {
-            userId: user.id.toString(),
-            source: 'checkout_flow'
+            userId: userId.toString()
           }
         });
         
+        // Guardar el ID del cliente para usarlo en la sesión
+        customerIdToUse = customer.id;
+        
         // Actualizar el usuario con el nuevo ID de cliente
-        await updateUserById(user.id, {
+        await updateUserById(userId, {
           stripeCustomerId: customer.id
         });
-        
-        // Actualizar el customerId para usarlo en la sesión
-        user.stripeCustomerId = customer.id;
       } catch (createError) {
-        console.error(`❌ Error al crear cliente en Stripe:`, createError);
-        return '/dashboard?error=customer-error';
-      }
-    } else {
-      // Verificar que el cliente exista en Stripe
-      try {
-        // Intentar recuperar el cliente de Stripe para verificar que existe
-        const customer = await stripe.customers.retrieve(user.stripeCustomerId);
-        
-        // Asegurarse de que el correo esté actualizado en Stripe
-        if (customer.email !== user.email) {
-          await stripe.customers.update(user.stripeCustomerId, {
-            email: user.email,
-            name: user.name || undefined
-          });
-        }
-      } catch (customerError) {
-        console.error(`❌ Error: El cliente ${user.stripeCustomerId} no existe en Stripe:`, customerError);
-        
-        try {
-          // El cliente no existe, crear uno nuevo
-          const customer = await stripe.customers.create({
-            email: user.email,
-            name: user.name || undefined,
-            metadata: {
-              userId: user.id.toString(),
-              source: 'checkout_recovery'
-            }
-          });
-          
-          // Actualizar el usuario con el nuevo ID de cliente
-          await updateUserById(user.id, {
-            stripeCustomerId: customer.id
-          });
-          
-          // Actualizar el customerId para usarlo en la sesión
-          user.stripeCustomerId = customer.id;
-        } catch (createError) {
-          console.error(`❌ Error al crear nuevo cliente en Stripe:`, createError);
-          return '/dashboard?error=customer-error';
-        }
+        console.error(`Error al crear cliente en Stripe:`, createError);
+        throw new Error('customer-error');
       }
     }
 
     // Verificar que el precio exista en Stripe
     try {
       // Intentar recuperar el precio para verificar que existe
-      const price = await stripe.prices.retrieve(priceId);
+      await stripe.prices.retrieve(priceId);
     } catch (priceError) {
-      console.error(`❌ Error: El precio ${priceId} no existe en Stripe:`, priceError);
-      return '/dashboard?error=invalid-price';
+      console.error(`Error: El precio ${priceId} no existe en Stripe:`, priceError);
+      throw new Error('invalid-price');
     }
 
-    // Intentar crear la sesión de checkout con el customerId existente
-    try {
-      // Si el usuario ya tiene una suscripción activa, mostrar mensaje
-      if (user.stripeSubscriptionId && user.subscriptionStatus === 'active') {
-        console.error(`❌ Usuario ya tiene una suscripción activa: ${user.stripeSubscriptionId}`);
-        return '/dashboard?error=subscription-exists';
+    // Construir URLs absolutas para success y cancel
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000';
+    const successUrl = `${baseUrl}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${baseUrl}/pricing`;
+    
+    // Configuración de la sesión de checkout
+    const sessionConfig = {
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1
+        }
+      ],
+      mode: 'subscription',
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      customer: customerIdToUse,
+      client_reference_id: userId.toString(),
+      subscription_data: {
+        trial_period_days: 14
       }
-      
-      // Construir URLs absolutas para success y cancel
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000';
-      const successUrl = `${baseUrl}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`;
-      const cancelUrl = `${baseUrl}/pricing`;
-      
-      // Configuración simplificada de la sesión de checkout
-      const sessionConfig = {
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1
-          }
-        ],
-        mode: 'subscription',
-        success_url: successUrl,
-        cancel_url: cancelUrl,
-        customer: user.stripeCustomerId,
-        client_reference_id: user.id.toString(),
-        subscription_data: {
-          trial_period_days: 14
-        }
-      };
-      
-      const session = await stripe.checkout.sessions.create(sessionConfig);
-
-      if (!session.url) {
-        console.error('❌ Error: La sesión de checkout no tiene URL');
-        throw new Error('No se pudo crear la URL de checkout');
-      }
-      
-      // Retornar la URL en lugar de redirigir
-      return session.url;
-    } catch (stripeError) {
-      console.error('❌ Error al crear sesión en Stripe:', stripeError);
-      
-      // Obtener detalles completos del error
-      if (stripeError instanceof Error) {
-        const errorMsg = stripeError.message;
-        console.error(`❌ Mensaje de error completo: ${errorMsg}`);
-        console.error(`❌ Stack trace: ${stripeError.stack}`);
-        
-        // Verificar errores comunes específicos de Stripe
-        if (errorMsg.includes('No such customer') || errorMsg.includes('customer')) {
-          return '/dashboard?error=invalid-customer-id';
-        }
-        
-        if (errorMsg.includes('No such price') || errorMsg.includes('price')) {
-          return '/dashboard?error=invalid-price-id';
-        }
-        
-        if (errorMsg.includes('API key') || errorMsg.includes('Invalid API Key')) {
-          return '/dashboard?error=invalid-api-key';
-        }
-        
-        // Problema con la URL de redirección
-        if (errorMsg.includes('success_url') || errorMsg.includes('cancel_url')) {
-          return '/dashboard?error=invalid-redirect-url';
-        }
-      }
-      
-      // Cualquier otro error de Stripe
-      throw stripeError;
+    };
+    
+    // Crear la sesión de checkout
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+    
+    if (!session.url) {
+      console.error('Error: La sesión de checkout no tiene URL');
+      throw new Error('checkout-creation-failed');
     }
+    
+    return session;
   } catch (error) {
-    console.error('❌ Error en createCheckoutSession:', error);
+    console.error('Error en createCheckoutSession:', error);
     throw error;
   }
 }

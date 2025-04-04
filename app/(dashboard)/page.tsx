@@ -12,7 +12,7 @@ export default function HomePage() {
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
               <h1 className="text-4xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
                 Lightning-Fast
-                <span className="block text-black">Trade Copier</span>
+                <span className="block text-black">IPTRADE</span>
               </h1>
               <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                 Copy trades instantly between MetaTrader accounts while maintaining the same IP address. 
@@ -46,7 +46,7 @@ export default function HomePage() {
       <section id="download" className="py-16 bg-gray-50 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Download Trade Copier</h2>
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Download IPTRADE</h2>
             <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
               Get our high-frequency trading software that allows you to copy trades between different MetaTrader platforms from the same computer.
             </p>
@@ -64,7 +64,7 @@ export default function HomePage() {
                   Download
                 </Button>
               </div>
-              <p className="text-sm text-gray-500">Compatible with Windows 10 and above. Supports MetaTrader 4 & 5 for high-frequency trading.</p>
+              <p className="text-sm text-gray-500">Compatible with Windows 10 and above. Supports MetaTrader 4 & 5 for high-frequency trading with IPTRADE.</p>
             </div>
             
             <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -78,7 +78,7 @@ export default function HomePage() {
                   Download
                 </Button>
               </div>
-              <p className="text-sm text-gray-500">Compatible with macOS Monterey and above. Optimized for Apple Silicon with MetaTrader support.</p>
+              <p className="text-sm text-gray-500">Compatible with macOS Monterey and above. Optimized for Apple Silicon with IPTRADE support.</p>
             </div>
             
             <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -301,7 +301,7 @@ export default function HomePage() {
                 Ready to revolutionize your trading?
               </h2>
               <p className="mt-3 max-w-3xl text-lg text-gray-500">
-                Our Trade Copier software provides everything you need to copy trades between platforms with the same IP address. Perfect for prop firm traders who want to maintain compliance while copying trades.
+                Our IPTRADE software provides everything you need to copy trades between platforms with the same IP address. Perfect for prop firm traders who want to maintain compliance while copying trades.
               </p>
             </div>
             <div className="mt-8 lg:mt-0 flex justify-center lg:justify-end">

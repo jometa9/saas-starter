@@ -6,6 +6,8 @@ import { getUser } from '@/lib/db/queries';
 import { createCheckoutSession, createCustomerPortalSession } from '@/lib/payments/stripe';
 
 export async function checkoutAction(priceId: string): Promise<{ error?: string; redirect?: string }> {
+  console.log('Iniciando checkout con priceId:', priceId);
+
   try {
     // Validar el formato del ID de precio
     if (!priceId || !priceId.startsWith('price_')) {
@@ -16,32 +18,37 @@ export async function checkoutAction(priceId: string): Promise<{ error?: string;
     const user = await getUser();
     
     if (!user) {
-      console.error(`❌ No se encontró sesión de usuario`);
-      return { error: 'no-session' };
+      console.log('No hay usuario autenticado');
+      return { error: 'no-auth' };
     }
     
-    if (user.stripeSubscriptionId && user.subscriptionStatus === 'active') {
-      console.error(`❌ El usuario ya tiene una suscripción activa: ${user.stripeSubscriptionId}`);
+    // Verificar si el usuario ya tiene una suscripción activa
+    if (user.stripeSubscriptionId && (
+      user.subscriptionStatus === 'active' || 
+      user.subscriptionStatus === 'trialing'
+    )) {
+      console.log('El usuario ya tiene una suscripción activa');
       return { error: 'subscription-exists' };
     }
     
-    // Usar siempre Stripe directamente sin simulación
-    const redirectUrl = await createCheckoutSession({ user, priceId });
+    // Crear sesión de checkout
+    const checkoutSession = await createCheckoutSession({
+      priceId,
+      userId: user.id,
+      email: user.email,
+      customerId: user.stripeCustomerId,
+    });
     
-    // Comprobar si la URL es una URL de error o una URL de Stripe
-    if (redirectUrl.startsWith('/')) {
-      // Es una URL de error interna
-      const errorCode = new URL(redirectUrl, 'http://localhost').searchParams.get('error');
-      if (errorCode) {
-        return { error: errorCode };
-      }
-      return { redirect: redirectUrl };
+    if (!checkoutSession || !checkoutSession.url) {
+      console.error('No se pudo crear la sesión de checkout');
+      return { error: 'checkout-creation-failed' };
     }
     
-    // Es una URL válida de Stripe
-    return { redirect: redirectUrl };
+    // Redirigir al usuario a la página de checkout de Stripe
+    console.log('Checkout creado con éxito, redirigiendo a:', checkoutSession.url);
+    return { redirect: checkoutSession.url };
   } catch (error) {
-    console.error('❌ Error en checkoutAction:', error);
+    console.error('Error en la acción de checkout:', error);
     
     if (error instanceof Error) {
       console.error(`❌ Mensaje de error: ${error.message}`);

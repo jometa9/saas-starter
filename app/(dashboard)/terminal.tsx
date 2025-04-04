@@ -6,7 +6,7 @@ import { Terminal as LucideTerminal } from 'lucide-react';
 export function Terminal() {
   const [text, setText] = useState('');
   const [fullText, setFullText] = useState(
-    `> Starting Trade Copier v1.0.0
+    `> Starting IPTRADE v1.0.0
 > Scanning for MetaTrader terminals...
 > Found: MT4 Terminal (account: 12345678)
 > Found: MT5 Terminal (account: 87654321)

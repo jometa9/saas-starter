@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { customerPortalAction } from '@/lib/payments/actions';
 import { toast } from '@/components/ui/use-toast';
 import { CalendarDays, CreditCard, CheckCircle, XCircle, Clock, AlertCircle, Info, TrendingUp, Award, Shield, Zap, ArrowUpRight, Download, BookOpen, LifeBuoy } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
@@ -18,7 +17,9 @@ import { useState } from 'react';
 export function Subscription({ user, currentVersion }: { user: User; currentVersion: string }) {
   const router = useRouter();
   const [showLicense, setShowLicense] = useState(false);
-  const licenseKey = user?.stripeSubscriptionId ? `TC-${user.stripeCustomerId?.substring(0, 8)}-${user.id.substring(0, 6)}` : 'No active license';
+  const licenseKey = user?.stripeSubscriptionId 
+    ? `IP-${user.stripeCustomerId ? user.stripeCustomerId.substring(0, 8) : 'NOID'}-${user.id ? user.id.substring(0, 6) : 'NOID'}` 
+    : 'No active license';
   const isLatestVersion = true; // Simulating this is the latest version
 
   const toggleLicenseVisibility = () => {
@@ -104,61 +105,43 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
 
   // Obtener el estado de la suscripción en formato legible
   const getSubscriptionStatusText = () => {
+    if (!user.subscriptionStatus) return 'Inactive';
+    
     switch (user.subscriptionStatus) {
-      case 'active':
-        return 'Active subscription';
-      case 'trialing':
-        return 'Trial period';
-      case 'canceled':
-        return 'Subscription canceled';
-      case 'past_due':
-        return 'Payment pending';
-      case 'unpaid':
-        return 'Subscription unpaid';
-      case 'incomplete':
-        return 'Subscription incomplete';
-      default:
-        return 'No active subscription';
+      case 'active': return 'Active';
+      case 'trialing': return 'Trial';
+      case 'canceled': return 'Canceled';
+      case 'past_due': return 'Past Due';
+      case 'unpaid': return 'Unpaid';
+      default: return user.subscriptionStatus;
     }
   };
 
   // Obtener color del estado de la suscripción
   const getSubscriptionStatusColor = () => {
+    if (!user.subscriptionStatus) return 'bg-gray-100 text-gray-800';
+    
     switch (user.subscriptionStatus) {
-      case 'active':
-        return 'text-green-600';
-      case 'trialing':
-        return 'text-blue-600';
-      case 'canceled':
-        return 'text-red-600';
-      case 'past_due':
-        return 'text-amber-600';
-      case 'unpaid':
-        return 'text-red-600';
-      case 'incomplete':
-        return 'text-amber-600';
-      default:
-        return 'text-gray-600';
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'trialing': return 'bg-blue-100 text-blue-800';
+      case 'canceled': return 'bg-red-100 text-red-800';
+      case 'past_due': return 'bg-yellow-100 text-yellow-800';
+      case 'unpaid': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   // Obtener el icono del estado de la suscripción
   const getSubscriptionStatusIcon = () => {
+    if (!user.subscriptionStatus) return <AlertCircle className="h-5 w-5 text-gray-500" />;
+    
     switch (user.subscriptionStatus) {
-      case 'active':
-        return <CheckCircle className="h-5 w-5 text-green-600" />;
-      case 'trialing':
-        return <Clock className="h-5 w-5 text-blue-600" />;
-      case 'canceled':
-        return <XCircle className="h-5 w-5 text-red-600" />;
-      case 'past_due':
-        return <AlertCircle className="h-5 w-5 text-amber-600" />;
-      case 'unpaid':
-        return <AlertCircle className="h-5 w-5 text-red-600" />;
-      case 'incomplete':
-        return <Info className="h-5 w-5 text-amber-600" />;
-      default:
-        return <Info className="h-5 w-5 text-gray-600" />;
+      case 'active': return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'trialing': return <Clock className="h-5 w-5 text-blue-500" />;
+      case 'canceled': return <XCircle className="h-5 w-5 text-red-500" />;
+      case 'past_due': return <AlertCircle className="h-5 w-5 text-yellow-500" />;
+      case 'unpaid': return <AlertCircle className="h-5 w-5 text-orange-500" />;
+      default: return <Info className="h-5 w-5 text-gray-500" />;
     }
   };
 
@@ -347,16 +330,16 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <h2 className="text-xl font-semibold leading-none tracking-tight">
-                  Trade Copier License
+                  IPTRADE License
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   Copy trades between MetaTrader platforms with the same IP address
                 </p>
               </div>
               <div className="flex items-center gap-4">
-                <Badge className={`px-2 py-1 ${getSubscriptionStatusColor()}`}>
+                <div className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getSubscriptionStatusColor()}`}>
                   {getSubscriptionStatusText()}
-                </Badge>
+                </div>
                 {getSubscriptionStatusIcon()}
               </div>
             </div>
@@ -380,7 +363,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
               <div className="text-xs text-gray-500 mt-1">
                 {user.subscriptionStatus === 'active' ? (
                   <div>
-                    <p>This license key allows you to activate the Trade Copier software on your computer.</p>
+                    <p>This license key allows you to activate the IPTRADE software on your computer.</p>
                     <p className="mt-1">Current Plan: <span className="font-semibold">{user.planName || 'Basic'}</span></p>
                   </div>
                 ) : (
@@ -495,7 +478,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
                 <CircleCheckIcon className="h-4 w-4 text-green-500" />
               </div>
               <div className="flex-1">
-                <div className="text-sm font-medium">Trade Copier v{currentVersion}</div>
+                <div className="text-sm font-medium">IPTRADE v{currentVersion}</div>
                 <div className="text-xs text-muted-foreground">
                   {isLatestVersion
                     ? 'You have the latest version installed'
@@ -539,7 +522,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
           <div className="p-6">
             <h3 className="text-lg font-medium">Need Help?</h3>
             <p className="text-sm text-muted-foreground mt-2">
-              If you need assistance with your Trade Copier software, our support team is ready to help.
+              If you need assistance with your IPTRADE software, our support team is ready to help.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <Card className="border">
@@ -548,7 +531,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
                     <BookOpen className="h-5 w-5 text-black" />
                     <h4 className="font-medium">Read Documentation</h4>
                     <p className="text-sm text-muted-foreground">
-                      Get detailed instructions on how to configure and use the Trade Copier software.
+                      Get detailed instructions on how to configure and use the IPTRADE software.
                     </p>
                     <Button variant="link" className="p-0 h-auto text-black" asChild>
                       <Link href="/docs">View Documentation</Link>
@@ -565,7 +548,7 @@ export function Subscription({ user, currentVersion }: { user: User; currentVers
                       Contact our support team for personalized assistance with any issues.
                     </p>
                     <Button variant="link" className="p-0 h-auto text-black" asChild>
-                      <Link href="mailto:support@tradecopier.com">Contact Support</Link>
+                      <Link href="mailto:support@iptrade.com">Contact Support</Link>
                     </Button>
                   </div>
                 </CardContent>

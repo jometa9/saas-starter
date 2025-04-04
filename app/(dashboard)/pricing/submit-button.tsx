@@ -23,11 +23,28 @@ export function SubmitButton({
   // Manejar el clic en el botón
   const handleButtonClick = () => {
     // Obtener el formulario padre del botón
-    const form = document.getElementById('subscription-form') as HTMLFormElement;
-    if (!form) return;
-    
-    // Obtener los datos del formulario
-    const formData = new FormData(form);
+    const form = document.getElementById('subscription-form');
+    if (!form) {
+      // Si no existe un formulario con id 'subscription-form', intentar obtener el formulario padre del botón
+      const button = document.activeElement as HTMLElement;
+      const parentForm = button?.closest('form') as HTMLFormElement;
+      
+      if (!parentForm) {
+        setError('Form not found');
+        return;
+      }
+      
+      // Obtener los datos del formulario
+      const formData = new FormData(parentForm);
+      submitFormData(formData);
+    } else {
+      // Si existe el formulario con id, usarlo
+      const formData = new FormData(form as HTMLFormElement);
+      submitFormData(formData);
+    }
+  };
+  
+  const submitFormData = async (formData: FormData) => {
     const priceId = formData.get('priceId') as string;
     
     if (!priceId) {

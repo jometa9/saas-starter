@@ -295,7 +295,7 @@ function PricingCard({
       </div>
       {trialDays > 0 && (
         <p className="mt-2 text-sm text-gray-500">
-          {trialDays}-day free trial
+          {trialDays}-day free trial of IPTRADE {name}
         </p>
       )}
       <ul className="mt-6 space-y-4">
@@ -309,7 +309,7 @@ function PricingCard({
       
       {isLoggedIn ? (
         hasSubscription ? (
-          <form className="mt-8">
+          <form id="subscription-form" className="mt-8">
             <input type="hidden" name="priceId" value={priceId} />
             <SubmitButton 
               className={`w-full flex items-center justify-center ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
@@ -319,7 +319,7 @@ function PricingCard({
             </SubmitButton>
           </form>
         ) : (
-          <form className="mt-8">
+          <form id="subscription-form" className="mt-8">
             <input type="hidden" name="priceId" value={priceId} />
             <SubmitButton 
               className={`w-full flex items-center justify-center ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
