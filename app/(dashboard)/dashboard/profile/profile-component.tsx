@@ -18,6 +18,9 @@ import {
   CreditCard,
 } from "lucide-react";
 import { getAvatarBgColor, getAvatarTextColor } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { customerPortalAction } from "@/lib/payments/actions";
+import { AccountInfoCard } from "@/components/account-info-card";
 
 type ActionState = {
   error?: string;
@@ -39,6 +42,8 @@ export function Profile({ user }: { user: User }) {
   const [passwordState, setPasswordState] = useState<ActionState>({});
   const [isPasswordPending, setIsPasswordPending] = useState(false);
   const passwordFormRef = useRef<HTMLFormElement>(null);
+
+  const router = useRouter();
 
   // Manejar el cambio de email
   const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -100,10 +105,6 @@ export function Profile({ user }: { user: User }) {
     } finally {
       setIsPasswordPending(false);
     }
-  };
-
-  const goToPricing = () => {
-    router.push("/pricing");
   };
 
   const handleCustomerPortal = async () => {
@@ -183,63 +184,18 @@ export function Profile({ user }: { user: User }) {
     }
   };
 
+  const goToPricing = () => {
+    router.push("/pricing");
+  };
+
   return (
     <section className="flex-1 px-4 gap-4">
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Account Information</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 pb-4 px-4">
-          <div className="flex items-center space-x-4">
-            <Avatar>
-              <AvatarImage alt={getUserDisplayName(user)} />
-              <AvatarFallback
-                className={`${getAvatarBgColor(getUserDisplayName(user))} ${getAvatarTextColor(getAvatarBgColor(getUserDisplayName(user)))}`}
-              >
-                {getUserDisplayName(user)
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-medium text-md">{getUserDisplayName(user)}</p>
-              <p className="text-sm text-muted-foreground">
-                Current Plan: {user.planName || "Free"}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-            {user.subscriptionStatus === "active" ? (
-              <Button
-                className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
-                onClick={handleCustomerPortal}
-              >
-                Manage Subscription
-              </Button>
-            ) : (
-              <Button
-                className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
-                onClick={goToPricing}
-              >
-                <CreditCard className="mr-2 h-4 w-4" />
-                Subscribe Now
-              </Button>
-            )}
-            {user.planName !== "Professional" &&
-              user.subscriptionStatus === "active" && (
-                <Button
-                  variant="outline"
-                  className="border-black text-black hover:bg-gray-100 w-full md:w-auto cursor-pointer"
-                  onClick={goToPricing}
-                >
-                  <ArrowUpRight className="mr-2 h-4 w-4" />
-                  Upgrade Plan
-                </Button>
-              )}
-          </div>
-        </CardContent>
-      </Card>
+      <AccountInfoCard 
+        user={user}
+        onManageSubscription={handleCustomerPortal}
+        onGoToPricing={goToPricing}
+        className="mb-4"
+      />
 
       {/* Sección de Account Settings con diseño responsive */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">

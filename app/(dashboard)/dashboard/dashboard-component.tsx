@@ -33,6 +33,7 @@ import { toast } from "@/components/ui/use-toast";
 import { getAvatarBgColor, getAvatarTextColor } from "@/lib/utils";
 import { customerPortalAction } from "@/lib/payments/actions";
 import { useRouter } from "next/navigation";
+import { AccountInfoCard } from "@/components/account-info-card";
 
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
@@ -253,62 +254,13 @@ export function Dashboard({
 
   return (
     <section className="flex-1 px-4 gap-4 space-y-4">
-      {/* Bienvenida y resumen */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Account Information</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 pb-4 px-4">
-          <div className="flex items-center space-x-4">
-            <Avatar>
-              <AvatarImage alt={getUserDisplayName(user)} />
-              <AvatarFallback
-                className={`${getAvatarBgColor(getUserDisplayName(user))} ${getAvatarTextColor(getAvatarBgColor(getUserDisplayName(user)))}`}
-              >
-                {getUserDisplayName(user)
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-medium text-md">{getUserDisplayName(user)}</p>
-              <p className="text-sm text-muted-foreground">
-                Current Plan: {user.planName || "Free"}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-            {user.subscriptionStatus === "active" ? (
-              <Button
-                className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
-                onClick={handleCustomerPortal}
-              >
-                Manage Subscription
-              </Button>
-            ) : (
-              <Button
-                className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
-                onClick={goToPricing}
-              >
-                <CreditCard className="mr-2 h-4 w-4" />
-                Subscribe Now
-              </Button>
-            )}
-            {user.planName !== "Professional" &&
-              user.subscriptionStatus === "active" && (
-                <Button
-                  variant="outline"
-                  className="border-black text-black hover:bg-gray-100 w-full md:w-auto cursor-pointer"
-                  onClick={goToPricing}
-                >
-                  <ArrowUpRight className="mr-2 h-4 w-4" />
-                  Upgrade Plan
-                </Button>
-              )}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Reemplazar la tarjeta de información de cuenta con el nuevo componente */}
+      <AccountInfoCard 
+        user={user}
+        onManageSubscription={handleCustomerPortal}
+        onGoToPricing={goToPricing}
+        className="mb-4"
+      />
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="space-y-1">

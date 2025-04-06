@@ -15,11 +15,41 @@ export default async function PricingPage() {
     getUser(),
   ]);
 
-  const basePlan = products.find((product) => product.name === 'Base');
-  const plusPlan = products.find((product) => product.name === 'Plus');
+  console.log('Productos disponibles:', products.map(p => ({ id: p.id, name: p.name })));
+  console.log('Precios disponibles:', prices.map(p => ({ id: p.id, productId: p.product, amount: p.unit_amount })));
 
-  const basePrice = prices.find((price) => price.productId === basePlan?.id);
-  const plusPrice = prices.find((price) => price.productId === plusPlan?.id);
+  // Buscar planes por nombre (ahora buscamos "Trader" y "Professional" con alternativas)
+  const traderPlan = products.find((product) => 
+    product.name === 'Trader' || product.name === 'Base');
+  
+  const professionalPlan = products.find((product) => 
+    product.name === 'Professional' || product.name === 'Plus');
+  
+  // Fallbacks para IDs de precios por si no se encuentran
+  const fallbackTraderPriceId = 'price_1OaCSVKKBm5sxvJOmNnqVCja';
+  const fallbackProfessionalPriceId = 'price_1OaCUmKKBm5sxvJOlvMcOjMH';
+  
+  // Obtener precio del plan Trader (Base)
+  let traderPriceId: string | undefined;
+  if (traderPlan) {
+    const traderPrice = prices.find((price) => price.product === traderPlan.id && price.active);
+    traderPriceId = traderPrice?.id;
+    console.log('Trader plan encontrado:', traderPlan.name, 'con precio:', traderPriceId);
+  } else {
+    console.log('Plan Trader no encontrado, usando fallback');
+    traderPriceId = fallbackTraderPriceId;
+  }
+
+  // Obtener precio del plan Professional (Plus)
+  let professionalPriceId: string | undefined;
+  if (professionalPlan) {
+    const professionalPrice = prices.find((price) => price.product === professionalPlan.id && price.active);
+    professionalPriceId = professionalPrice?.id;
+    console.log('Professional plan encontrado:', professionalPlan?.name, 'con precio:', professionalPriceId);
+  } else {
+    console.log('Plan Professional no encontrado, usando fallback');
+    professionalPriceId = fallbackProfessionalPriceId;
+  }
 
   const isLoggedIn = !!user;
   const hasSubscription = !!(user?.stripeSubscriptionId && 
@@ -110,7 +140,7 @@ export default async function PricingPage() {
             "Trade notifications",
             "Automated retries"
           ]}
-          priceId={basePrice?.id}
+          priceId={traderPriceId || fallbackTraderPriceId}
           isLoggedIn={!!user}
           hasSubscription={hasSubscription}
           isRecommended={true}
@@ -131,7 +161,7 @@ export default async function PricingPage() {
             "Custom order type filtering",
             "Trading hours filter"
           ]}
-          priceId={plusPrice?.id}
+          priceId={professionalPriceId || fallbackProfessionalPriceId}
           isLoggedIn={!!user}
           hasSubscription={hasSubscription}
         />
