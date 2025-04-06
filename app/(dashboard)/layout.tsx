@@ -87,87 +87,40 @@ function Header() {
 
 function Footer() {
   return (
-    <footer className="mt-auto">
-      <div className="mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <div className="mb-4">
-              <Link href="/" className="flex items-center">
-                <span className="text-xl font-bold text-black">IPTRADE</span>
-              </Link>
-              <p className="text-sm text-gray-600 mt-3">
-                Professional trading solutions for MetaTrader platforms
-              </p>
-            </div>
-            <address className="text-sm text-gray-600 not-italic">
-              123 Trading Avenue
-              <br />
-              New York, NY 10001
-              <br />
-              United States
-            </address>
-            <div className="flex space-x-4 mt-6">
-              <Link
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-gray-100 p-2 rounded-full text-gray-600 hover:text-black hover:bg-gray-200 transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="h-4 w-4" />
-              </Link>
-              <Link
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-gray-100 p-2 rounded-full text-gray-600 hover:text-black hover:bg-gray-200 transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-          <div>
-            <div className="mb-6">
-              <h3 className="text-sm font-bold text-black mb-4">Legal</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link
-                    href="/terms"
-                    className="text-sm text-gray-600 hover:text-black transition-colors"
-                  >
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/privacy"
-                    className="text-sm text-gray-600 hover:text-black transition-colors"
-                  >
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/risk-disclaimer"
-                    className="text-sm text-gray-600 hover:text-black transition-colors"
-                  >
-                    Risk Disclaimer
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div className="pt-8 text-center">
-          <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} IPTRADE. All rights reserved.
-            Trading involves risk.
+      <div className="w-full p-6 ">
+        <div className="mb-4">
+          <Link href="/" className="flex items-center">
+            <span className="text-xl font-bold text-black">IPTRADE</span>
+          </Link>
+          <p className="text-sm text-gray-600 mt-3">
+            Professional trading solutions
           </p>
         </div>
+
+        <div className="flex space-x-4 text-sm">
+          <Link
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className=" rounded-full text-gray-600 hover:text-black hover:bg-gray-200 transition-colors flex items-center justify-center"
+            aria-label="Instagram"
+          >
+            Instagram
+          </Link>
+          <Link
+            href="https://linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className=" rounded-full text-gray-600 hover:text-black hover:bg-gray-200 transition-colors flex items-center justify-center"
+            aria-label="LinkedIn"
+          >
+            LinkedIn
+          </Link>
+        </div>
+        <p className="text-sm text-gray-500 pt-4">
+          &copy; {new Date().getFullYear()} IPTRADE
+        </p>
       </div>
-    </footer>
   );
 }
 
