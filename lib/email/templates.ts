@@ -248,4 +248,45 @@ export const versionUpdateEmailTemplate = (data: {
     html: baseTemplate(content),
     text: `Nueva actualización disponible: ${data.newVersion} (actual: ${data.currentVersion}). ${data.isCritical ? 'ACTUALIZACIÓN CRÍTICA - ' : ''}${data.downloadUrl ? `Descargar: ${data.downloadUrl}` : ''}`
   };
+};
+
+// Email para anuncios o comunicaciones masivas
+export const broadcastEmailTemplate = (data: { 
+  name: string;
+  subject: string;
+  message: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  isImportant?: boolean;
+}) => {
+  const importantNotice = data.isImportant 
+    ? `<p style="color: #e53e3e; font-weight: bold;">Esta es una comunicación importante que requiere tu atención.</p>` 
+    : '';
+  
+  const ctaButton = data.ctaUrl && data.ctaLabel
+    ? `
+      <div style="text-align: center;">
+        <a href="${data.ctaUrl}" class="button">${data.ctaLabel}</a>
+      </div>
+    ` 
+    : '';
+  
+  const content = `
+    <h1>${data.subject}</h1>
+    <p>Hola ${data.name},</p>
+    ${importantNotice}
+    
+    <div class="info-box">
+      ${data.message.replace(/\n/g, '<br />')}
+    </div>
+    
+    ${ctaButton}
+    
+    <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
+  `;
+  
+  return {
+    html: baseTemplate(content),
+    text: `${data.subject}\n\nHola ${data.name},\n\n${data.isImportant ? 'IMPORTANTE: ' : ''}${data.message}\n\n${data.ctaUrl ? `${data.ctaLabel}: ${data.ctaUrl}` : ''}`
+  };
 }; 

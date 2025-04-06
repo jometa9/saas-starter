@@ -3,7 +3,10 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Home, FileText, User, CreditCard } from "lucide-react";
+import { Home, FileText, User, CreditCard, Settings } from "lucide-react";
+import { useUser } from "@/lib/auth";
+import { use } from "react";
+import { User as UserType } from "@/lib/db/schema";
 
 export default function DashboardLayout({
   children,
@@ -13,6 +16,9 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const { userPromise } = useUser();
+  const user = use(userPromise);
+  const isAdmin = user?.role === "admin";
 
   useEffect(() => {
     const path = pathname.split("/").pop();
@@ -23,6 +29,8 @@ export default function DashboardLayout({
       setActiveTab("documents");
     } else if (path === "profile") {
       setActiveTab("profile");
+    } else if (path === "admin") {
+      setActiveTab("admin");
     }
   }, [pathname]);
 
@@ -58,6 +66,16 @@ export default function DashboardLayout({
           <User className="h-4 w-4 mr-2" />
           Account
         </Button>
+        {isAdmin && (
+          <Button
+            variant={activeTab === "admin" ? "default" : "ghost"}
+            onClick={() => navigateTo("admin")}
+            className="flex items-center rounded-xl border shadow mb-4 pr-5 mr-4 bg-gray-800 text-white hover:bg-gray-900"
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            Admin
+          </Button>
+        )}
       </div>
 
       <main className="flex-1 overflow-y-auto">{children}</main>

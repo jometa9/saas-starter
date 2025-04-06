@@ -102,8 +102,15 @@ const isValidResendTestAddress = (email: string): boolean => {
   // Dominios válidos para pruebas en Resend
   const validTestDomains = [
     '@resend.dev',
-    '@gmail.com', // Agrega aquí cualquier dominio que hayas verificado en Resend
-    '@iptradecopier.com' // Tu dominio verificado
+    '@gmail.com',
+    '@hotmail.com',
+    '@outlook.com',
+    '@yahoo.com',
+    '@icloud.com',
+    '@aol.com',
+    '@protonmail.com',
+    '@iptradecopier.com'
+    // Puedes añadir más dominios según sea necesario
   ];
   
   return validTestDomains.some(domain => email.toLowerCase().endsWith(domain));
@@ -126,10 +133,18 @@ const getSafeResendEmail = (email: string): string => {
     email.toLowerCase().endsWith(domain)
   );
   
-  if (isInvalidTestDomain || !isProduction() && !isValidResendTestAddress(email)) {
-    console.warn(`⚠️ Email ${email} no es válido para Resend. Usando dirección de prueba alternativa.`);
-    
-    // Direcciones seguras para pruebas en Resend
+  // En modo producción, permitimos todos los dominios excepto los de prueba conocidos
+  if (isProduction()) {
+    if (isInvalidTestDomain) {
+      console.warn(`⚠️ Email ${email} es un dominio de prueba inválido. Usando dirección alternativa.`);
+      return process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev';
+    }
+    return email; // En producción, devolvemos el email tal cual si no es un dominio de prueba
+  }
+  
+  // En desarrollo, solo permitimos dominios verificados
+  if (!isValidResendTestAddress(email)) {
+    console.warn(`⚠️ Email ${email} no es válido para Resend en desarrollo. Usando dirección de prueba alternativa.`);
     return process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev';
   }
   

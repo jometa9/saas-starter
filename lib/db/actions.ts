@@ -2,7 +2,7 @@
 
 import { getUser, updateAppVersion, getAppVersion } from '@/lib/db/queries';
 import { revalidatePath } from 'next/cache';
-import { sendVersionUpdateEmail } from '@/lib/email';
+import { sendVersionUpdateEmail, sendBroadcastEmail } from '@/lib/email';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
 import { ne, isNull } from 'drizzle-orm';
@@ -216,6 +216,126 @@ export async function updateAppVersionAction(
     console.error("❌ Error updating app version:", error);
     return {
       error: 'Failed to update app version'
+    };
+  }
+}
+
+export async function sendBroadcastEmailAction(
+  data: FormData | null | undefined,
+  _previousState: any
+) {
+  const user = await getUser();
+  if (!user || user.role !== 'admin') {
+    return {
+      error: 'Unauthorized - only admins can send broadcast emails'
+    };
+  }
+
+  if (!data || !(data instanceof FormData)) {
+    return {
+      error: 'No data provided'
+    };
+  }
+
+  // Extraer datos del formulario
+  const subject = data.get('subject')?.toString();
+  const message = data.get('message')?.toString();
+  const ctaLabel = data.get('ctaLabel')?.toString();
+  const ctaUrl = data.get('ctaUrl')?.toString();
+  const isImportant = data.get('isImportant') === 'true';
+
+  // Validar datos
+  if (!subject || subject.trim() === '') {
+    return {
+      error: 'El asunto es obligatorio'
+    };
+  }
+
+  if (!message || message.trim() === '') {
+    return {
+      error: 'El mensaje es obligatorio'
+    };
+  }
+
+  // Si se proporciona etiqueta CTA, la URL es obligatoria
+  if (ctaLabel && (!ctaUrl || !ctaUrl.startsWith('http'))) {
+    return {
+      error: 'Si se proporciona una etiqueta CTA, la URL debe ser válida'
+    };
+  }
+
+  try {
+    // Obtener todos los usuarios activos con email
+    const activeUsers = await db
+      .select()
+      .from(users)
+      .where(ne(users.email, ''))
+      .where(isNull(users.deletedAt));
+    
+    if (activeUsers.length === 0) {
+      return {
+        error: 'No se encontraron usuarios activos para enviar el mensaje'
+      };
+    }
+    
+    // Enviar email a cada usuario de forma asíncrona
+    // Limitar el número de emails simultáneos
+    const batchSize = 5;
+    let successCount = 0;
+    let failureCount = 0;
+    
+    // Procesar en lotes para no sobrecargar el servicio de email
+    for (let i = 0; i < activeUsers.length; i += batchSize) {
+      const batch = activeUsers.slice(i, i + batchSize);
+      
+      const emailPromises = batch.map(recipient => 
+        sendBroadcastEmail({
+          email: recipient.email,
+          name: recipient.name || recipient.email.split('@')[0],
+          subject: subject,
+          message: message,
+          ctaLabel: ctaLabel || undefined,
+          ctaUrl: ctaUrl || undefined,
+          isImportant: isImportant
+        }).then(() => {
+          successCount++;
+          return true;
+        }).catch(error => {
+          console.error(`❌ Failed to send broadcast email to ${recipient.email}:`, error);
+          failureCount++;
+          // No bloqueamos el proceso si falla algún email individual
+          return false;
+        })
+      );
+      
+      // Esperamos a que termine este lote antes de continuar
+      await Promise.all(emailPromises);
+      
+      // Pequeña pausa entre lotes para no sobrecargar
+      if (i + batchSize < activeUsers.length) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+    
+    // Si estamos en modo desarrollo, mostrar un mensaje especial
+    if (process.env.NEXT_PUBLIC_EMAIL_MODE !== 'production') {
+      console.log(`
+        ⚠️ MODO DESARROLLO: Los emails de difusión
+        ⚠️ fueron redirigidos a direcciones de prueba seguras.
+        ⚠️ Asunto: ${subject}
+        ⚠️ Usuarios: ${activeUsers.length}
+        ⚠️ Enviados con éxito: ${successCount}
+        ⚠️ Fallidos: ${failureCount}
+      `);
+    }
+    
+    return {
+      success: `Email enviado con éxito a ${successCount} usuarios (${failureCount} fallidos)`
+    };
+  } catch (error) {
+    console.error("❌ Error sending broadcast emails:", error);
+    return {
+      error: 'Ocurrió un error al enviar los emails'
     };
   }
 }

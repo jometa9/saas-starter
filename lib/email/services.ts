@@ -4,6 +4,7 @@ import {
   subscriptionChangeEmailTemplate,
   passwordResetEmailTemplate,
   versionUpdateEmailTemplate,
+  broadcastEmailTemplate,
 } from './templates';
 
 // Función de utilidad para reintento de operaciones
@@ -180,6 +181,60 @@ export async function sendVersionUpdateEmail({
   return sendEmail({
     to: email,
     subject,
+    html,
+    text,
+  });
+}
+
+// Servicio para enviar email de anuncio o comunicación masiva
+export async function sendBroadcastEmail({
+  email,
+  name,
+  subject,
+  message,
+  ctaLabel,
+  ctaUrl,
+  isImportant = false,
+}: {
+  email: string;
+  name: string;
+  subject: string;
+  message: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  isImportant?: boolean;
+}) {
+  const { html, text } = broadcastEmailTemplate({
+    name,
+    subject,
+    message,
+    ctaLabel,
+    ctaUrl,
+    isImportant,
+  });
+  
+  const emailSubject = isImportant
+    ? `[IMPORTANTE] ${subject}`
+    : subject;
+  
+  // Añadimos reintentos para emails importantes
+  if (isImportant) {
+    return withRetry(
+      () => sendEmail({
+        to: email,
+        subject: emailSubject,
+        html,
+        text,
+      }),
+      3,
+      500,
+      `Broadcast email to ${email}`
+    );
+  }
+  
+  return sendEmail({
+    to: email,
+    subject: emailSubject,
     html,
     text,
   });
