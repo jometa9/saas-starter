@@ -1,18 +1,18 @@
-import { sendEmail } from './config';
+import { sendEmail } from "./config";
 import {
   welcomeEmailTemplate,
   subscriptionChangeEmailTemplate,
   passwordResetEmailTemplate,
   versionUpdateEmailTemplate,
   broadcastEmailTemplate,
-} from './templates';
+} from "./templates";
 
-// Función de utilidad para reintento de operaciones
+// Utility function for retrying operations
 async function withRetry<T>(
   operation: () => Promise<T>,
   retries = 3,
   delay = 500,
-  name = 'Operation'
+  name = "Operation"
 ): Promise<T> {
   try {
     return await operation();
@@ -21,17 +21,17 @@ async function withRetry<T>(
       console.error(`❌ ${name} failed after all retries:`, error);
       throw error;
     }
-    
-    await new Promise(resolve => setTimeout(resolve, delay));
+
+    await new Promise((resolve) => setTimeout(resolve, delay));
     return withRetry(operation, retries - 1, delay * 1.5, name);
   }
 }
 
-// Servicio para enviar email de bienvenida
+// Service to send welcome email
 export async function sendWelcomeEmail({
   email,
   name,
-  loginUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  loginUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
 }: {
   email: string;
   name: string;
@@ -41,28 +41,29 @@ export async function sendWelcomeEmail({
     name,
     loginUrl,
   });
-  
+
   return withRetry(
-    () => sendEmail({
-      to: email,
-      subject: '¡Bienvenido a SaaS Starter!',
-      html,
-      text,
-    }),
+    () =>
+      sendEmail({
+        to: email,
+        subject: "Welcome to SaaS Starter!",
+        html,
+        text,
+      }),
     3,
     500,
     `Welcome email to ${email}`
   );
 }
 
-// Servicio para enviar email de cambio de suscripción
+// Service to send subscription change email
 export async function sendSubscriptionChangeEmail({
   email,
   name,
   planName,
   status,
   expiryDate,
-  dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard`,
+  dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/dashboard`,
 }: {
   email: string;
   name: string;
@@ -73,47 +74,51 @@ export async function sendSubscriptionChangeEmail({
 }) {
   try {
     if (!email) {
-      throw new Error('Email address is missing');
+      throw new Error("Email address is missing");
     }
-    
+
     const { html, text } = await subscriptionChangeEmailTemplate({
       name,
       plan: planName,
       status,
       renewalDate: expiryDate,
     });
-    
-    // Determinar asunto del email basado en el estado
-    let subject = 'Actualización de tu suscripción a SaaS Starter';
-    if (status === 'active') {
-      subject = 'Tu suscripción a SaaS Starter está activa';
-    } else if (status === 'trialing') {
-      subject = 'Tu período de prueba de SaaS Starter ha comenzado';
-    } else if (status === 'canceled') {
-      subject = 'Tu suscripción a SaaS Starter ha sido cancelada';
-    } else if (status === 'unpaid') {
-      subject = 'Problema de pago en tu suscripción a SaaS Starter';
+
+    // Determine email subject based on status
+    let subject = "Your SaaS Starter subscription has been updated";
+    if (status === "active") {
+      subject = "Your SaaS Starter subscription is active";
+    } else if (status === "trialing") {
+      subject = "Your SaaS Starter trial has started";
+    } else if (status === "canceled") {
+      subject = "Your SaaS Starter subscription has been canceled";
+    } else if (status === "unpaid") {
+      subject = "There was a payment issue with your SaaS Starter subscription";
     }
-    
-    // Reintentar el envío hasta 3 veces
+
+    // Retry sending up to 3 times
     return await withRetry(
-      () => sendEmail({
-        to: email,
-        subject,
-        html,
-        text,
-      }),
+      () =>
+        sendEmail({
+          to: email,
+          subject,
+          html,
+          text,
+        }),
       3,
       500,
       `Subscription email to ${email}`
     );
   } catch (error) {
-    console.error(`❌ Critical error preparing subscription email for ${email}:`, error);
+    console.error(
+      `❌ Critical error preparing subscription email for ${email}:`,
+      error
+    );
     throw error;
   }
 }
 
-// Servicio para enviar email de restablecimiento de contraseña
+// Service to send password reset email
 export async function sendPasswordResetEmail({
   email,
   name,
@@ -125,22 +130,22 @@ export async function sendPasswordResetEmail({
   token: string;
   expiryMinutes?: number;
 }) {
-  const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
-  
+  const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/reset-password?token=${token}`;
+
   const { html, text } = await passwordResetEmailTemplate({
     name,
     resetUrl,
   });
-  
+
   return sendEmail({
     to: email,
-    subject: 'Restablecimiento de contraseña para SaaS Starter',
+    subject: "Reset password for your IPTRADE account",
     html,
     text,
   });
 }
 
-// Servicio para enviar email de actualización de versión
+// Service to send version update email
 export async function sendVersionUpdateEmail({
   email,
   name,
@@ -166,11 +171,11 @@ export async function sendVersionUpdateEmail({
     downloadUrl,
     isCritical,
   });
-  
+
   const subject = isCritical
-    ? `[ACTUALIZACIÓN CRÍTICA] Nueva versión ${newVersion} disponible`
-    : `Nueva versión ${newVersion} disponible para SaaS Starter`;
-  
+    ? `[CRITICAL UPDATE] New version ${newVersion} available`
+    : `New version ${newVersion} available for SaaS Starter`;
+
   return sendEmail({
     to: email,
     subject,
@@ -179,7 +184,7 @@ export async function sendVersionUpdateEmail({
   });
 }
 
-// Servicio para enviar email de anuncio o comunicación masiva
+// Service to send broadcast or announcement email
 export async function sendBroadcastEmail({
   email,
   name,
@@ -205,11 +210,11 @@ export async function sendBroadcastEmail({
     ctaUrl,
     isImportant,
   });
-  
+
   return sendEmail({
     to: email,
-    subject: isImportant ? `[IMPORTANTE] ${subject}` : subject,
+    subject: isImportant ? `[IMPORTANT] ${subject}` : subject,
     html,
     text,
   });
-} 
+}

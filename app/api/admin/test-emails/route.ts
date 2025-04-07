@@ -10,7 +10,7 @@ import {
 
 export async function POST() {
   try {
-    // Verificar que el usuario es admin
+    // Verify that the user is an admin
     const user = await getUser();
     if (!user?.email || user?.role !== "admin") {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -19,7 +19,7 @@ export async function POST() {
     const adminEmail = user.email;
     const adminName = user.name || "Admin";
 
-    // Enviar todos los tipos de emails de prueba
+    // Send all types of test emails
     await Promise.all([
       // Welcome email
       sendWelcomeEmail({
@@ -35,7 +35,7 @@ export async function POST() {
         currentVersion: "1.0.0",
         newVersion: "1.1.0",
         releaseNotes:
-          "- Nueva interfaz de usuario\n- Mejoras de rendimiento\n- Corrección de errores",
+          "- New user interface\n- Performance improvements\n- Bug fixes",
         downloadUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
         isCritical: true,
       }),
@@ -44,9 +44,9 @@ export async function POST() {
       sendBroadcastEmail({
         email: adminEmail,
         name: adminName,
-        subject: "Anuncio Importante",
-        message: "Este es un mensaje de prueba para el email de broadcast.",
-        ctaLabel: "Ver Dashboard",
+        subject: "Important Announcement",
+        message: "This is a test message for the broadcast email.",
+        ctaLabel: "View Dashboard",
         ctaUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
         isImportant: true,
       }),
