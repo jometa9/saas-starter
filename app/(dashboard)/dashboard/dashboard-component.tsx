@@ -712,25 +712,6 @@ export function Dashboard({
                       {currentVersion}
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleSendTestEmail}
-                    disabled={isTestEmailPending}
-                    className="bg-white"
-                  >
-                    {isTestEmailPending ? (
-                      <>
-                        <span className="mr-2 h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="h-3 w-3 mr-1" />
-                        Test Email
-                      </>
-                    )}
-                  </Button>
                 </div>
 
                 {versionUpdateState.error && (

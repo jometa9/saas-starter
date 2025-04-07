@@ -127,79 +127,11 @@ export async function updateAppVersionAction(
         }
       }
       
-      // Enviar email cuando hay notas de la actualización
-      if (currentVersion && data instanceof FormData && data.get('releaseNotes')) {
-        try {
-          // Obtener todos los usuarios activos con email
-          const activeUsers = await db
-            .select()
-            .from(users)
-            .where(ne(users.email, ''))
-            .where(isNull(users.deletedAt));
-          
-          // Enviar email a cada usuario de forma asíncrona
-          // Limitar el número de emails simultáneos
-          const batchSize = 5;
-          let successCount = 0;
-          let failureCount = 0;
-          
-          // Procesar en lotes para no sobrecargar el servicio de email
-          for (let i = 0; i < activeUsers.length; i += batchSize) {
-            const batch = activeUsers.slice(i, i + batchSize);
-            
-            const emailPromises = batch.map(recipient => 
-              sendVersionUpdateEmail({
-                email: recipient.email,
-                name: recipient.name || recipient.email.split('@')[0],
-                currentVersion: currentVersion,
-                newVersion: updatedVersion,
-                releaseNotes: data instanceof FormData 
-                  ? data.get('releaseNotes')?.toString() 
-                  : '',
-                downloadUrl: data instanceof FormData 
-                  ? data.get('downloadUrl')?.toString() 
-                  : process.env.NEXT_PUBLIC_APP_URL,
-                isCritical: data instanceof FormData 
-                  ? data.get('isCritical') === 'true'
-                  : false
-              }).then(() => {
-                successCount++;
-                return true;
-              }).catch(error => {
-                console.error(`❌ Failed to send version update email to ${recipient.email}:`, error);
-                failureCount++;
-                // No bloqueamos el proceso si falla algún email individual
-                return false;
-              })
-            );
-            
-            // Esperamos a que termine este lote antes de continuar
-            await Promise.all(emailPromises);
-            
-            // Pequeña pausa entre lotes para no sobrecargar
-            if (i + batchSize < activeUsers.length) {
-              await new Promise(resolve => setTimeout(resolve, 500));
-            }
-          }
-          
-          // Si estamos en modo desarrollo, mostrar un mensaje especial
-          if (process.env.NEXT_PUBLIC_EMAIL_MODE !== 'production') {
-            console.log(`
-              ⚠️ MODO DESARROLLO: Los emails de actualización de versión 
-              ⚠️ fueron redirigidos a direcciones de prueba seguras.
-              ⚠️ Versión actual: ${currentVersion}
-              ⚠️ Nueva versión: ${updatedVersion}
-              ⚠️ URL de descarga: ${data instanceof FormData ? data.get('downloadUrl')?.toString() || 'No especificada' : 'No especificada'}
-            `);
-          }
-        } catch (error) {
-          console.error("❌ Error sending version update emails:", error);
-          // No bloqueamos la actualización de versión si falla el envío de emails
-        }
+      // Si estamos en modo desarrollo, mostrar un mensaje especial
+      if (process.env.NEXT_PUBLIC_EMAIL_MODE !== 'production') {
       }
     } catch (error) {
       console.error("❌ Error sending version update emails:", error);
-      // No bloqueamos la actualización de versión si falla el envío de emails
     }
     
     // Forzar la revalidación del path

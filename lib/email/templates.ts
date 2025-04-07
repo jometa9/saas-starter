@@ -10,69 +10,209 @@ const baseTemplate = (content: string) => `
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    :root {
+      --primary: #0ea5e9;
+      --primary-dark: #0284c7;
+      --primary-light: #e0f2fe;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+    }
+
     body { 
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-      line-height: 1.5;
-      color: #333;
+      line-height: 1.6;
+      color: var(--gray-800);
       margin: 0;
       padding: 0;
+      background-color: var(--gray-50);
     }
+
     .container {
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
+
     .header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       padding-bottom: 20px;
-      border-bottom: 1px solid #eaeaea;
+      border-bottom: 1px solid var(--gray-200);
     }
+
     .logo {
       font-size: 24px;
       font-weight: bold;
-      color: #f97316;
+      color: var(--primary);
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 10px;
     }
+
     .content {
       margin-bottom: 30px;
+      padding: 0 20px;
     }
+
     .footer {
       text-align: center;
-      font-size: 12px;
-      color: #666;
+      font-size: 14px;
+      color: var(--gray-500);
       margin-top: 30px;
       padding-top: 20px;
-      border-top: 1px solid #eaeaea;
+      border-top: 1px solid var(--gray-200);
     }
+
     .button {
       display: inline-block;
-      background-color: #f97316;
+      background-color: var(--primary);
       color: white;
       text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 5px;
+      padding: 12px 24px;
+      border-radius: 6px;
       margin: 20px 0;
       font-weight: 500;
+      transition: background-color 0.2s ease;
     }
+
     .button:hover {
-      background-color: #ea580c;
+      background-color: var(--primary-dark);
     }
-    h1, h2, h3 {
-      color: #1a202c;
+
+    h1 {
+      color: var(--gray-900);
+      font-size: 24px;
+      margin-bottom: 20px;
+      font-weight: 600;
     }
+
+    h2 {
+      color: var(--gray-800);
+      font-size: 20px;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    h3 {
+      color: var(--gray-700);
+      font-size: 18px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--gray-700);
+    }
+
     a {
-      color: #f97316;
+      color: var(--primary);
       text-decoration: none;
+      transition: color 0.2s ease;
     }
+
     a:hover {
+      color: var(--primary-dark);
       text-decoration: underline;
     }
+
     .info-box {
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 5px;
-      padding: 15px;
+      background-color: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      padding: 20px;
       margin: 20px 0;
+    }
+
+    .important-notice {
+      background-color: #fef2f2;
+      border: 1px solid #fee2e2;
+      border-radius: 6px;
+      padding: 16px;
+      margin: 20px 0;
+      color: var(--danger);
+    }
+
+    .success-notice {
+      background-color: #f0fdf4;
+      border: 1px solid #dcfce7;
+      border-radius: 6px;
+      padding: 16px;
+      margin: 20px 0;
+      color: var(--success);
+    }
+
+    .warning-notice {
+      background-color: #fffbeb;
+      border: 1px solid #fef3c7;
+      border-radius: 6px;
+      padding: 16px;
+      margin: 20px 0;
+      color: var(--warning);
+    }
+
+    .version-badge {
+      display: inline-block;
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 4px 0;
+    }
+
+    .critical-badge {
+      display: inline-block;
+      background-color: #fee2e2;
+      color: var(--danger);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 4px 0;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+
+      .content {
+        padding: 0 10px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+
+      h3 {
+        font-size: 16px;
+      }
+
+      .button {
+        display: block;
+        text-align: center;
+        margin: 20px 0;
+      }
     }
   </style>
 </head>
@@ -86,7 +226,7 @@ const baseTemplate = (content: string) => `
     </div>
     <div class="footer">
       <p>&copy; ${new Date().getFullYear()} SaaS Starter. All rights reserved.</p>
-      <p>Si no solicitaste este email, por favor ignóralo o contáctanos.</p>
+      <p>If you didn't request this email, please ignore it or contact us.</p>
     </div>
   </div>
 </body>
@@ -96,30 +236,30 @@ const baseTemplate = (content: string) => `
 // Email de bienvenida
 export const welcomeEmailTemplate = (data: { name: string; loginUrl: string }) => {
   const content = `
-    <h1>¡Bienvenido a SaaS Starter, ${data.name}!</h1>
-    <p>Gracias por registrarte en nuestra plataforma. Estamos emocionados de tenerte con nosotros.</p>
-    <p>Con SaaS Starter, puedes gestionar fácilmente suscripciones, validar licencias y mucho más.</p>
+    <h1>Welcome to SaaS Starter, ${data.name}!</h1>
+    <p>Thank you for joining our platform. We're excited to have you on board.</p>
+    <p>With SaaS Starter, you can easily manage subscriptions, validate licenses, and much more.</p>
     
     <div style="text-align: center;">
-      <a href="${data.loginUrl}" class="button">Acceder a tu cuenta</a>
+      <a href="${data.loginUrl}" class="button">Access your account</a>
     </div>
     
     <div class="info-box">
-      <h3>Primeros pasos</h3>
+      <h3>Getting Started</h3>
       <ol>
-        <li>Configura tu perfil</li>
-        <li>Explora nuestro panel de control</li>
-        <li>Revisa nuestra <a href="${data.loginUrl}/docs">documentación</a></li>
+        <li>Set up your profile</li>
+        <li>Explore our dashboard</li>
+        <li>Check our <a href="${data.loginUrl}/docs">documentation</a></li>
       </ol>
     </div>
     
-    <p>Si tienes alguna pregunta, no dudes en responder a este correo.</p>
-    <p>¡Esperamos que disfrutes usando nuestra plataforma!</p>
+    <p>If you have any questions, feel free to reply to this email.</p>
+    <p>We hope you enjoy using our platform!</p>
   `;
   
   return {
     html: baseTemplate(content),
-    text: `¡Bienvenido a SaaS Starter, ${data.name}! Gracias por registrarte en nuestra plataforma. Puedes acceder a tu cuenta en: ${data.loginUrl}`
+    text: `Welcome to SaaS Starter, ${data.name}! Thank you for joining our platform. You can access your account at: ${data.loginUrl}`
   };
 };
 
@@ -132,66 +272,66 @@ export const subscriptionChangeEmailTemplate = (data: {
   dashboardUrl: string;
 }) => {
   const statusText = data.status === 'active' 
-    ? 'Tu suscripción está activa y funcionando correctamente.'
+    ? 'Your subscription is active and working properly.'
     : data.status === 'canceled'
-    ? 'Tu suscripción ha sido cancelada.'
-    : `El estado actual de tu suscripción es: ${data.status}`;
+    ? 'Your subscription has been canceled.'
+    : `Your current subscription status is: ${data.status}`;
   
   const expiryInfo = data.expiryDate 
-    ? `<p>Tu suscripción es válida hasta: <strong>${data.expiryDate}</strong></p>` 
+    ? `<p>Your subscription is valid until: <strong>${data.expiryDate}</strong></p>` 
     : '';
   
   const content = `
-    <h1>Actualización de tu suscripción</h1>
-    <p>Hola ${data.name},</p>
-    <p>Te informamos que ha habido un cambio en tu suscripción a SaaS Starter.</p>
+    <h1>Subscription Update</h1>
+    <p>Hello ${data.name},</p>
+    <p>We're informing you about a change in your SaaS Starter subscription.</p>
     
     <div class="info-box">
-      <h3>Detalles de la suscripción</h3>
+      <h3>Subscription Details</h3>
       <p>Plan: <strong>${data.planName}</strong></p>
-      <p>Estado: <strong>${data.status}</strong></p>
+      <p>Status: <strong>${data.status}</strong></p>
       ${expiryInfo}
       <p>${statusText}</p>
     </div>
     
     <div style="text-align: center;">
-      <a href="${data.dashboardUrl}" class="button">Ver detalles en tu cuenta</a>
+      <a href="${data.dashboardUrl}" class="button">View details in your account</a>
     </div>
     
-    <p>Si no realizaste este cambio o tienes alguna pregunta, por favor contáctanos inmediatamente.</p>
+    <p>If you didn't make this change or have any questions, please contact us immediately.</p>
   `;
   
   return {
     html: baseTemplate(content),
-    text: `Actualización de tu suscripción: Plan ${data.planName}, Estado: ${data.status}. ${statusText} Puedes ver más detalles en: ${data.dashboardUrl}`
+    text: `Subscription Update: Plan ${data.planName}, Status: ${data.status}. ${statusText} You can view more details at: ${data.dashboardUrl}`
   };
 };
 
 // Email de restablecimiento de contraseña
 export const passwordResetEmailTemplate = (data: { name: string; resetUrl: string; expiryMinutes: number }) => {
   const content = `
-    <h1>Restablecimiento de contraseña</h1>
-    <p>Hola ${data.name},</p>
-    <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si no fuiste tú, puedes ignorar este correo.</p>
+    <h1>Password Reset</h1>
+    <p>Hello ${data.name},</p>
+    <p>We received a request to reset your account password. If this wasn't you, you can ignore this email.</p>
     
     <div class="info-box">
-      <p>Para restablecer tu contraseña, haz clic en el botón a continuación:</p>
+      <p>To reset your password, click the button below:</p>
       <div style="text-align: center;">
-        <a href="${data.resetUrl}" class="button">Restablecer contraseña</a>
+        <a href="${data.resetUrl}" class="button">Reset password</a>
       </div>
-      <p style="color: #666; font-size: 13px;">Este enlace expirará en ${data.expiryMinutes} minutos.</p>
+      <p style="color: var(--gray-500); font-size: 13px;">This link will expire in ${data.expiryMinutes} minutes.</p>
     </div>
     
-    <p>Si el botón no funciona, copia y pega esta URL en tu navegador:</p>
+    <p>If the button doesn't work, copy and paste this URL into your browser:</p>
     <p style="word-break: break-all; font-size: 14px;"><a href="${data.resetUrl}">${data.resetUrl}</a></p>
     
-    <p>Por razones de seguridad, este enlace caducará después de ${data.expiryMinutes} minutos.</p>
-    <p>Si no solicitaste restablecer tu contraseña, te recomendamos que revises la seguridad de tu cuenta.</p>
+    <p>For security reasons, this link will expire after ${data.expiryMinutes} minutes.</p>
+    <p>If you didn't request a password reset, we recommend checking your account security.</p>
   `;
   
   return {
     html: baseTemplate(content),
-    text: `Restablecimiento de contraseña para SaaS Starter. Usa este enlace para restablecer tu contraseña (expira en ${data.expiryMinutes} minutos): ${data.resetUrl}`
+    text: `Password Reset for SaaS Starter. Use this link to reset your password (expires in ${data.expiryMinutes} minutes): ${data.resetUrl}`
   };
 };
 
@@ -205,13 +345,16 @@ export const versionUpdateEmailTemplate = (data: {
   isCritical?: boolean;
 }) => {
   const criticalNotice = data.isCritical 
-    ? `<p style="color: #e53e3e; font-weight: bold;">Esta es una actualización crítica que contiene importantes correcciones de seguridad o funcionalidad.</p>` 
+    ? `<div class="critical-badge">CRITICAL UPDATE</div>
+       <div class="important-notice">
+         <p>This is a critical update containing important security fixes or functionality improvements.</p>
+       </div>` 
     : '';
   
   const releaseNotes = data.releaseNotes 
     ? `
       <div class="info-box">
-        <h3>Notas de la versión</h3>
+        <h3>Release Notes</h3>
         <p>${data.releaseNotes}</p>
       </div>
     ` 
@@ -220,20 +363,20 @@ export const versionUpdateEmailTemplate = (data: {
   const downloadButton = data.downloadUrl 
     ? `
       <div style="text-align: center;">
-        <a href="${data.downloadUrl}" class="button">Descargar actualización</a>
+        <a href="${data.downloadUrl}" class="button">Download update</a>
       </div>
     ` 
     : '';
   
   const content = `
-    <h1>Nueva actualización disponible</h1>
-    <p>Hola ${data.name},</p>
-    <p>Nos complace informarte que hay una nueva versión de nuestra aplicación disponible.</p>
+    <h1>New Update Available</h1>
+    <p>Hello ${data.name},</p>
+    <p>We're pleased to inform you that a new version of our application is available.</p>
     
     <div class="info-box">
-      <h3>Detalles de la actualización</h3>
-      <p>Versión actual: <strong>${data.currentVersion}</strong></p>
-      <p>Nueva versión: <strong>${data.newVersion}</strong></p>
+      <h3>Update Details</h3>
+      <p>Current version: <span class="version-badge">${data.currentVersion}</span></p>
+      <p>New version: <span class="version-badge">${data.newVersion}</span></p>
       ${criticalNotice}
     </div>
     
@@ -241,12 +384,12 @@ export const versionUpdateEmailTemplate = (data: {
     
     ${downloadButton}
     
-    <p>Te recomendamos mantener tu aplicación actualizada para disfrutar de las últimas características y mejoras de seguridad.</p>
+    <p>We recommend keeping your application up to date to enjoy the latest features and security improvements.</p>
   `;
   
   return {
     html: baseTemplate(content),
-    text: `Nueva actualización disponible: ${data.newVersion} (actual: ${data.currentVersion}). ${data.isCritical ? 'ACTUALIZACIÓN CRÍTICA - ' : ''}${data.downloadUrl ? `Descargar: ${data.downloadUrl}` : ''}`
+    text: `New update available: ${data.newVersion} (current: ${data.currentVersion}). ${data.isCritical ? 'CRITICAL UPDATE - ' : ''}${data.downloadUrl ? `Download: ${data.downloadUrl}` : ''}`
   };
 };
 
@@ -260,7 +403,9 @@ export const broadcastEmailTemplate = (data: {
   isImportant?: boolean;
 }) => {
   const importantNotice = data.isImportant 
-    ? `<p style="color: #e53e3e; font-weight: bold;">Esta es una comunicación importante que requiere tu atención.</p>` 
+    ? `<div class="important-notice">
+         <p>This is an important communication that requires your attention.</p>
+       </div>` 
     : '';
   
   const ctaButton = data.ctaUrl && data.ctaLabel
@@ -273,7 +418,7 @@ export const broadcastEmailTemplate = (data: {
   
   const content = `
     <h1>${data.subject}</h1>
-    <p>Hola ${data.name},</p>
+    <p>Hello ${data.name},</p>
     ${importantNotice}
     
     <div class="info-box">
@@ -282,11 +427,11 @@ export const broadcastEmailTemplate = (data: {
     
     ${ctaButton}
     
-    <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
+    <p>If you have any questions, feel free to contact us.</p>
   `;
   
   return {
     html: baseTemplate(content),
-    text: `${data.subject}\n\nHola ${data.name},\n\n${data.isImportant ? 'IMPORTANTE: ' : ''}${data.message}\n\n${data.ctaUrl ? `${data.ctaLabel}: ${data.ctaUrl}` : ''}`
+    text: `${data.subject}\n\nHello ${data.name},\n\n${data.isImportant ? 'IMPORTANT: ' : ''}${data.message}\n\n${data.ctaUrl ? `${data.ctaLabel}: ${data.ctaUrl}` : ''}`
   };
 }; 
