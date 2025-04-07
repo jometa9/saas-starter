@@ -135,6 +135,7 @@ export async function sendPasswordResetEmail({
   const { html, text } = await passwordResetEmailTemplate({
     name,
     resetUrl,
+    expiryMinutes,
   });
 
   return sendEmail({
