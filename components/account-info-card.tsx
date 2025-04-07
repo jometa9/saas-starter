@@ -30,6 +30,7 @@ export function AccountInfoCard({
   title = "Account Information",
 }: AccountInfoCardProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isPortalLoading, setIsPortalLoading] = useState(false);
 
   const getUserDisplayName = (user: User) => {
     return user.name || user.email || "Unknown User";
@@ -37,11 +38,14 @@ export function AccountInfoCard({
 
   const handleStripePortalRedirect = async () => {
     try {
+      setIsPortalLoading(true);
+      
       const result = await customerPortalAction();
 
       if (result?.redirect) {
         window.location.href = result.redirect;
       } else if (result?.error) {
+        setIsPortalLoading(false);
         toast({
           title: "Error",
           description: `Could not access subscription portal: ${result.error}`,
@@ -49,6 +53,7 @@ export function AccountInfoCard({
         });
       }
     } catch (error) {
+      setIsPortalLoading(false);
       console.error("Error accessing Stripe portal:", error);
       toast({
         title: "Error",
@@ -121,44 +126,45 @@ export function AccountInfoCard({
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-          {user.subscriptionStatus === "active" ? (
-            <Button
-              className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
-              onClick={handleStripePortalRedirect}
-            >
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Manage Subscription
-            </Button>
-          ) : (
-            <Button
-              className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
-              onClick={handleDirectSubscription}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Subscribe Now
-                </>
-              )}
-            </Button>
-          )}
-          {user.planName !== "Professional" &&
-            user.subscriptionStatus === "active" && (
+          {user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing" ? (
               <Button
                 variant="outline"
                 className="border-black text-black hover:bg-gray-100 w-full md:w-auto cursor-pointer"
-                onClick={onGoToPricing}
+                onClick={handleStripePortalRedirect}
+                disabled={isPortalLoading}
               >
-                <ArrowUpRight className="mr-2 h-4 w-4" />
-                Upgrade Plan
+                {isPortalLoading ? (
+                  <>
+                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></span>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Manage Subscription
+                  </>
+                )}
               </Button>
-            )}
+          ) : (
+              <Button
+                className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
+                onClick={handleDirectSubscription}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Subscribe Now
+                  </>
+                )}
+              </Button>
+          )}
+         
         </div>
       </CardContent>
     </Card>

@@ -273,13 +273,13 @@ export function Dashboard({
                 value={user.apiKey || ""}
                 readOnly
                 type={showLicense ? "text" : "password"}
-                disabled={!user?.stripeSubscriptionId}
+                disabled={!user?.stripeSubscriptionId || (user.subscriptionStatus !== "active" && user.subscriptionStatus !== "trialing")}
               />
               <Button
                 variant="outline"
                 className="rounded-l-none rounded-r-none border-l-0 h-10 flex items-center cursor-pointer"
                 onClick={toggleShowLicense}
-                disabled={!user?.stripeSubscriptionId}
+                disabled={!user?.stripeSubscriptionId || (user.subscriptionStatus !== "active" && user.subscriptionStatus !== "trialing")}
               >
                 {showLicense ? "Hide" : "Show"}
               </Button>
@@ -287,7 +287,7 @@ export function Dashboard({
                 variant="outline"
                 className="rounded-l-none border-l-0 h-10 flex items-center cursor-pointer"
                 onClick={copyMainLicenseToClipboard}
-                disabled={!user?.stripeSubscriptionId || !user.apiKey}
+                disabled={!user?.stripeSubscriptionId || !user.apiKey || (user.subscriptionStatus !== "active" && user.subscriptionStatus !== "trialing")}
                 title="Copy to clipboard"
               >
                 {isMainLicenseCopied ? (
@@ -298,7 +298,7 @@ export function Dashboard({
               </Button>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              {user.subscriptionStatus === "active" ? (
+              {user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing" ? (
                 <div>
                   <p>
                     This license key allows you to activate the IPTRADE software
@@ -309,6 +309,11 @@ export function Dashboard({
                     <span className="font-semibold">
                       {user.planName || "Basic"}
                     </span>
+                    {user.subscriptionStatus === "trialing" && (
+                      <span className="ml-1 text-blue-500 font-medium">
+                        (Trial Period)
+                      </span>
+                    )}
                   </p>
                 </div>
               ) : (
@@ -397,14 +402,14 @@ export function Dashboard({
                       <BookOpen className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-medium">Documentation</h3>
+                      <h3 className="font-medium">Guide</h3>
                       <p className="text-sm text-muted-foreground">
                         Setup guides and tutorials
                       </p>
                     </div>
                   </div>
                   <Button variant="outline" className="ml-auto">
-                    View Docs
+                    <Link href="/guide">View Guide</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -425,7 +430,7 @@ export function Dashboard({
                     </div>
                   </div>
                   <Button variant="outline" className="ml-auto">
-                    Contact
+                    <Link href="mailto:support@iptrade.com">Contact</Link>
                   </Button>
                 </div>
               </CardContent>
