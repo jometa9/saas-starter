@@ -39,8 +39,8 @@
                   border-bottom: 1px solid #e5e7eb;
                 "
               >
-                <div style="font-size: 24px; font-weight: bold; color: #0070f3">
-                  SaaS Starter
+                <div style="font-size: 24px; font-weight: bold; color: #000000">
+                  IPTRADE
                 </div>
               </td>
             </tr>
@@ -57,7 +57,7 @@
                   {{subject}}
                 </h1>
 
-                <p style="margin-bottom: 20px; color: #374151">Hi {{name}},</p>
+                <p style="margin-bottom: 20px; color: #000000">Hi {{name}},</p>
 
                 {{#if isImportant}}
                 <div
@@ -80,7 +80,7 @@
                         <span style="font-size: 20px">📢</span>
                       </td>
                       <td style="padding-left: 12px">
-                        <p style="margin: 0; color: #9a3412; font-weight: 500">
+                        <p style="margin: 0; color: #9a3412; font-weight: 600">
                           Important Announcement
                         </p>
                         <div
@@ -98,25 +98,26 @@
                 </div>
                 {{else}}
                 <div
-                  style="color: #374151; margin: 20px 0; white-space: pre-line"
+                  style="color: #000000; margin: 20px 0; white-space: pre-line"
                 >
                   {{message}}
                 </div>
                 {{/if}} {{#if ctaUrl}}
-                <div style="text-align: center; margin: 30px 0">
+                <div style="margin: 30px 0">
                   <a
                     href="{{ctaUrl}}"
                     style="
                       display: inline-block;
-                      background-color: #0070f3;
+                      background-color: #00000090;
                       color: #ffffff;
                       text-decoration: none;
                       padding: 12px 24px;
                       border-radius: 6px;
                       font-weight: 500;
                     "
-                    >{{ctaLabel}}</a
                   >
+                    {{ctaLabel}}
+                  </a>
                 </div>
                 {{/if}}
 
@@ -161,9 +162,7 @@
                   color: #6b7280;
                 "
               >
-                <p style="margin: 0">
-                  &copy; {{year}} SaaS Starter. All rights reserved.
-                </p>
+                <p style="margin: 0">&copy; {{year}} IPTRADE</p>
               </td>
             </tr>
           </table>
