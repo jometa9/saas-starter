@@ -25,8 +25,8 @@ export default function DashboardLayout({
 
     if (path === "dashboard" || path === "") {
       setActiveTab("dashboard");
-    } else if (path === "documents") {
-      setActiveTab("documents");
+    } else if (path === "guide") {
+      setActiveTab("guide");
     } else if (path === "profile") {
       setActiveTab("profile");
     } else if (path === "admin") {
@@ -51,8 +51,8 @@ export default function DashboardLayout({
           Dashboard
         </Button>
         <Button
-          variant={activeTab === "documents" ? "default" : "ghost"}
-          onClick={() => navigateTo("documents")}
+          variant={activeTab === "guide" ? "default" : "ghost"}
+          onClick={() => navigateTo("guide")}
           className="flex items-center rounded-xl border shadow mb-4 pr-5 mr-4"
         >
           <FileText className="h-4 w-4 mr-2" />
@@ -70,7 +70,7 @@ export default function DashboardLayout({
           <Button
             variant={activeTab === "admin" ? "default" : "ghost"}
             onClick={() => navigateTo("admin")}
-            className="flex items-center rounded-xl border shadow mb-4 pr-5 mr-4 bg-gray-800 text-white hover:bg-gray-900"
+            className="flex items-center rounded-xl border shadow mb-4 pr-5 mr-4"
           >
             <Settings className="h-4 w-4 mr-2" />
             Admin

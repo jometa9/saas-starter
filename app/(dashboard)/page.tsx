@@ -97,7 +97,7 @@ export default function HomePage() {
           </div>
           
           <div className="text-center mt-8">
-            <p className="text-sm text-gray-500">Need help with setup? Check our <Link href="/dashboard/documents" className="text-black font-medium">guide</Link> for detailed installation instructions.</p>
+            <p className="text-sm text-gray-500">Need help with setup? Check our <Link href="/dashboard/guide" className="text-black font-medium">guide</Link> for detailed installation instructions.</p>
           </div>
         </div>
       </section>

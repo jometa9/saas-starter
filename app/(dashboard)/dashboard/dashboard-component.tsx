@@ -6,7 +6,7 @@ import { User } from "@/lib/db/schema";
 import {
   Download,
   BookOpen,
-  Link,
+  Link as LinkIcon,
   LifeBuoy,
   ArrowUpRight,
   CreditCard,
@@ -34,6 +34,7 @@ import { getAvatarBgColor, getAvatarTextColor } from "@/lib/utils";
 import { customerPortalAction } from "@/lib/payments/actions";
 import { useRouter } from "next/navigation";
 import { AccountInfoCard } from "@/components/account-info-card";
+import Link from "next/link";
 
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
@@ -340,7 +341,7 @@ export function Dashboard({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-0">
             <Card className="border border-gray-200 hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-full">
                       <Monitor className="h-5 w-5" />
@@ -352,7 +353,7 @@ export function Dashboard({
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" className="ml-auto cursor-pointer">
+                  <Button variant="outline" className="w-full sm:w-auto cursor-pointer">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -362,7 +363,7 @@ export function Dashboard({
 
             <Card className="border border-gray-200 hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-full">
                       <Apple className="h-5 w-5" />
@@ -374,7 +375,7 @@ export function Dashboard({
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" className="ml-auto cursor-pointer">
+                  <Button variant="outline" className="w-full sm:w-auto cursor-pointer">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -396,7 +397,7 @@ export function Dashboard({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="border border-gray-200 hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="bg-blue-50 p-2 rounded-full">
                       <BookOpen className="h-5 w-5 text-blue-600" />
@@ -408,8 +409,12 @@ export function Dashboard({
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" className="ml-auto">
-                    <Link href="/guide">View Guide</Link>
+                  <Button 
+                    variant="outline" 
+                    className="w-full sm:w-auto"
+                    onClick={() => router.push('/dashboard/guide')}
+                  >
+                    View Guide
                   </Button>
                 </div>
               </CardContent>
@@ -425,13 +430,10 @@ export function Dashboard({
                     <div>
                       <h3 className="font-medium">Technical Support</h3>
                       <p className="text-sm text-muted-foreground">
-                        Get help with any issues
+                        Help sending email to <b>support@iptrade.com</b>
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" className="ml-auto">
-                    <Link href="mailto:support@iptrade.com">Contact</Link>
-                  </Button>
                 </div>
               </CardContent>
             </Card>

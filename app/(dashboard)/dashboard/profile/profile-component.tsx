@@ -199,7 +199,7 @@ export function Profile({ user }: { user: User }) {
 
       {/* Sección de Account Settings con diseño responsive */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
-        {/* Formulario para cambiar email */}
+        {/* Commented out - Change Email Address section 
         <Card>
           <CardHeader>
             <CardTitle>Change Email Address</CardTitle>
@@ -263,6 +263,7 @@ export function Profile({ user }: { user: User }) {
             </form>
           </CardContent>
         </Card>
+        */}
 
         <Card>
           <CardHeader>
