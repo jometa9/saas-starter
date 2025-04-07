@@ -40,7 +40,7 @@ export function AccountInfoCard({
   const handleStripePortalRedirect = async () => {
     try {
       setIsPortalLoading(true);
-      
+
       const result = await customerPortalAction();
 
       if (result?.redirect) {
@@ -104,14 +104,14 @@ export function AccountInfoCard({
   const handleTestEmails = async () => {
     try {
       setIsSendingEmails(true);
-      const response = await fetch('/api/admin/test-emails', {
-        method: 'POST',
+      const response = await fetch("/api/admin/test-emails", {
+        method: "POST",
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to send test emails');
+        throw new Error(data.error || "Failed to send test emails");
       }
 
       toast({
@@ -119,7 +119,7 @@ export function AccountInfoCard({
         description: "Test emails sent successfully! Check your inbox.",
       });
     } catch (error) {
-      console.error('Error sending test emails:', error);
+      console.error("Error sending test emails:", error);
       toast({
         title: "Error",
         description: "Failed to send test emails. Please try again.",
@@ -154,17 +154,15 @@ export function AccountInfoCard({
               Current Plan: {user.planName || "Free"}
             </p>
             {user.role === "admin" && (
-              <p className="text-sm text-blue-600 font-medium">
-                Admin Account
-              </p>
+              <p className="text-sm text-blue-600 font-medium">Admin Account</p>
             )}
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto cursor-pointer">
           {user.role === "admin" && (
             <Button
               variant="outline"
-              className="border-blue-600 text-blue-600 hover:bg-blue-50 w-full md:w-auto"
+              className="border-blue-600  hover:text-blue-600 text-blue-600 hover:bg-blue-50 w-full md:w-auto cursor-pointer"
               onClick={handleTestEmails}
               disabled={isSendingEmails}
             >
@@ -181,7 +179,8 @@ export function AccountInfoCard({
               )}
             </Button>
           )}
-          {user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing" ? (
+          {user.subscriptionStatus === "active" ||
+          user.subscriptionStatus === "trialing" ? (
             <Button
               variant="outline"
               className="border-black text-black hover:bg-gray-100 w-full md:w-auto cursor-pointer"
