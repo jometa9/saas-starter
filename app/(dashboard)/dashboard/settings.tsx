@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { customerPortalAction } from "@/lib/payments/actions";
-import { useActionState } from "react";
 import { User } from "@/lib/db/schema";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef, useTransition } from "react";
@@ -17,21 +16,14 @@ import {
   CheckIcon,
   Lock,
   Loader2,
-  CircleSlash,
   CreditCard,
-  ShieldAlert,
-  BadgeCheck,
-  ShieldQuestion,
-  Wrench,
-  Timer,
 } from "lucide-react";
 import { Label as UILabel } from "@/components/ui/label";
 import { updatePassword } from "@/app/(login)/actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
-import { getAvatarBgColor, getAvatarTextColor } from '@/lib/utils';
-import { Badge } from "@/components/ui/badge";
+import { getAvatarBgColor, getAvatarTextColor } from "@/lib/utils";
 
 type ActionState = {
   error?: string;
@@ -385,7 +377,9 @@ export function Settings({
                 <div className="flex items-center space-x-4 mb-4">
                   <Avatar>
                     <AvatarImage alt={getUserDisplayName(user)} />
-                    <AvatarFallback className={`${getAvatarBgColor(getUserDisplayName(user))} ${getAvatarTextColor(getAvatarBgColor(getUserDisplayName(user)))}`}>
+                    <AvatarFallback
+                      className={`${getAvatarBgColor(getUserDisplayName(user))} ${getAvatarTextColor(getAvatarBgColor(getUserDisplayName(user)))}`}
+                    >
                       {getUserDisplayName(user)
                         .split(" ")
                         .map((n) => n[0])
@@ -938,7 +932,6 @@ export function Settings({
                         description: statusDescription,
                         variant: statusVariant,
                       });
-
                     } else {
                       toast({
                         title: "Error en diagnóstico",
@@ -963,7 +956,6 @@ export function Settings({
             </div>
           </div>
 
-          {/* Advertencia de entorno de desarrollo */}
           {process.env.NEXT_PUBLIC_EMAIL_MODE !== "production" && (
             <div className="p-4 mb-4 text-sm bg-gray-100 border border-gray-200 rounded text-gray-800">
               <p className="font-medium">⚠️ Development mode active</p>

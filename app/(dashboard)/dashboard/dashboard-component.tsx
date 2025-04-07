@@ -188,15 +188,12 @@ export function Dashboard({
   const handleSendTestEmail = async () => {
     try {
       setIsTestEmailPending(true);
-      const result = await sendBroadcastEmailAction(
-        {
-          subject: "Test Email",
-          message:
-            "This is a test email to verify the email system configuration.",
-          important: false,
-        },
-        {}
-      );
+      const formData = new FormData();
+      formData.append("subject", "Test Email");
+      formData.append("message", "This is a test email to verify the email system configuration.");
+      formData.append("important", "false");
+      
+      const result = await sendBroadcastEmailAction(formData, {});
 
       if (result.success) {
         toast({
@@ -1018,6 +1015,7 @@ export function Dashboard({
           </Card>
         </div>
       )}
+
     </section>
   );
 }
