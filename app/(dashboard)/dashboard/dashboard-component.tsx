@@ -46,7 +46,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { updateAppVersionAction, sendBroadcastEmailAction } from "@/lib/db/actions";
+import {
+  updateAppVersionAction,
+  sendBroadcastEmailAction,
+} from "@/lib/db/actions";
 
 export function Dashboard({
   user,
@@ -70,7 +73,19 @@ export function Dashboard({
     success?: string;
     info?: string;
   }>({});
-  
+  const [isMassEmailPending, setIsMassEmailPending] = useState(false);
+  const [massEmailState, setMassEmailState] = useState<{
+    error?: string;
+    success?: string;
+  }>({});
+  const [massEmailForm, setMassEmailForm] = useState({
+    subject: "",
+    message: "",
+    ctaLabel: "",
+    ctaUrl: "",
+    isImportant: false,
+  });
+
   // Definir isAdmin basado en el rol del usuario
   const isAdmin = user?.role === "admin";
 
@@ -155,11 +170,13 @@ export function Dashboard({
     } catch (error) {
       console.error("Error updating version:", error);
       setVersionUpdateState({
-        error: "An error occurred while updating the version. Please try again.",
+        error:
+          "An error occurred while updating the version. Please try again.",
       });
       toast({
         title: "Error",
-        description: "An error occurred while updating the version. Please try again.",
+        description:
+          "An error occurred while updating the version. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -171,11 +188,15 @@ export function Dashboard({
   const handleSendTestEmail = async () => {
     try {
       setIsTestEmailPending(true);
-      const result = await sendBroadcastEmailAction({
-        subject: "Test Email",
-        message: "This is a test email to verify the email system configuration.",
-        important: false,
-      }, {});
+      const result = await sendBroadcastEmailAction(
+        {
+          subject: "Test Email",
+          message:
+            "This is a test email to verify the email system configuration.",
+          important: false,
+        },
+        {}
+      );
 
       if (result.success) {
         toast({
@@ -384,6 +405,65 @@ export function Dashboard({
             variant: "destructive",
           });
         });
+    }
+  };
+
+  // Handle mass email form submission
+  const handleMassEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setIsMassEmailPending(true);
+      setMassEmailState({});
+
+      const formData = new FormData();
+      formData.append("subject", massEmailForm.subject);
+      formData.append("message", massEmailForm.message);
+      formData.append("ctaLabel", massEmailForm.ctaLabel || "");
+      formData.append("ctaUrl", massEmailForm.ctaUrl || "");
+      formData.append(
+        "isImportant",
+        massEmailForm.isImportant ? "true" : "false"
+      );
+
+      const result = await sendBroadcastEmailAction(formData, {});
+      setMassEmailState(result || {});
+
+      if (result.success) {
+        // Reset form
+        setMassEmailForm({
+          subject: "",
+          message: "",
+          ctaLabel: "",
+          ctaUrl: "",
+          isImportant: false,
+        });
+
+        toast({
+          title: "Success",
+          description: result.success,
+          variant: "default",
+        });
+      } else if (result.error) {
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error sending mass email:", error);
+      setMassEmailState({
+        error:
+          "An error occurred while sending the mass email. Please try again.",
+      });
+      toast({
+        title: "Error",
+        description:
+          "An error occurred while sending the mass email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsMassEmailPending(false);
     }
   };
 
@@ -615,8 +695,8 @@ export function Dashboard({
       </Button>
 
       {isAdmin && (
-        <div className="container py-4 px-0">
-          <Card className="mb-8">
+        <div className="pt-4 px-0">
+          <Card className="mb-4">
             <CardHeader>
               <CardTitle>Version Management</CardTitle>
               <p className="text-sm text-muted-foreground">
@@ -628,7 +708,9 @@ export function Dashboard({
                 <div className="flex items-center justify-between p-4 rounded-md bg-muted">
                   <div className="flex-1">
                     <div className="font-sm">Current Version</div>
-                    <div className="text-xl font-bold pt-1">{currentVersion}</div>
+                    <div className="text-xl font-bold pt-1">
+                      {currentVersion}
+                    </div>
                   </div>
                   <Button
                     variant="outline"
@@ -740,7 +822,9 @@ export function Dashboard({
                   </div>
 
                   <div>
-                    <Label htmlFor="download-url">Download URL (optional)</Label>
+                    <Label htmlFor="download-url">
+                      Download URL (optional)
+                    </Label>
                     <Input
                       id="download-url"
                       placeholder="https://example.com/download"
@@ -765,14 +849,17 @@ export function Dashboard({
                     <Checkbox
                       id="critical"
                       checked={versionForm.watch("isCritical")}
-                      onCheckedChange={(checked) => versionForm.setValue("isCritical", checked as boolean)}
+                      onCheckedChange={(checked) =>
+                        versionForm.setValue("isCritical", checked as boolean)
+                      }
                     />
                     <div className="space-y-1">
                       <Label htmlFor="critical" className="font-medium">
                         Critical Update
                       </Label>
                       <p className="text-xs text-muted-foreground">
-                        Check this option if the update contains important security fixes.
+                        Check this option if the update contains important
+                        security fixes.
                       </p>
                     </div>
                   </div>
@@ -796,7 +883,7 @@ export function Dashboard({
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="mb-0">
             <CardHeader>
               <CardTitle>Mass Email</CardTitle>
               <p className="text-sm text-muted-foreground">
@@ -815,12 +902,36 @@ export function Dashboard({
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                {massEmailState.error && (
+                  <Alert variant="destructive">
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{massEmailState.error}</AlertDescription>
+                  </Alert>
+                )}
+
+                {massEmailState.success && (
+                  <Alert className="bg-green-50 text-green-800 border-green-200 p-4">
+                    <AlertTitle>Email Sent</AlertTitle>
+                    <AlertDescription>
+                      {massEmailState.success}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <form onSubmit={handleMassEmailSubmit} className="space-y-4">
                   <div>
                     <Label htmlFor="email-subject">Email Subject</Label>
                     <Input
                       id="email-subject"
                       placeholder="Important announcement for our users"
+                      value={massEmailForm.subject}
+                      onChange={(e) =>
+                        setMassEmailForm({
+                          ...massEmailForm,
+                          subject: e.target.value,
+                        })
+                      }
+                      required
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       Clear and descriptive subject for the email.
@@ -833,9 +944,18 @@ export function Dashboard({
                       id="email-message"
                       placeholder="Write the detailed message content here..."
                       className="min-h-[200px]"
+                      value={massEmailForm.message}
+                      onChange={(e) =>
+                        setMassEmailForm({
+                          ...massEmailForm,
+                          message: e.target.value,
+                        })
+                      }
+                      required
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      You can use line breaks to format the text. HTML is not supported.
+                      You can use line breaks to format the text. HTML is not
+                      supported.
                     </p>
                   </div>
 
@@ -844,6 +964,13 @@ export function Dashboard({
                     <Input
                       id="cta-label"
                       placeholder="More Information"
+                      value={massEmailForm.ctaLabel}
+                      onChange={(e) =>
+                        setMassEmailForm({
+                          ...massEmailForm,
+                          ctaLabel: e.target.value,
+                        })
+                      }
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       Text for the call-to-action (CTA) button.
@@ -855,6 +982,13 @@ export function Dashboard({
                     <Input
                       id="cta-url"
                       placeholder="https://example.com/info"
+                      value={massEmailForm.ctaUrl}
+                      onChange={(e) =>
+                        setMassEmailForm({
+                          ...massEmailForm,
+                          ctaUrl: e.target.value,
+                        })
+                      }
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       URL where the CTA button will redirect.
@@ -862,19 +996,40 @@ export function Dashboard({
                   </div>
 
                   <div className="flex items-start space-x-3 rounded-md border p-4">
-                    <Checkbox id="important" />
+                    <Checkbox
+                      id="important"
+                      checked={massEmailForm.isImportant}
+                      onCheckedChange={(checked) =>
+                        setMassEmailForm({
+                          ...massEmailForm,
+                          isImportant: checked as boolean,
+                        })
+                      }
+                    />
                     <div>
                       <Label htmlFor="important">Mark as Important</Label>
                       <p className="text-xs text-gray-500 mt-1">
-                        Adds an [IMPORTANT] tag to the subject and visually highlights the message.
+                        Adds an [IMPORTANT] tag to the subject and visually
+                        highlights the message.
                       </p>
                     </div>
                   </div>
 
-                  <Button className="w-full">
-                    Send Email to All Users
+                  <Button
+                    type="submit"
+                    className="w-full mt-4"
+                    disabled={isMassEmailPending}
+                  >
+                    {isMassEmailPending ? (
+                      <>
+                        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                        Sending emails... Please wait
+                      </>
+                    ) : (
+                      "Send Email to All Users"
+                    )}
                   </Button>
-                </div>
+                </form>
               </div>
             </CardContent>
           </Card>
