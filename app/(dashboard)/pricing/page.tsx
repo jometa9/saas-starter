@@ -4,6 +4,7 @@ import { getStripePrices, getStripeProducts } from '@/lib/payments/stripe';
 import { SubmitButton } from './submit-button';
 import { redirect } from 'next/navigation';
 import { getUser } from '@/lib/db/queries';
+import { Button } from '@/components/ui/button';
 
 // Prices are fresh for one hour max
 export const revalidate = 3600;
@@ -61,6 +62,7 @@ export default async function PricingPage() {
         <h1 className="text-3xl font-bold mb-4">Choose Your Plan</h1>
         <p className="text-gray-600 max-w-xl mx-auto">
           Select the subscription plan that best fits your needs. All plans include a 14-day free trial.
+          {hasSubscription && " You can manage your subscription details, change between monthly/annual billing, or cancel through your dashboard."}
         </p>
         
         {/* Alertas condicionales */}
@@ -96,8 +98,15 @@ export default async function PricingPage() {
                 </h3>
                 <div className="mt-2 text-sm text-green-700">
                   <p>
-                    You already have an active subscription. You can manage your subscription from your dashboard.
+                    You already have an active subscription. You can manage your subscription, change billing cycle (monthly/annual), or cancel it from your dashboard.
                   </p>
+                  <Button
+                    onClick={() => window.location.href = '/dashboard'}
+                    className="mt-2 bg-green-600 hover:bg-green-700 text-white"
+                    size="sm"
+                  >
+                    Go to Dashboard
+                  </Button>
                 </div>
               </div>
             </div>
@@ -321,8 +330,11 @@ function PricingCard({
   hasSubscription: boolean;
   isRecommended?: boolean;
 }) {
+  // Crear un ID único para el formulario basado en el nombre del plan
+  const formId = `subscription-form-${name.toLowerCase().replace(/\s+/g, '-')}`;
+  
   return (
-    <div className={`p-6 border ${isRecommended ? 'border-black border-2' : 'border-gray-200'} rounded-lg shadow-sm hover:shadow-md transition-shadow relative`}>
+    <div className={`p-6 border ${isRecommended ? 'border-black border-2' : 'border-gray-200'} rounded-lg shadow-sm hover:shadow-md transition-shadow relative ${isRecommended ? 'recommended' : ''}`}>
       {isRecommended && (
         <div className="absolute top-0 right-0 bg-black text-white text-xs font-bold py-1 px-3 transform translate-x-2 -translate-y-2 rounded">
           RECOMMENDED
@@ -349,20 +361,18 @@ function PricingCard({
       
       {isLoggedIn ? (
         hasSubscription ? (
-          <form id="subscription-form" className="mt-8">
-            <input type="hidden" name="priceId" value={priceId} />
-            <SubmitButton 
-              className={`w-full flex items-center justify-center ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
-              formAction={handleSubscription}
+          <div className="mt-8">
+            <button disabled
+              className="w-full flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gray-400 cursor-not-allowed"
             >
               Currently Subscribed
-            </SubmitButton>
-          </form>
+            </button>
+          </div>
         ) : (
-          <form id="subscription-form" className="mt-8">
+          <form id={formId} action={handleSubscription} className="mt-8">
             <input type="hidden" name="priceId" value={priceId} />
             <SubmitButton 
-              className={`w-full flex items-center justify-center ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
+              className={`w-full flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${isRecommended ? 'bg-black hover:bg-gray-800' : 'bg-blue-600 hover:bg-blue-700'}`}
               formAction={handleSubscription}
             >
               <CreditCard className="mr-2 h-4 w-4" />
@@ -371,9 +381,9 @@ function PricingCard({
           </form>
         )
       ) : (
-        <a href="/sign-in?redirect=/pricing" className="block w-full">
+        <a href="/sign-in?redirect=/pricing" className="block w-full mt-8">
           <button
-            className={`w-full flex items-center justify-center bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-md ${isRecommended ? 'bg-black hover:bg-gray-800' : ''}`}
+            className={`w-full flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${isRecommended ? 'bg-black hover:bg-gray-800' : 'bg-blue-600 hover:bg-blue-700'}`}
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Sign in to Subscribe

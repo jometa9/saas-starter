@@ -57,13 +57,7 @@ export function Dashboard({
   // Función para acceder al portal de cliente de Stripe
   const handleCustomerPortal = async () => {
     try {
-      // Mostrar mensaje de espera mientras se procesa
-      toast({
-        title: "Processing...",
-        description: "Preparing the management portal...",
-      });
-
-      // Intentar acceder al portal de cliente
+      // Intentar acceder al portal de cliente directamente
       const result = await customerPortalAction();
 
       if (result?.error) {
@@ -107,18 +101,11 @@ export function Dashboard({
       }
 
       if (result?.redirect) {
-        // Si se obtiene una URL de redirección, navegar a ella
+        // Redirección inmediata sin toasts ni retrasos
         window.location.href = result.redirect;
       } else {
-        // Si no hay redirección pero tampoco error, usar modo de simulación
-        toast({
-          title: "Simulation",
-          description:
-            "Redirecting to simulated mode due to environment limitations.",
-        });
-        setTimeout(() => {
-          window.location.href = "/dashboard?success=portal-simulated";
-        }, 1500);
+        // Solo en caso de fallar la redirección pero no tener error específico
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error("Error accessing portal:", error);
@@ -126,7 +113,7 @@ export function Dashboard({
       toast({
         title: "Could not access portal",
         description:
-          "An error occurred when attempting to access the management portal. Your subscription is still active.",
+          "An error occurred when attempting to access the management portal. Please try again later.",
         variant: "destructive",
       });
     }
@@ -257,7 +244,6 @@ export function Dashboard({
       {/* Reemplazar la tarjeta de información de cuenta con el nuevo componente */}
       <AccountInfoCard 
         user={user}
-        onManageSubscription={handleCustomerPortal}
         onGoToPricing={goToPricing}
         className="mb-4"
       />

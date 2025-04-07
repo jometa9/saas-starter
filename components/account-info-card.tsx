@@ -1,15 +1,22 @@
-'use client';
+"use client";
 
-import { User } from '@/lib/db/schema';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CreditCard, ArrowUpRight } from 'lucide-react';
-import { getAvatarBgColor, getAvatarTextColor } from '@/lib/utils';
+import { User } from "@/lib/db/schema";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CreditCard, ArrowUpRight, ExternalLink } from "lucide-react";
+import { getAvatarBgColor, getAvatarTextColor } from "@/lib/utils";
+import { Tooltip } from "@/components/ui/tooltip";
+import {
+  customerPortalAction,
+  directCheckoutAction,
+} from "@/lib/payments/actions";
+import { toast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 interface AccountInfoCardProps {
   user: User;
-  onManageSubscription: () => void;
+  onManageSubscription?: () => void;
   onGoToPricing: () => void;
   className?: string;
   title?: string;
@@ -19,11 +26,73 @@ export function AccountInfoCard({
   user,
   onManageSubscription,
   onGoToPricing,
-  className = '',
-  title = 'Account Information'
+  className = "",
+  title = "Account Information",
 }: AccountInfoCardProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const getUserDisplayName = (user: User) => {
-    return user.name || user.email || 'Unknown User';
+    return user.name || user.email || "Unknown User";
+  };
+
+  const handleStripePortalRedirect = async () => {
+    try {
+      const result = await customerPortalAction();
+
+      if (result?.redirect) {
+        window.location.href = result.redirect;
+      } else if (result?.error) {
+        toast({
+          title: "Error",
+          description: `Could not access subscription portal: ${result.error}`,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error accessing Stripe portal:", error);
+      toast({
+        title: "Error",
+        description: "Could not access subscription management portal",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDirectSubscription = async () => {
+    try {
+      setIsLoading(true);
+
+      const result = await directCheckoutAction();
+
+      if (result?.redirect) {
+        window.location.href = result.redirect;
+      } else if (result?.error) {
+        let errorMessage = `Could not create subscription: ${result.error}`;
+
+        if (result.error === "subscription-exists") {
+          errorMessage = "You already have an active subscription.";
+        } else if (result.error === "no-auth") {
+          errorMessage = "You need to be logged in to subscribe.";
+        }
+
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Error creating subscription:", error);
+      toast({
+        title: "Error",
+        description: "Could not create subscription. Please try again later.",
+        variant: "destructive",
+      });
+
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -55,17 +124,28 @@ export function AccountInfoCard({
           {user.subscriptionStatus === "active" ? (
             <Button
               className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
-              onClick={onManageSubscription}
+              onClick={handleStripePortalRedirect}
             >
+              <ExternalLink className="mr-2 h-4 w-4" />
               Manage Subscription
             </Button>
           ) : (
             <Button
               className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
-              onClick={onGoToPricing}
+              onClick={handleDirectSubscription}
+              disabled={isLoading}
             >
-              <CreditCard className="mr-2 h-4 w-4" />
-              Subscribe Now
+              {isLoading ? (
+                <>
+                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Subscribe Now
+                </>
+              )}
             </Button>
           )}
           {user.planName !== "Professional" &&
@@ -83,4 +163,4 @@ export function AccountInfoCard({
       </CardContent>
     </Card>
   );
-} 
+}
