@@ -27,6 +27,8 @@ import {
   HelpCircle,
   MessageCircle,
   ExternalLink,
+  Mail,
+  CheckCircle2,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
@@ -38,6 +40,13 @@ import Link from "next/link";
 
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { updateAppVersionAction, sendBroadcastEmailAction } from "@/lib/db/actions";
 
 export function Dashboard({
   user,
@@ -54,6 +63,144 @@ export function Dashboard({
   const [isLicenseVisible, setIsLicenseVisible] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isMainLicenseCopied, setIsMainLicenseCopied] = useState(false);
+  const [isTestEmailPending, setIsTestEmailPending] = useState(false);
+  const [isVersionUpdatePending, setIsVersionUpdatePending] = useState(false);
+  const [versionUpdateState, setVersionUpdateState] = useState<{
+    error?: string;
+    success?: string;
+    info?: string;
+  }>({});
+  
+  // Definir isAdmin basado en el rol del usuario
+  const isAdmin = user?.role === "admin";
+
+  // Esquema de validación para el formulario de versión
+  const versionFormSchema = z.object({
+    version: z
+      .string()
+      .regex(/^\d+\.\d+\.\d+$/, "El formato debe ser X.Y.Z (ej. 1.0.0)"),
+    releaseNotes: z
+      .string()
+      .min(10, "Las notas de versión deben tener al menos 10 caracteres"),
+    downloadUrl: z
+      .string()
+      .url("Debe ser una URL válida")
+      .optional()
+      .or(z.literal("")),
+    isCritical: z.boolean().default(false),
+  });
+
+  type VersionFormValues = z.infer<typeof versionFormSchema>;
+
+  const versionForm = useForm<VersionFormValues>({
+    resolver: zodResolver(versionFormSchema),
+    defaultValues: {
+      version: currentVersion,
+      releaseNotes: "",
+      downloadUrl: "",
+      isCritical: false,
+    },
+  });
+
+  // Manejar el envío del formulario de actualización de versión
+  const handleVersionUpdate = async (data: VersionFormValues) => {
+    try {
+      setIsVersionUpdatePending(true);
+      setVersionUpdateState({});
+
+      const formData = new FormData();
+      formData.append("version", data.version);
+      formData.append("releaseNotes", data.releaseNotes);
+      formData.append("downloadUrl", data.downloadUrl || "");
+      formData.append("isCritical", data.isCritical ? "true" : "false");
+
+      const result = await updateAppVersionAction(formData, {});
+      setVersionUpdateState(result || {});
+
+      if (result.success) {
+        versionForm.reset({
+          version: data.version,
+          releaseNotes: "",
+          downloadUrl: "",
+          isCritical: false,
+        });
+
+        const isDevMode =
+          process.env.NODE_ENV === "development" ||
+          window.location.hostname === "localhost";
+
+        toast({
+          title: "Success",
+          description: `${result.success}${isDevMode ? " (In development mode, emails are redirected to test addresses)" : ""}`,
+          variant: "default",
+        });
+
+        if (isDevMode) {
+          setTimeout(() => {
+            toast({
+              title: "Email Information",
+              description:
+                "In development mode, emails are not sent to real users. Check the server console for details.",
+              variant: "default",
+            });
+          }, 1000);
+        }
+      } else if (result.error) {
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error updating version:", error);
+      setVersionUpdateState({
+        error: "An error occurred while updating the version. Please try again.",
+      });
+      toast({
+        title: "Error",
+        description: "An error occurred while updating the version. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsVersionUpdatePending(false);
+    }
+  };
+
+  // Manejar el envío de email de prueba
+  const handleSendTestEmail = async () => {
+    try {
+      setIsTestEmailPending(true);
+      const result = await sendBroadcastEmailAction({
+        subject: "Test Email",
+        message: "This is a test email to verify the email system configuration.",
+        important: false,
+      }, {});
+
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Test email sent successfully",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Could not send test email",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error sending test email:", error);
+      toast({
+        title: "Error",
+        description: "Error sending test email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTestEmailPending(false);
+    }
+  };
 
   // Función para acceder al portal de cliente de Stripe
   const handleCustomerPortal = async () => {
@@ -207,7 +354,7 @@ export function Dashboard({
           });
         })
         .catch((err) => {
-          console.error("Error al copiar al portapapeles:", err);
+          console.error("Error copying to clipboard:", err);
           toast({
             title: "Error",
             description: "Could not copy to clipboard",
@@ -242,11 +389,11 @@ export function Dashboard({
 
   return (
     <section className="flex-1 px-4 gap-4 space-y-4">
-      {/* Reemplazar la tarjeta de información de cuenta con el nuevo componente */}
-      <AccountInfoCard 
+      <AccountInfoCard
         user={user}
         onGoToPricing={goToPricing}
         className="mb-4"
+        title="User Profile"
       />
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -274,13 +421,21 @@ export function Dashboard({
                 value={user.apiKey || ""}
                 readOnly
                 type={showLicense ? "text" : "password"}
-                disabled={!user?.stripeSubscriptionId || (user.subscriptionStatus !== "active" && user.subscriptionStatus !== "trialing")}
+                disabled={
+                  !user?.stripeSubscriptionId ||
+                  (user.subscriptionStatus !== "active" &&
+                    user.subscriptionStatus !== "trialing")
+                }
               />
               <Button
                 variant="outline"
                 className="rounded-l-none rounded-r-none border-l-0 h-10 flex items-center cursor-pointer"
                 onClick={toggleShowLicense}
-                disabled={!user?.stripeSubscriptionId || (user.subscriptionStatus !== "active" && user.subscriptionStatus !== "trialing")}
+                disabled={
+                  !user?.stripeSubscriptionId ||
+                  (user.subscriptionStatus !== "active" &&
+                    user.subscriptionStatus !== "trialing")
+                }
               >
                 {showLicense ? "Hide" : "Show"}
               </Button>
@@ -288,7 +443,12 @@ export function Dashboard({
                 variant="outline"
                 className="rounded-l-none border-l-0 h-10 flex items-center cursor-pointer"
                 onClick={copyMainLicenseToClipboard}
-                disabled={!user?.stripeSubscriptionId || !user.apiKey || (user.subscriptionStatus !== "active" && user.subscriptionStatus !== "trialing")}
+                disabled={
+                  !user?.stripeSubscriptionId ||
+                  !user.apiKey ||
+                  (user.subscriptionStatus !== "active" &&
+                    user.subscriptionStatus !== "trialing")
+                }
                 title="Copy to clipboard"
               >
                 {isMainLicenseCopied ? (
@@ -299,7 +459,8 @@ export function Dashboard({
               </Button>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              {user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing" ? (
+              {user.subscriptionStatus === "active" ||
+              user.subscriptionStatus === "trialing" ? (
                 <div>
                   <p>
                     This license key allows you to activate the IPTRADE software
@@ -329,7 +490,6 @@ export function Dashboard({
           </div>
         </CardContent>
       </Card>
-      {/* Downloads Card */}
       <Card>
         <CardHeader>
           <CardTitle>Software Downloads</CardTitle>
@@ -353,7 +513,10 @@ export function Dashboard({
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" className="w-full sm:w-auto cursor-pointer">
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto cursor-pointer"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -375,7 +538,10 @@ export function Dashboard({
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" className="w-full sm:w-auto cursor-pointer">
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto cursor-pointer"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -409,10 +575,10 @@ export function Dashboard({
                       </p>
                     </div>
                   </div>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full sm:w-auto"
-                    onClick={() => router.push('/dashboard/guide')}
+                    onClick={() => router.push("/dashboard/guide")}
                   >
                     View Guide
                   </Button>
@@ -422,7 +588,7 @@ export function Dashboard({
 
             <Card className="border border-gray-200 hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="bg-green-50 p-2 rounded-full">
                       <LifeBuoy className="h-5 w-5 text-green-600" />
@@ -430,7 +596,7 @@ export function Dashboard({
                     <div>
                       <h3 className="font-medium">Technical Support</h3>
                       <p className="text-sm text-muted-foreground">
-                        Help sending email to <b>support@iptrade.com</b>
+                        Get help by emailing support@iptrade.com
                       </p>
                     </div>
                   </div>
@@ -440,6 +606,280 @@ export function Dashboard({
           </div>
         </CardContent>
       </Card>
+
+      <Button
+        variant="outline"
+        className="text-red-500 hover:bg-red-50 hover:text-red-600 mb-0"
+      >
+        Delete Account
+      </Button>
+
+      {isAdmin && (
+        <div className="container py-4 px-0">
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Version Management</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Update application version and notify users
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-md bg-muted">
+                  <div className="flex-1">
+                    <div className="font-sm">Current Version</div>
+                    <div className="text-xl font-bold pt-1">{currentVersion}</div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSendTestEmail}
+                    disabled={isTestEmailPending}
+                    className="bg-white"
+                  >
+                    {isTestEmailPending ? (
+                      <>
+                        <span className="mr-2 h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="h-3 w-3 mr-1" />
+                        Test Email
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {versionUpdateState.error && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>
+                      {versionUpdateState.error}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {versionUpdateState.success && (
+                  <Alert className="bg-green-50 text-green-800 border-green-200 mb-4">
+                    <CheckCircle2 className="h-4 w-4 text-green-800" />
+                    <AlertTitle>Update Completed</AlertTitle>
+                    <AlertDescription>
+                      {versionUpdateState.success}
+                      <p className="mt-2 font-medium">
+                        The application has been updated successfully.
+                      </p>
+                      <p className="mt-1 text-sm">
+                        {process.env.NODE_ENV === "development" ||
+                        (typeof window !== "undefined" &&
+                          window.location.hostname === "localhost")
+                          ? "Note: In development mode, emails are not sent to real users. They are redirected to test addresses or simulated."
+                          : "Email notifications have been sent to users."}
+                      </p>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {versionUpdateState.info && (
+                  <Alert variant="default" className="mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Information</AlertTitle>
+                    <AlertDescription>
+                      {versionUpdateState.info}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <form
+                  onSubmit={versionForm.handleSubmit(handleVersionUpdate)}
+                  className="space-y-4"
+                >
+                  <div>
+                    <Label htmlFor="version">New Version</Label>
+                    <Input
+                      id="version"
+                      placeholder="1.0.0"
+                      {...versionForm.register("version")}
+                      className={
+                        versionForm.formState.errors.version
+                          ? "border-red-500"
+                          : ""
+                      }
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Use semantic versioning: X.Y.Z (example: 1.0.0)
+                    </p>
+                    {versionForm.formState.errors.version && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {versionForm.formState.errors.version.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="release-notes">Release Notes</Label>
+                    <Textarea
+                      id="release-notes"
+                      placeholder="Detail the changes included in this version..."
+                      className={`min-h-[120px] ${
+                        versionForm.formState.errors.releaseNotes
+                          ? "border-red-500"
+                          : ""
+                      }`}
+                      {...versionForm.register("releaseNotes")}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      This information will be sent to users via email.
+                    </p>
+                    {versionForm.formState.errors.releaseNotes && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {versionForm.formState.errors.releaseNotes.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="download-url">Download URL (optional)</Label>
+                    <Input
+                      id="download-url"
+                      placeholder="https://example.com/download"
+                      {...versionForm.register("downloadUrl")}
+                      className={
+                        versionForm.formState.errors.downloadUrl
+                          ? "border-red-500"
+                          : ""
+                      }
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      URL where users can download this version.
+                    </p>
+                    {versionForm.formState.errors.downloadUrl && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {versionForm.formState.errors.downloadUrl.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-3 rounded-md border p-4">
+                    <Checkbox
+                      id="critical"
+                      checked={versionForm.watch("isCritical")}
+                      onCheckedChange={(checked) => versionForm.setValue("isCritical", checked as boolean)}
+                    />
+                    <div className="space-y-1">
+                      <Label htmlFor="critical" className="font-medium">
+                        Critical Update
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Check this option if the update contains important security fixes.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isVersionUpdatePending}
+                  >
+                    {isVersionUpdatePending ? (
+                      <>
+                        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                        Updating version... Please wait
+                      </>
+                    ) : (
+                      "Update Version and Notify Users"
+                    )}
+                  </Button>
+                </form>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Mass Email</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Send notifications or announcements to all platform users
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="flex items-center p-4 rounded-md bg-muted">
+                  <Mail className="h-6 w-6 mr-3 text-primary" />
+                  <div className="flex-1">
+                    <div className="font-medium">Mass Email Sending</div>
+                    <div className="text-sm text-muted-foreground">
+                      This tool will send emails to all active platform users.
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="email-subject">Email Subject</Label>
+                    <Input
+                      id="email-subject"
+                      placeholder="Important announcement for our users"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Clear and descriptive subject for the email.
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email-message">Message Content</Label>
+                    <Textarea
+                      id="email-message"
+                      placeholder="Write the detailed message content here..."
+                      className="min-h-[200px]"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      You can use line breaks to format the text. HTML is not supported.
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="cta-label">Button Text (optional)</Label>
+                    <Input
+                      id="cta-label"
+                      placeholder="More Information"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Text for the call-to-action (CTA) button.
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="cta-url">Button URL (optional)</Label>
+                    <Input
+                      id="cta-url"
+                      placeholder="https://example.com/info"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      URL where the CTA button will redirect.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start space-x-3 rounded-md border p-4">
+                    <Checkbox id="important" />
+                    <div>
+                      <Label htmlFor="important">Mark as Important</Label>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Adds an [IMPORTANT] tag to the subject and visually highlights the message.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button className="w-full">
+                    Send Email to All Users
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </section>
   );
 }
