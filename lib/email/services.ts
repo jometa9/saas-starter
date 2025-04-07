@@ -42,7 +42,7 @@ export async function sendWelcomeEmail({
   name: string;
   loginUrl?: string;
 }) {
-  const { html, text } = welcomeEmailTemplate({
+  const { html, text } = await welcomeEmailTemplate({
     name,
     loginUrl,
   });
@@ -81,12 +81,11 @@ export async function sendSubscriptionChangeEmail({
       throw new Error('Email address is missing');
     }
     
-    const { html, text } = subscriptionChangeEmailTemplate({
+    const { html, text } = await subscriptionChangeEmailTemplate({
       name,
-      planName,
+      plan: planName,
       status,
-      expiryDate,
-      dashboardUrl,
+      renewalDate: expiryDate,
     });
     
     // Determinar asunto del email basado en el estado
@@ -133,10 +132,9 @@ export async function sendPasswordResetEmail({
 }) {
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
   
-  const { html, text } = passwordResetEmailTemplate({
+  const { html, text } = await passwordResetEmailTemplate({
     name,
     resetUrl,
-    expiryMinutes,
   });
   
   return sendEmail({
@@ -165,7 +163,7 @@ export async function sendVersionUpdateEmail({
   downloadUrl?: string;
   isCritical?: boolean;
 }) {
-  const { html, text } = versionUpdateEmailTemplate({
+  const { html, text } = await versionUpdateEmailTemplate({
     name,
     currentVersion,
     newVersion,
@@ -204,7 +202,7 @@ export async function sendBroadcastEmail({
   ctaUrl?: string;
   isImportant?: boolean;
 }) {
-  const { html, text } = broadcastEmailTemplate({
+  const { html, text } = await broadcastEmailTemplate({
     name,
     subject,
     message,
@@ -213,28 +211,9 @@ export async function sendBroadcastEmail({
     isImportant,
   });
   
-  const emailSubject = isImportant
-    ? `[IMPORTANTE] ${subject}`
-    : subject;
-  
-  // Añadimos reintentos para emails importantes
-  if (isImportant) {
-    return withRetry(
-      () => sendEmail({
-        to: email,
-        subject: emailSubject,
-        html,
-        text,
-      }),
-      3,
-      500,
-      `Broadcast email to ${email}`
-    );
-  }
-  
   return sendEmail({
     to: email,
-    subject: emailSubject,
+    subject: isImportant ? `[IMPORTANTE] ${subject}` : subject,
     html,
     text,
   });

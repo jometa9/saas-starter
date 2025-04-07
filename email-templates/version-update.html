@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Version Update</title>
+</head>
+<body>
+  <p style="margin-bottom: 16px; color: #374151;">Hi {{name}},</p>
+
+  <p style="margin-bottom: 16px; color: #374151;">A new version of SaaS Starter is available.</p>
+
+  <div style="margin: 20px 0;">
+    <span style="display: inline-block; background-color: #e5e7eb; color: #374151; padding: 4px 8px; border-radius: 4px; font-size: 14px; font-weight: 500; margin: 4px 8px 4px 0;">Current: {{currentVersion}}</span>
+    <span style="display: inline-block; background-color: #dbeafe; color: #0070f3; padding: 4px 8px; border-radius: 4px; font-size: 14px; font-weight: 500; margin: 4px 0;">New: {{newVersion}}</span>
+  </div>
+
+  {{#if isCritical}}
+  <div style="background-color: #fef2f2; border: 1px solid #fee2e2; border-radius: 6px; padding: 16px; margin: 20px 0;">
+    <p style="margin: 0; color: #ef4444; font-weight: 500;">⚠️ This is a critical update that addresses important security or stability issues. Please update as soon as possible.</p>
+  </div>
+  {{/if}}
+
+  {{#if releaseNotes}}
+  <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 20px; margin: 20px 0;">
+    <h3 style="color: #374151; font-size: 18px; margin: 0 0 12px 0; font-weight: 600;">What's New:</h3>
+    <div style="color: #4b5563;">{{releaseNotes}}</div>
+  </div>
+  {{/if}}
+
+  {{#if downloadUrl}}
+  <div style="margin: 30px 0; text-align: center;">
+    <a href="{{downloadUrl}}" style="display: inline-block; background-color: #0070f3; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">Download Update</a>
+  </div>
+  {{/if}}
+
+  <p style="margin-bottom: 16px; color: #374151;">If you have any questions about this update, please don't hesitate to contact our support team.</p>
+</body>
+</html> 

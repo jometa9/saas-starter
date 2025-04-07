@@ -1,0 +1,19 @@
+<h1>Subscription Update</h1>
+<p>Hello {{name}},</p>
+<p>We're informing you about a change in your SaaS Starter subscription.</p>
+
+<div class="info-box">
+  <h3>Subscription Details</h3>
+  <p>Plan: <strong>{{plan}}</strong></p>
+  <p>Status: <strong>{{status}}</strong></p>
+  {{#if renewalDate}}
+  <p>Your subscription is valid until: <strong>{{renewalDate}}</strong></p>
+  {{/if}}
+  <p>{{#if status === 'active'}}Your subscription is active and working properly.{{else}}{{#if status === 'canceled'}}Your subscription has been canceled.{{else}}Your current subscription status is: {{status}}{{/if}}{{/if}}</p>
+</div>
+
+<div style="text-align: center;">
+  <a href="{{dashboardUrl}}" class="button">View details in your account</a>
+</div>
+
+<p>If you didn't make this change or have any questions, please contact us immediately.</p> 

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Broadcast Email Template</title>
+  <style>
+    :root {
+      --primary: #0070f3;
+      --primary-dark: #0051a2;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--gray-800);
+      background-color: var(--gray-100);
+      margin: 0;
+      padding: 0;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header {
+      text-align: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    
+    .content {
+      padding: 30px 0;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 20px 0;
+      border-top: 1px solid var(--gray-200);
+      font-size: 14px;
+      color: var(--gray-500);
+    }
+    
+    h1 {
+      color: var(--gray-900);
+      margin-top: 0;
+      font-size: 24px;
+    }
+    
+    h2 {
+      color: var(--gray-800);
+      font-size: 20px;
+      margin-top: 30px;
+    }
+    
+    p {
+      margin-bottom: 16px;
+    }
+    
+    .button {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-weight: 500;
+      margin: 20px 0;
+    }
+    
+    .button:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .info-box {
+      background-color: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 4px;
+      padding: 16px;
+      margin: 20px 0;
+    }
+    
+    .important-badge {
+      display: inline-block;
+      background-color: var(--danger);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0 4px;
+    }
+    
+    .notification-box {
+      background-color: var(--warning);
+      color: white;
+      padding: 16px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+      
+      h1 {
+        font-size: 22px;
+      }
+      
+      h2 {
+        font-size: 18px;
+      }
+      
+      h3 {
+        font-size: 16px;
+      }
+      
+      .button {
+        display: block;
+        text-align: center;
+        margin: 20px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">SaaS Starter</div>
+    </div>
+    <div class="content">
+      <h1>{{subject}}</h1>
+      
+      <p>Hello {{name}},</p>
+      
+      {{#if isImportant}}
+      <div class="notification-box">
+        <strong>⚠️ IMPORTANT:</strong> This message contains important information about your account.
+      </div>
+      {{/if}}
+      
+      <div class="info-box">
+        {{message}}
+      </div>
+      
+      {{#if ctaUrl}}
+      {{#if ctaLabel}}
+      <div style="text-align: center;">
+        <a href="{{ctaUrl}}" class="button">{{ctaLabel}}</a>
+      </div>
+      {{/if}}
+      {{/if}}
+      
+      <p>If you have any questions, feel free to contact us.</p>
+      
+      <p>Thank you for your continued support!</p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2023 SaaS Starter. All rights reserved.</p>
+      <p>If you didn't request this email, please ignore it or contact us.</p>
+    </div>
+  </div>
+</body>
+</html> 
