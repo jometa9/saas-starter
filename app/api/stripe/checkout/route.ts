@@ -12,8 +12,6 @@ import { sendSubscriptionChangeEmail } from '@/lib/email';
 
 export async function GET(req: NextRequest) {
   const sessionId = req.nextUrl.searchParams.get('session_id');
-  console.log(`🔄 Callback de Stripe recibido: ${req.url}`);
-  console.log(`🔄 Parámetros: ${req.nextUrl.search}`);
   
   if (!sessionId) {
     console.error(`❌ No se encontró session_id en la URL: ${req.url}`);
@@ -21,7 +19,6 @@ export async function GET(req: NextRequest) {
   }
   
   try {
-    console.log(`🔄 Procesando finalización de checkout para sessionId: ${sessionId}`);
     
     // Obtener la sesión de Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
@@ -32,14 +29,6 @@ export async function GET(req: NextRequest) {
       console.error(`❌ Sesión de Stripe no encontrada: ${sessionId}`);
       return NextResponse.redirect(new URL('/dashboard?error=invalid-session', req.url));
     }
-    
-    console.log(`✅ Sesión Stripe recuperada:`, JSON.stringify({
-      id: session.id,
-      customer: session.customer,
-      subscription: session.subscription,
-      status: session.status,
-      mode: session.mode
-    }, null, 2));
     
     // Validar que tengamos los datos necesarios
     if (!session.customer) {
@@ -61,7 +50,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL('/dashboard?error=incomplete-data', req.url));
     }
     
-    console.log(`🔄 Obteniendo detalles de suscripción: ${subscriptionId}`);
     const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
       expand: ['items.data.price.product']
     });
@@ -76,19 +64,8 @@ export async function GET(req: NextRequest) {
     const priceId = item.price.id;
     const productId = typeof item.price.product === 'string' ? item.price.product : item.price.product.id;
     const productName = typeof item.price.product === 'string' ? 'Suscripción Premium' : item.price.product.name;
-    
-    // Determinar el estado de la suscripción
     const status = subscription.status;
     
-    console.log(`🔄 Datos de suscripción: 
-      - CustomerId: ${customerId}
-      - SubscriptionId: ${subscriptionId}
-      - ProductId: ${productId}
-      - ProductName: ${productName}
-      - PriceId: ${priceId}
-      - Status: ${status}`);
-    
-    // Obtener el usuario actual
     const user = await getUser();
     if (!user) {
       console.error(`❌ Usuario no encontrado en la sesión`);
@@ -101,9 +78,6 @@ export async function GET(req: NextRequest) {
       expiryDate = new Date(subscription.current_period_end * 1000).toISOString().split('T')[0];
     }
     
-    // Actualizar el usuario con los datos de Stripe
-    console.log(`🔄 Actualizando usuario ${user.id} con datos de suscripción`);
-    
     try {
       await updateUserById(user.id, {
         stripeCustomerId: customerId,
@@ -113,12 +87,7 @@ export async function GET(req: NextRequest) {
         subscriptionStatus: status
       });
       
-      console.log(`✅ Usuario actualizado correctamente con datos de suscripción`);
-      
-      // Enviar email de confirmación de suscripción
       try {
-        console.log(`🔄 Enviando email de confirmación de suscripción a ${user.email}`);
-        
         await sendSubscriptionChangeEmail({
           email: user.email,
           name: user.name || user.email.split('@')[0],
@@ -126,10 +95,7 @@ export async function GET(req: NextRequest) {
           status: status,
           expiryDate: expiryDate
         });
-        
-        console.log(`✅ Email de confirmación de suscripción enviado correctamente`);
       } catch (emailError) {
-        // No bloqueamos el flujo principal si falla el envío de email
         console.error(`⚠️ Error al enviar email de confirmación:`, emailError);
       }
     } catch (updateError) {
@@ -149,19 +115,13 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Ruta simulada para desarrollo sin Stripe real
 export async function POST(req: NextRequest) {
-  // Esta ruta es solo para desarrollo sin Stripe real
   try {
-    console.log('🔧 Simulando finalización de checkout (POST)');
-    
-    // Obtener el usuario actual
     const user = await getUser();
     if (!user) {
       return NextResponse.json({ error: 'No user session found' }, { status: 401 });
     }
     
-    // Parse JSON body
     const body = await req.json();
     const { priceId, productId, productName } = body;
     
@@ -169,19 +129,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing priceId' }, { status: 400 });
     }
     
-    // Simular IDs
     const simulatedCustomerId = `cus_sim_${Math.random().toString(36).substring(2, 15)}`;
     const simulatedSubscriptionId = `sub_sim_${Math.random().toString(36).substring(2, 15)}`;
     const simulatedProductId = productId || `prod_sim_${Math.random().toString(36).substring(2, 15)}`;
     const simulatedProductName = productName || 'Plan Premium (Simulado)';
     
-    console.log(`🔧 Simulando suscripción: 
-      - CustomerId: ${simulatedCustomerId}
-      - SubscriptionId: ${simulatedSubscriptionId}
-      - ProductId: ${simulatedProductId}
-      - ProductName: ${simulatedProductName}`);
-    
-    // Actualizar el usuario con datos simulados
     await updateUserById(user.id, {
       stripeCustomerId: simulatedCustomerId,
       stripeSubscriptionId: simulatedSubscriptionId,
@@ -190,12 +142,7 @@ export async function POST(req: NextRequest) {
       subscriptionStatus: 'active'
     });
     
-    console.log(`✅ Usuario actualizado con datos simulados: ${user.id}`);
-    
-    // Enviar email de confirmación de suscripción simulada
     try {
-      console.log(`🔄 Enviando email de confirmación de suscripción simulada a ${user.email}`);
-      
       await sendSubscriptionChangeEmail({
         email: user.email,
         name: user.name || user.email.split('@')[0],
@@ -203,8 +150,6 @@ export async function POST(req: NextRequest) {
         status: 'active',
         expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 30 días desde hoy
       });
-      
-      console.log(`✅ Email de confirmación de suscripción simulada enviado correctamente`);
     } catch (emailError) {
       // No bloqueamos el flujo principal si falla el envío de email
       console.error(`⚠️ Error al enviar email de confirmación simulada:`, emailError);

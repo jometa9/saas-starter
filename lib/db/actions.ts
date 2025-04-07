@@ -249,18 +249,6 @@ export async function sendBroadcastEmailAction(
       }
     }
     
-    // Si estamos en modo desarrollo, mostrar un mensaje especial
-    if (process.env.NEXT_PUBLIC_EMAIL_MODE !== 'production') {
-      console.log(`
-        ⚠️ MODO DESARROLLO: Los emails de difusión
-        ⚠️ fueron redirigidos a direcciones de prueba seguras.
-        ⚠️ Asunto: ${subject}
-        ⚠️ Usuarios: ${activeUsers.length}
-        ⚠️ Enviados con éxito: ${successCount}
-        ⚠️ Fallidos: ${failureCount}
-      `);
-    }
-    
     return {
       success: `Email enviado con éxito a ${successCount} usuarios (${failureCount} fallidos)`
     };

@@ -12,9 +12,7 @@ export async function POST(request: NextRequest) {
 
   try {
     event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
-    console.log(`✅ Webhook event received: ${event.type}`);
   } catch (err) {
-    console.error('❌ Webhook signature verification failed.', err);
     return NextResponse.json(
       { error: 'Webhook signature verification failed.' },
       { status: 400 }
@@ -30,7 +28,6 @@ export async function POST(request: NextRequest) {
       case 'customer.subscription.trial_will_end':
       case 'customer.subscription.paused':
       case 'customer.subscription.resumed':
-        console.log(`🔄 Processing subscription event: ${event.type}`);
         const subscription = event.data.object as Stripe.Subscription;
         await handleSubscriptionChange(subscription, event.type);
         break;
@@ -38,7 +35,6 @@ export async function POST(request: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session;
         // Solo procesar si está relacionado con suscripciones
         if (session.mode === 'subscription' && session.subscription) {
-          console.log(`🔄 Processing checkout session for subscription: ${session.subscription}`);
           // Obtener la suscripción completa y procesarla
           const subscriptionData = await stripe.subscriptions.retrieve(
             session.subscription as string
@@ -46,8 +42,6 @@ export async function POST(request: NextRequest) {
           await handleSubscriptionChange(subscriptionData, 'checkout.session.completed');
         }
         break;
-      default:
-        console.log(`ℹ️ Unhandled event type ${event.type}`);
     }
     
     return NextResponse.json({ received: true });

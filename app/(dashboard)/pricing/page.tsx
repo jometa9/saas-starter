@@ -16,10 +16,6 @@ export default async function PricingPage() {
     getUser(),
   ]);
 
-  console.log('Productos disponibles:', products.map(p => ({ id: p.id, name: p.name })));
-  console.log('Precios disponibles:', prices.map(p => ({ id: p.id, productId: p.product, amount: p.unit_amount })));
-
-  // Buscar planes por nombre (ahora buscamos "Trader" y "Professional" con alternativas)
   const traderPlan = products.find((product) => 
     product.name === 'Trader' || product.name === 'Base');
   
@@ -35,9 +31,7 @@ export default async function PricingPage() {
   if (traderPlan) {
     const traderPrice = prices.find((price) => price.product === traderPlan.id && price.active);
     traderPriceId = traderPrice?.id;
-    console.log('Trader plan encontrado:', traderPlan.name, 'con precio:', traderPriceId);
   } else {
-    console.log('Plan Trader no encontrado, usando fallback');
     traderPriceId = fallbackTraderPriceId;
   }
 
@@ -46,9 +40,7 @@ export default async function PricingPage() {
   if (professionalPlan) {
     const professionalPrice = prices.find((price) => price.product === professionalPlan.id && price.active);
     professionalPriceId = professionalPrice?.id;
-    console.log('Professional plan encontrado:', professionalPlan?.name, 'con precio:', professionalPriceId);
   } else {
-    console.log('Plan Professional no encontrado, usando fallback');
     professionalPriceId = fallbackProfessionalPriceId;
   }
 
@@ -276,32 +268,23 @@ export default async function PricingPage() {
 async function handleSubscription(formData: FormData) {
   'use server';
   
-  console.log('Ejecutando handleSubscription, formData:', Object.fromEntries(formData.entries()));
-  
   const priceId = formData.get('priceId') as string;
   if (!priceId) {
-    console.log('No se encontró priceId en formData');
     return { error: 'No price ID provided' };
   }
   
   try {
-    console.log('Llamando a checkoutAction con priceId:', priceId);
     const result = await checkoutAction(priceId);
-    console.log('Resultado de checkoutAction:', result);
     
-    // Si tenemos una URL de redirección, devolverla para que el cliente redirija
     if (result.redirect) {
-      console.log('Redirigiendo a:', result.redirect);
       return { redirect: result.redirect };
     }
     
     // Si tenemos un error, devolverlo para manejo en el cliente
     if (result.error) {
-      console.log('Error en checkoutAction:', result.error);
       return { error: result.error };
     }
     
-    console.log('Checkout exitoso');
     return { success: true };
   } catch (error) {
     console.error('Error en checkout:', error);

@@ -192,9 +192,6 @@ export async function sendEmail({
       }
     }
     
-    // Si no hay API key de Resend o falló, usa Nodemailer
-    console.log(`🔄 Using Nodemailer to send email (fallback or primary method)`);
-    
     const transport = await initializeEmailTransporter();
     const info = await transport.sendMail({
       from,
@@ -204,27 +201,10 @@ export async function sendEmail({
       html,
     });
     
-    // En desarrollo, imprime la URL para ver el email
-    if (!isProduction()) {
-      const previewUrl = nodemailer.getTestMessageUrl(info);
-      console.log(`📬 Email preview URL: ${previewUrl}`);
-    }
-    
-    console.log(`✅ Email sent successfully with Nodemailer, ID: ${info.messageId}`);
     return { id: info.messageId, provider: 'nodemailer' };
   } catch (error) {
     console.error('❌ Failed to send email:', error);
-    
-    // Si está en desarrollo, imprimir mensaje informativo
-    if (!isProduction()) {
-      console.warn(`
-        ⚠️ MODO DESARROLLO: Email no enviado a ${to}
-        ⚠️ ASUNTO: ${subject}
-        ⚠️ Para probar con Resend, usa direcciones que terminen en @resend.dev o dominios verificados
-        ⚠️ Para evitar este mensaje, configura SMTP o añade dominios verificados en Resend
-      `);
-    }
-    
+   
     throw error;
   }
 }

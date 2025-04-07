@@ -1,11 +1,8 @@
 'use server';
 
-import { redirect } from 'next/navigation';
-import { User } from '@/lib/db/schema';
 import { getUser } from '@/lib/db/queries';
 import { createCheckoutSession, createCustomerPortalSession, getStripeProducts, getStripePrices } from '@/lib/payments/stripe';
 
-// IDs de precios de Stripe (obtenidos desde las variables de entorno)
 const MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID || 'price_1RB3j0A3C4QniATDapoM1A3a';
 const ANNUAL_PRICE_ID = process.env.STRIPE_ANNUAL_PRICE_ID || 'price_1RB3jfA3C4QniATDbeuwOUrx';
 const DEFAULT_PRICE_ID = process.env.STRIPE_DEFAULT_PRICE_ID || MONTHLY_PRICE_ID;
@@ -15,30 +12,22 @@ async function getValidStripePrice(): Promise<string | null> {
   try {
     // Primero intentamos usar el precio por defecto (mensual) desde las variables de entorno
     if (DEFAULT_PRICE_ID) {
-      console.log('Usando precio por defecto desde ENV:', DEFAULT_PRICE_ID);
       return DEFAULT_PRICE_ID;
     }
     
     // Si no hay variable de entorno, intentamos el precio mensual
     if (MONTHLY_PRICE_ID) {
-      console.log('Usando precio mensual desde ENV:', MONTHLY_PRICE_ID);
       return MONTHLY_PRICE_ID;
     }
     
-    // Si no está disponible, intentamos con el precio anual
     if (ANNUAL_PRICE_ID) {
-      console.log('Usando precio anual desde ENV:', ANNUAL_PRICE_ID);
       return ANNUAL_PRICE_ID;
     }
     
-    // Como último recurso, intentamos buscar precios desde Stripe
-    console.log('Intentando obtener precios directamente desde Stripe');
     const stripePrices = await getStripePrices();
     
-    // Buscamos cualquier precio activo
     const anyValidPrice = stripePrices.prices.find(price => price.active);
     if (anyValidPrice?.id) {
-      console.log('Usando precio desde Stripe API:', anyValidPrice.id);
       return anyValidPrice.id;
     }
     
@@ -57,7 +46,6 @@ export async function directCheckoutAction(): Promise<{ error?: string; redirect
     const user = await getUser();
     
     if (!user) {
-      console.log('No hay usuario autenticado');
       return { error: 'no-auth' };
     }
     
@@ -66,7 +54,6 @@ export async function directCheckoutAction(): Promise<{ error?: string; redirect
       user.subscriptionStatus === 'active' || 
       user.subscriptionStatus === 'trialing'
     )) {
-      console.log('El usuario ya tiene una suscripción activa');
       return { error: 'subscription-exists' };
     }
     
@@ -79,9 +66,6 @@ export async function directCheckoutAction(): Promise<{ error?: string; redirect
       return { error: 'no-price-id' };
     }
     
-    console.log(`Iniciando checkout directo con priceId: ${priceId}`);
-    
-    // Crear la sesión de checkout
     const checkoutSession = await createCheckoutSession({
       priceId,
       userId: user.id,
@@ -94,8 +78,6 @@ export async function directCheckoutAction(): Promise<{ error?: string; redirect
       return { error: 'checkout-creation-failed' };
     }
     
-    // Redirigir al usuario a la página de checkout de Stripe
-    console.log('Checkout directo creado con éxito, redirigiendo a:', checkoutSession.url);
     return { redirect: checkoutSession.url };
   } catch (error) {
     console.error('Error en directCheckoutAction:', error);
@@ -103,7 +85,6 @@ export async function directCheckoutAction(): Promise<{ error?: string; redirect
     if (error instanceof Error) {
       console.error(`❌ Mensaje de error: ${error.message}`);
       
-      // Mapear errores comunes a códigos más amigables
       if (error.message.includes('API key') || error.message.includes('stripe')) {
         return { error: 'stripe-api-key' };
       } else if (error.message.includes('price') || error.message.includes('product')) {
@@ -118,10 +99,8 @@ export async function directCheckoutAction(): Promise<{ error?: string; redirect
 }
 
 export async function checkoutAction(priceId: string): Promise<{ error?: string; redirect?: string }> {
-  console.log('Iniciando checkout con priceId:', priceId);
 
   try {
-    // Validar el formato del ID de precio
     if (!priceId || !priceId.startsWith('price_')) {
       console.error(`❌ Formato de priceId inválido: ${priceId}`);
       return { error: 'invalid-price-format' };
@@ -130,7 +109,6 @@ export async function checkoutAction(priceId: string): Promise<{ error?: string;
     const user = await getUser();
     
     if (!user) {
-      console.log('No hay usuario autenticado');
       return { error: 'no-auth' };
     }
     
@@ -139,7 +117,6 @@ export async function checkoutAction(priceId: string): Promise<{ error?: string;
       user.subscriptionStatus === 'active' || 
       user.subscriptionStatus === 'trialing'
     )) {
-      console.log('El usuario ya tiene una suscripción activa');
       return { error: 'subscription-exists' };
     }
     
@@ -156,8 +133,6 @@ export async function checkoutAction(priceId: string): Promise<{ error?: string;
       return { error: 'checkout-creation-failed' };
     }
     
-    // Redirigir al usuario a la página de checkout de Stripe
-    console.log('Checkout creado con éxito, redirigiendo a:', checkoutSession.url);
     return { redirect: checkoutSession.url };
   } catch (error) {
     console.error('Error en la acción de checkout:', error);
@@ -166,7 +141,6 @@ export async function checkoutAction(priceId: string): Promise<{ error?: string;
       console.error(`❌ Mensaje de error: ${error.message}`);
       console.error(`❌ Stack: ${error.stack}`);
       
-      // Mapear errores comunes a códigos más amigables
       if (error.message.includes('API key') || error.message.includes('stripe')) {
         return { error: 'stripe-api-key' };
       } else if (error.message.includes('price') || error.message.includes('product')) {
@@ -189,19 +163,16 @@ export async function customerPortalAction(): Promise<{ error?: string; redirect
       return { error: 'no-session' };
     }
     
-    // Verificar si el usuario tiene un ID de cliente de Stripe
     if (!user.stripeCustomerId) {
       console.error(`❌ El usuario no tiene un ID de cliente de Stripe`);
       return { error: 'no-customer-id' };
     }
     
-    // Verificar si el usuario tiene una suscripción activa o en prueba
     if (!user.stripeSubscriptionId || (user.subscriptionStatus !== 'active' && user.subscriptionStatus !== 'trialing')) {
       console.error(`❌ El usuario no tiene una suscripción activa o en prueba (Status: ${user.subscriptionStatus})`);
       return { error: 'no-active-subscription' };
     }
     
-    // Verificar si el usuario tiene un ID de producto
     if (!user.stripeProductId) {
       console.error(`❌ El usuario no tiene un ID de producto`);
       return { error: 'no-product-id' };
@@ -209,7 +180,6 @@ export async function customerPortalAction(): Promise<{ error?: string; redirect
     
     const session = await createCustomerPortalSession(user);
     
-    // Manejar si createCustomerPortalSession devuelve un error
     if ('error' in session) {
       console.error(`❌ Error de la sesión del portal: ${session.error}`);
       return { error: session.error };
@@ -228,7 +198,6 @@ export async function customerPortalAction(): Promise<{ error?: string; redirect
       console.error(`❌ Mensaje de error: ${error.message}`);
       console.error(`❌ Stack: ${error.stack}`);
       
-      // Mapear errores comunes a códigos más amigables
       if (error.message.includes('API key') || error.message.includes('stripe')) {
         return { error: 'stripe-api-key' };
       } else if (error.message.includes('product')) {

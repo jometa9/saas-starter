@@ -39,11 +39,9 @@ export function SubmitButton({
     const priceId = formData.get('priceId') as string;
     
     if (!priceId) {
-      console.log('No se encontró priceId en el formulario');
       const recommendedCard = document.querySelector('.recommended input[name="priceId"]') as HTMLInputElement;
       if (recommendedCard?.value) {
         formData.set('priceId', recommendedCard.value);
-        console.log('Usando priceId del plan recomendado:', recommendedCard.value);
         submitSubscription(formData);
       } else {
         toast({
@@ -53,7 +51,6 @@ export function SubmitButton({
         });
       }
     } else {
-      console.log('PriceId encontrado:', priceId);
       submitSubscription(formData);
     }
   };

@@ -22,12 +22,7 @@ async function withRetry<T>(
       throw error;
     }
     
-    console.log(`⚠️ ${name} failed, retrying (${retries} attempts left). Error:`, error);
-    
-    // Esperar antes de reintentar
     await new Promise(resolve => setTimeout(resolve, delay));
-    
-    // Incrementar el delay para el próximo intento (backoff exponencial)
     return withRetry(operation, retries - 1, delay * 1.5, name);
   }
 }

@@ -939,8 +939,6 @@ export function Settings({
                         variant: statusVariant,
                       });
 
-                      // Mostrar detalles completos en la consola para depuración
-                      console.log("🔍 Diagnóstico de Stripe:", result);
                     } else {
                       toast({
                         title: "Error en diagnóstico",

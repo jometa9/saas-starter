@@ -17,61 +17,36 @@ const templateCache: Record<string, string> = {};
  * @returns El contenido del template HTML
  */
 export async function loadTemplate(templateName: string): Promise<string> {
-  console.log(`📧 Loading template: ${templateName}`);
-  console.log(`📁 Templates directory: ${TEMPLATES_DIR}`);
-  console.log(`📁 Current working directory: ${process.cwd()}`);
-  console.log(`📁 Absolute templates path: ${path.resolve(TEMPLATES_DIR)}`);
-
-  // Verificar si el directorio existe
   if (!fs.existsSync(TEMPLATES_DIR)) {
-    console.warn(`⚠️ Templates directory does not exist: ${TEMPLATES_DIR}`);
-    console.log("Creating templates directory...");
     fs.mkdirSync(TEMPLATES_DIR, { recursive: true });
   }
 
   // Listar archivos en el directorio
   const files = fs.readdirSync(TEMPLATES_DIR);
-  console.log(`📁 Files in templates directory: ${files.join(", ")}`);
 
   // Verificar si el template ya está en caché
   if (templateCache[templateName]) {
-    console.log(`✅ Template found in cache: ${templateName}`);
     return templateCache[templateName];
   }
 
   try {
     // Intentar cargar el template desde el archivo
     const filePath = path.join(TEMPLATES_DIR, `${templateName}.html`);
-    console.log(`📄 Loading template file: ${filePath}`);
-    console.log(`📄 File exists: ${fs.existsSync(filePath)}`);
 
     if (!fs.existsSync(filePath)) {
       console.warn(`⚠️ Template file does not exist: ${filePath}`);
-      console.log("Using default template...");
       const defaultTemplate = getDefaultTemplate(templateName);
-
-      // Guardar el template por defecto en el archivo
-      console.log("Saving default template to file...");
       await saveTemplate(templateName, defaultTemplate);
-
       return defaultTemplate;
     }
 
     const templateContent = await readFile(filePath, "utf8");
-    console.log(`✅ Template loaded successfully: ${templateName}`);
-    console.log(
-      `📄 Template content length: ${templateContent.length} characters`
-    );
-
-    // Guardar en caché
     templateCache[templateName] = templateContent;
 
     return templateContent;
   } catch (error) {
     console.error(`❌ Error loading template ${templateName}:`, error);
 
-    // Si hay un error, devolver un template por defecto
-    console.log("Using default template due to error...");
     return getDefaultTemplate(templateName);
   }
 }
@@ -85,24 +60,19 @@ export async function saveTemplate(
   templateName: string,
   content: string
 ): Promise<void> {
-  console.log(`💾 Saving template: ${templateName}`);
 
   try {
-    // Asegurarse de que el directorio existe
     if (!fs.existsSync(TEMPLATES_DIR)) {
-      console.log(`📁 Creating templates directory: ${TEMPLATES_DIR}`);
       fs.mkdirSync(TEMPLATES_DIR, { recursive: true });
     }
 
     // Guardar el template en un archivo
     const filePath = path.join(TEMPLATES_DIR, `${templateName}.html`);
-    console.log(`📝 Writing template to file: ${filePath}`);
     await writeFile(filePath, content, "utf8");
 
     // Actualizar la caché
     templateCache[templateName] = content;
 
-    console.log(`✅ Template ${templateName} saved successfully`);
   } catch (error) {
     console.error(`❌ Error saving template ${templateName}:`, error);
     throw error;
@@ -115,9 +85,6 @@ export async function saveTemplate(
  * @returns El contenido del template por defecto
  */
 function getDefaultTemplate(templateName: string): string {
-  console.log(`🔄 Getting default template for: ${templateName}`);
-
-  // Templates por defecto para cada tipo
   const defaultTemplates: Record<string, string> = {
     base: `<!DOCTYPE html>
 <html>
@@ -224,7 +191,6 @@ function getDefaultTemplate(templateName: string): string {
     return "<p>Template not found</p>";
   }
 
-  console.log(`✅ Default template found for: ${templateName}`);
   return template;
 }
 

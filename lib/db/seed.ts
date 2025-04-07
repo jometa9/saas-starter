@@ -5,8 +5,6 @@ import { hashPassword } from '../auth/session';
 import { generateApiKey } from '../utils';
 
 async function createStripeProducts() {
-  console.log('Creating Stripe products and prices...');
-
   const baseProduct = await stripe.products.create({
     name: 'Base',
     description: 'Base subscription plan',
@@ -37,16 +35,11 @@ async function createStripeProducts() {
     },
   });
 
-  console.log('Stripe products and prices created successfully.');
 }
 
 async function main() {
-  console.log('Seeding database...');
-
-  // Delete all existing data
   await db.delete(users);
 
-  // Create a test user
   const passwordHash = await hashPassword('password');
   const apiKey = generateApiKey();
   const [user] = await db
@@ -59,11 +52,7 @@ async function main() {
       role: 'owner',
     })
     .returning();
-
-  console.log('Created user:', user);
-
   await createStripeProducts();
-  console.log('Seeding complete!');
 }
 
 main()

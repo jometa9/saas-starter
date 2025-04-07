@@ -30,9 +30,6 @@ export async function migrateAppSettings() {
         VALUES ('1.0.0', CURRENT_TIMESTAMP);
       `);
       
-      console.log('✅ Tabla app_settings creada con éxito');
-    } else {
-      console.log('⏭️ La tabla app_settings ya existe, saltando migración');
     }
     
     return { success: true };
