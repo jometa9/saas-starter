@@ -891,7 +891,7 @@ export function Dashboard({
               </p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <div className="flex items-center p-4 rounded-md bg-muted">
                   <Mail className="h-6 w-6 mr-3 text-primary" />
                   <div className="flex-1">
@@ -995,7 +995,7 @@ export function Dashboard({
                     </p>
                   </div>
 
-                  <div className="flex items-start space-x-3 rounded-md border p-4">
+                  <div className="flex items-center space-x-3 rounded-md border p-4">
                     <Checkbox
                       id="important"
                       checked={massEmailForm.isImportant}
@@ -1007,7 +1007,9 @@ export function Dashboard({
                       }
                     />
                     <div>
-                      <Label htmlFor="important">Mark as Important</Label>
+                      <Label htmlFor="important" className="font-medium">
+                        Mark as Important
+                      </Label>
                       <p className="text-xs text-gray-500 mt-1">
                         Adds an [IMPORTANT] tag to the subject and visually
                         highlights the message.
@@ -1017,7 +1019,7 @@ export function Dashboard({
 
                   <Button
                     type="submit"
-                    className="w-full mt-4"
+                    className="w-full"
                     disabled={isMassEmailPending}
                   >
                     {isMassEmailPending ? (
