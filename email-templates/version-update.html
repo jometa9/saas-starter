@@ -1,38 +1,204 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>Version Update</title>
-</head>
-<body>
-  <p style="margin-bottom: 16px; color: #374151;">Hi {{name}},</p>
+  <head>
+    <meta charset="utf-8" />
+    <title>Version Update</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;,
+        Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #1f2937;
+      background-color: #f3f4f6;
+    "
+  >
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td align="center" style="padding: 20px">
+          <table
+            class="container"
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            style="
+              background-color: #ffffff;
+              border-radius: 8px;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <tr>
+              <td
+                class="header"
+                style="
+                  text-align: center;
+                  padding: 20px 0;
+                  border-bottom: 1px solid #e5e7eb;
+                "
+              >
+                <div style="font-size: 24px; font-weight: bold; color: #0070f3">
+                  SaaS Starter
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="content" style="padding: 30px">
+                <h1
+                  style="
+                    color: #111827;
+                    font-size: 24px;
+                    font-weight: 600;
+                    margin: 0 0 20px;
+                  "
+                >
+                  New Version Available
+                </h1>
 
-  <p style="margin-bottom: 16px; color: #374151;">A new version of SaaS Starter is available.</p>
+                <p style="margin-bottom: 20px; color: #374151">Hi {{name}},</p>
 
-  <div style="margin: 20px 0;">
-    <span style="display: inline-block; background-color: #e5e7eb; color: #374151; padding: 4px 8px; border-radius: 4px; font-size: 14px; font-weight: 500; margin: 4px 8px 4px 0;">Current: {{currentVersion}}</span>
-    <span style="display: inline-block; background-color: #dbeafe; color: #0070f3; padding: 4px 8px; border-radius: 4px; font-size: 14px; font-weight: 500; margin: 4px 0;">New: {{newVersion}}</span>
-  </div>
+                <p style="margin-bottom: 20px; color: #374151">
+                  A new version of SaaS Starter is now available.
+                </p>
 
-  {{#if isCritical}}
-  <div style="background-color: #fef2f2; border: 1px solid #fee2e2; border-radius: 6px; padding: 16px; margin: 20px 0;">
-    <p style="margin: 0; color: #ef4444; font-weight: 500;">⚠️ This is a critical update that addresses important security or stability issues. Please update as soon as possible.</p>
-  </div>
-  {{/if}}
+                <table
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  style="margin-bottom: 20px"
+                >
+                  <tr>
+                    <td>
+                      <span
+                        style="
+                          display: inline-block;
+                          background-color: #e5e7eb;
+                          color: #374151;
+                          padding: 4px 12px;
+                          border-radius: 4px;
+                          font-size: 14px;
+                          font-weight: 500;
+                        "
+                        >Current: {{currentVersion}}</span
+                      >
+                    </td>
+                    <td style="text-align: right">
+                      <span
+                        style="
+                          display: inline-block;
+                          background-color: #dbeafe;
+                          color: #0070f3;
+                          padding: 4px 12px;
+                          border-radius: 4px;
+                          font-size: 14px;
+                          font-weight: 500;
+                        "
+                        >New: {{newVersion}}</span
+                      >
+                    </td>
+                  </tr>
+                </table>
 
-  {{#if releaseNotes}}
-  <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 20px; margin: 20px 0;">
-    <h3 style="color: #374151; font-size: 18px; margin: 0 0 12px 0; font-weight: 600;">What's New:</h3>
-    <div style="color: #4b5563;">{{releaseNotes}}</div>
-  </div>
-  {{/if}}
+                {{#if isCritical}}
+                <div
+                  style="
+                    background-color: #fef2f2;
+                    border: 1px solid #fee2e2;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin: 20px 0;
+                  "
+                >
+                  <table
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                  >
+                    <tr>
+                      <td width="24" style="vertical-align: top">
+                        <span style="font-size: 20px">⚠️</span>
+                      </td>
+                      <td style="padding-left: 12px">
+                        <p style="margin: 0; color: #ef4444; font-weight: 500">
+                          This is a critical update that addresses important
+                          security or stability issues. Please update as soon as
+                          possible.
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                {{/if}} {{#if releaseNotes}}
+                <div
+                  style="
+                    background-color: #f9fafb;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin: 20px 0;
+                  "
+                >
+                  <h3
+                    style="
+                      color: #111827;
+                      font-size: 18px;
+                      font-weight: 600;
+                      margin: 0 0 12px;
+                    "
+                  >
+                    What's New:
+                  </h3>
+                  <div style="color: #4b5563; white-space: pre-line">
+                    {{releaseNotes}}
+                  </div>
+                </div>
+                {{/if}} {{#if downloadUrl}}
+                <div style="text-align: center; margin: 30px 0">
+                  <a
+                    href="{{downloadUrl}}"
+                    style="
+                      display: inline-block;
+                      background-color: #0070f3;
+                      color: #ffffff;
+                      text-decoration: none;
+                      padding: 12px 24px;
+                      border-radius: 6px;
+                      font-weight: 500;
+                    "
+                    >Download Update</a
+                  >
+                </div>
+                {{/if}}
 
-  {{#if downloadUrl}}
-  <div style="margin: 30px 0; text-align: center;">
-    <a href="{{downloadUrl}}" style="display: inline-block; background-color: #0070f3; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">Download Update</a>
-  </div>
-  {{/if}}
-
-  <p style="margin-bottom: 16px; color: #374151;">If you have any questions about this update, please don't hesitate to contact our support team.</p>
-</body>
-</html> 
+                <p style="margin: 20px 0 0; color: #374151">
+                  If you have any questions about this update, please don't
+                  hesitate to contact our support team.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="footer"
+                style="
+                  text-align: center;
+                  padding: 20px 0;
+                  border-top: 1px solid #e5e7eb;
+                  font-size: 14px;
+                  color: #6b7280;
+                "
+              >
+                <p style="margin: 0">
+                  &copy; {{year}} SaaS Starter. All rights reserved.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

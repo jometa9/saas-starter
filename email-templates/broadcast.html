@@ -1,189 +1,174 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Broadcast Email Template</title>
-  <style>
-    :root {
-      --primary: #0070f3;
-      --primary-dark: #0051a2;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --gray-50: #f9fafb;
-      --gray-100: #f3f4f6;
-      --gray-200: #e5e7eb;
-      --gray-300: #d1d5db;
-      --gray-400: #9ca3af;
-      --gray-500: #6b7280;
-      --gray-600: #4b5563;
-      --gray-700: #374151;
-      --gray-800: #1f2937;
-      --gray-900: #111827;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      color: var(--gray-800);
-      background-color: var(--gray-100);
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>{{subject}}</title>
+  </head>
+  <body
+    style="
       margin: 0;
       padding: 0;
-    }
-    
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .header {
-      text-align: center;
-      padding: 20px 0;
-      border-bottom: 1px solid var(--gray-200);
-    }
-    
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--primary);
-    }
-    
-    .content {
-      padding: 30px 0;
-    }
-    
-    .footer {
-      text-align: center;
-      padding: 20px 0;
-      border-top: 1px solid var(--gray-200);
-      font-size: 14px;
-      color: var(--gray-500);
-    }
-    
-    h1 {
-      color: var(--gray-900);
-      margin-top: 0;
-      font-size: 24px;
-    }
-    
-    h2 {
-      color: var(--gray-800);
-      font-size: 20px;
-      margin-top: 30px;
-    }
-    
-    p {
-      margin-bottom: 16px;
-    }
-    
-    .button {
-      display: inline-block;
-      background-color: var(--primary);
-      color: white;
-      text-decoration: none;
-      padding: 12px 24px;
-      border-radius: 4px;
-      font-weight: 500;
-      margin: 20px 0;
-    }
-    
-    .button:hover {
-      background-color: var(--primary-dark);
-    }
-    
-    .info-box {
-      background-color: var(--gray-50);
-      border: 1px solid var(--gray-200);
-      border-radius: 4px;
-      padding: 16px;
-      margin: 20px 0;
-    }
-    
-    .important-badge {
-      display: inline-block;
-      background-color: var(--danger);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: 500;
-      margin: 0 4px;
-    }
-    
-    .notification-box {
-      background-color: var(--warning);
-      color: white;
-      padding: 16px;
-      border-radius: 4px;
-      margin: 20px 0;
-    }
-    
-    @media (max-width: 600px) {
-      .container {
-        padding: 10px;
-      }
-      
-      h1 {
-        font-size: 22px;
-      }
-      
-      h2 {
-        font-size: 18px;
-      }
-      
-      h3 {
-        font-size: 16px;
-      }
-      
-      .button {
-        display: block;
-        text-align: center;
-        margin: 20px 0;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <div class="logo">SaaS Starter</div>
-    </div>
-    <div class="content">
-      <h1>{{subject}}</h1>
-      
-      <p>Hello {{name}},</p>
-      
-      {{#if isImportant}}
-      <div class="notification-box">
-        <strong>⚠️ IMPORTANT:</strong> This message contains important information about your account.
-      </div>
-      {{/if}}
-      
-      <div class="info-box">
-        {{message}}
-      </div>
-      
-      {{#if ctaUrl}}
-      {{#if ctaLabel}}
-      <div style="text-align: center;">
-        <a href="{{ctaUrl}}" class="button">{{ctaLabel}}</a>
-      </div>
-      {{/if}}
-      {{/if}}
-      
-      <p>If you have any questions, feel free to contact us.</p>
-      
-      <p>Thank you for your continued support!</p>
-    </div>
-    <div class="footer">
-      <p>&copy; 2023 SaaS Starter. All rights reserved.</p>
-      <p>If you didn't request this email, please ignore it or contact us.</p>
-    </div>
-  </div>
-</body>
-</html> 
+      font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;,
+        Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #1f2937;
+      background-color: #f3f4f6;
+    "
+  >
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td align="center" style="padding: 20px">
+          <table
+            class="container"
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            style="
+              background-color: #ffffff;
+              border-radius: 8px;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <tr>
+              <td
+                class="header"
+                style="
+                  text-align: center;
+                  padding: 20px 0;
+                  border-bottom: 1px solid #e5e7eb;
+                "
+              >
+                <div style="font-size: 24px; font-weight: bold; color: #0070f3">
+                  SaaS Starter
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="content" style="padding: 30px">
+                <h1
+                  style="
+                    color: #111827;
+                    font-size: 24px;
+                    font-weight: 600;
+                    margin: 0 0 20px;
+                  "
+                >
+                  {{subject}}
+                </h1>
+
+                <p style="margin-bottom: 20px; color: #374151">Hi {{name}},</p>
+
+                {{#if isImportant}}
+                <div
+                  style="
+                    background-color: #fff7ed;
+                    border: 1px solid #fed7aa;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin: 20px 0;
+                  "
+                >
+                  <table
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                  >
+                    <tr>
+                      <td width="24" style="vertical-align: top">
+                        <span style="font-size: 20px">📢</span>
+                      </td>
+                      <td style="padding-left: 12px">
+                        <p style="margin: 0; color: #9a3412; font-weight: 500">
+                          Important Announcement
+                        </p>
+                        <div
+                          style="
+                            color: #374151;
+                            margin-top: 10px;
+                            white-space: pre-line;
+                          "
+                        >
+                          {{message}}
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                {{else}}
+                <div
+                  style="color: #374151; margin: 20px 0; white-space: pre-line"
+                >
+                  {{message}}
+                </div>
+                {{/if}} {{#if ctaUrl}}
+                <div style="text-align: center; margin: 30px 0">
+                  <a
+                    href="{{ctaUrl}}"
+                    style="
+                      display: inline-block;
+                      background-color: #0070f3;
+                      color: #ffffff;
+                      text-decoration: none;
+                      padding: 12px 24px;
+                      border-radius: 6px;
+                      font-weight: 500;
+                    "
+                    >{{ctaLabel}}</a
+                  >
+                </div>
+                {{/if}}
+
+                <div
+                  style="
+                    background-color: #f9fafb;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin-top: 30px;
+                  "
+                >
+                  <table
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                  >
+                    <tr>
+                      <td width="24" style="vertical-align: top">
+                        <span style="font-size: 20px">💬</span>
+                      </td>
+                      <td style="padding-left: 12px">
+                        <p style="margin: 0; color: #4b5563">
+                          If you have any questions or need assistance, our
+                          support team is here to help.
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="footer"
+                style="
+                  text-align: center;
+                  padding: 20px 0;
+                  border-top: 1px solid #e5e7eb;
+                  font-size: 14px;
+                  color: #6b7280;
+                "
+              >
+                <p style="margin: 0">
+                  &copy; {{year}} SaaS Starter. All rights reserved.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

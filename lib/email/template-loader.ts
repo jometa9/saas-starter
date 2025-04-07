@@ -1,12 +1,12 @@
-import fs from 'fs';
-import path from 'path';
-import { promisify } from 'util';
+import fs from "fs";
+import path from "path";
+import { promisify } from "util";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 
 // Ruta a la carpeta de templates
-const TEMPLATES_DIR = path.join(process.cwd(), 'email-templates');
+const TEMPLATES_DIR = path.resolve(process.cwd(), "email-templates");
 
 // Cache para almacenar los templates cargados
 const templateCache: Record<string, string> = {};
@@ -19,13 +19,19 @@ const templateCache: Record<string, string> = {};
 export async function loadTemplate(templateName: string): Promise<string> {
   console.log(`📧 Loading template: ${templateName}`);
   console.log(`📁 Templates directory: ${TEMPLATES_DIR}`);
+  console.log(`📁 Current working directory: ${process.cwd()}`);
+  console.log(`📁 Absolute templates path: ${path.resolve(TEMPLATES_DIR)}`);
 
   // Verificar si el directorio existe
   if (!fs.existsSync(TEMPLATES_DIR)) {
     console.warn(`⚠️ Templates directory does not exist: ${TEMPLATES_DIR}`);
-    console.log('Creating templates directory...');
+    console.log("Creating templates directory...");
     fs.mkdirSync(TEMPLATES_DIR, { recursive: true });
   }
+
+  // Listar archivos en el directorio
+  const files = fs.readdirSync(TEMPLATES_DIR);
+  console.log(`📁 Files in templates directory: ${files.join(", ")}`);
 
   // Verificar si el template ya está en caché
   if (templateCache[templateName]) {
@@ -37,31 +43,35 @@ export async function loadTemplate(templateName: string): Promise<string> {
     // Intentar cargar el template desde el archivo
     const filePath = path.join(TEMPLATES_DIR, `${templateName}.html`);
     console.log(`📄 Loading template file: ${filePath}`);
+    console.log(`📄 File exists: ${fs.existsSync(filePath)}`);
 
     if (!fs.existsSync(filePath)) {
       console.warn(`⚠️ Template file does not exist: ${filePath}`);
-      console.log('Using default template...');
+      console.log("Using default template...");
       const defaultTemplate = getDefaultTemplate(templateName);
-      
+
       // Guardar el template por defecto en el archivo
-      console.log('Saving default template to file...');
+      console.log("Saving default template to file...");
       await saveTemplate(templateName, defaultTemplate);
-      
+
       return defaultTemplate;
     }
 
-    const templateContent = await readFile(filePath, 'utf8');
+    const templateContent = await readFile(filePath, "utf8");
     console.log(`✅ Template loaded successfully: ${templateName}`);
-    
+    console.log(
+      `📄 Template content length: ${templateContent.length} characters`
+    );
+
     // Guardar en caché
     templateCache[templateName] = templateContent;
-    
+
     return templateContent;
   } catch (error) {
     console.error(`❌ Error loading template ${templateName}:`, error);
-    
+
     // Si hay un error, devolver un template por defecto
-    console.log('Using default template due to error...');
+    console.log("Using default template due to error...");
     return getDefaultTemplate(templateName);
   }
 }
@@ -71,24 +81,27 @@ export async function loadTemplate(templateName: string): Promise<string> {
  * @param templateName Nombre del template (sin extensión)
  * @param content Contenido del template HTML
  */
-export async function saveTemplate(templateName: string, content: string): Promise<void> {
+export async function saveTemplate(
+  templateName: string,
+  content: string
+): Promise<void> {
   console.log(`💾 Saving template: ${templateName}`);
-  
+
   try {
     // Asegurarse de que el directorio existe
     if (!fs.existsSync(TEMPLATES_DIR)) {
       console.log(`📁 Creating templates directory: ${TEMPLATES_DIR}`);
       fs.mkdirSync(TEMPLATES_DIR, { recursive: true });
     }
-    
+
     // Guardar el template en un archivo
     const filePath = path.join(TEMPLATES_DIR, `${templateName}.html`);
     console.log(`📝 Writing template to file: ${filePath}`);
-    await writeFile(filePath, content, 'utf8');
-    
+    await writeFile(filePath, content, "utf8");
+
     // Actualizar la caché
     templateCache[templateName] = content;
-    
+
     console.log(`✅ Template ${templateName} saved successfully`);
   } catch (error) {
     console.error(`❌ Error saving template ${templateName}:`, error);
@@ -103,10 +116,10 @@ export async function saveTemplate(templateName: string, content: string): Promi
  */
 function getDefaultTemplate(templateName: string): string {
   console.log(`🔄 Getting default template for: ${templateName}`);
-  
+
   // Templates por defecto para cada tipo
   const defaultTemplates: Record<string, string> = {
-    'base': `<!DOCTYPE html>
+    base: `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -125,8 +138,8 @@ function getDefaultTemplate(templateName: string): string {
   </div>
 </body>
 </html>`,
-    
-    'version-update': `<!DOCTYPE html>
+
+    "version-update": `<!DOCTYPE html>
 <html>
 <head>
   <title>Version Update</title>
@@ -145,8 +158,8 @@ function getDefaultTemplate(templateName: string): string {
   {{/if}}
 </body>
 </html>`,
-    
-    'broadcast': `<!DOCTYPE html>
+
+    broadcast: `<!DOCTYPE html>
 <html>
 <head>
   <title>{{subject}}</title>
@@ -160,8 +173,8 @@ function getDefaultTemplate(templateName: string): string {
   {{/if}}
 </body>
 </html>`,
-    
-    'welcome': `<!DOCTYPE html>
+
+    welcome: `<!DOCTYPE html>
 <html>
 <head>
   <title>Welcome to SaaS Starter</title>
@@ -173,7 +186,7 @@ function getDefaultTemplate(templateName: string): string {
 </body>
 </html>`,
 
-    'subscription-change': `<!DOCTYPE html>
+    "subscription-change": `<!DOCTYPE html>
 <html>
 <head>
   <title>Subscription Update</title>
@@ -190,7 +203,7 @@ function getDefaultTemplate(templateName: string): string {
 </body>
 </html>`,
 
-    'password-reset': `<!DOCTYPE html>
+    "password-reset": `<!DOCTYPE html>
 <html>
 <head>
   <title>Password Reset</title>
@@ -202,15 +215,15 @@ function getDefaultTemplate(templateName: string): string {
   <a href="{{resetUrl}}">Reset Password</a>
   <p>This link will expire soon.</p>
 </body>
-</html>`
+</html>`,
   };
-  
+
   const template = defaultTemplates[templateName];
   if (!template) {
     console.warn(`⚠️ No default template found for: ${templateName}`);
-    return '<p>Template not found</p>';
+    return "<p>Template not found</p>";
   }
-  
+
   console.log(`✅ Default template found for: ${templateName}`);
   return template;
 }
@@ -221,22 +234,25 @@ function getDefaultTemplate(templateName: string): string {
  * @param data Datos para reemplazar en el template
  * @returns El template con las variables reemplazadas
  */
-export function replaceTemplateVariables(template: string, data: Record<string, any>): string {
+export function replaceTemplateVariables(
+  template: string,
+  data: Record<string, any>
+): string {
   let result = template;
-  
+
   // Manejar bloques condicionales {{#if variable}}...{{/if}}
   const ifRegex = /{{#if\s+([^}]+)}}([\s\S]*?){{\/if}}/g;
   result = result.replace(ifRegex, (match, condition, content) => {
-    const value = condition.split('.').reduce((obj, key) => obj?.[key], data);
-    return value ? content : '';
+    const value = condition.split(".").reduce((obj, key) => obj?.[key], data);
+    return value ? content : "";
   });
-  
+
   // Reemplazar variables simples {{variable}}
   const varRegex = /{{([^#/][^}]*)}}/g;
   result = result.replace(varRegex, (match, key) => {
-    const value = key.split('.').reduce((obj, k) => obj?.[k], data);
+    const value = key.split(".").reduce((obj, k) => obj?.[k], data);
     return value !== undefined ? String(value) : match;
   });
-  
+
   return result;
-} 
+}
