@@ -46,7 +46,7 @@ export async function sendWelcomeEmail({
     () =>
       sendEmail({
         to: email,
-        subject: "Welcome to SaaS Starter!",
+        subject: "Welcome to IPTRADE!",
         html,
         text,
       }),
@@ -85,15 +85,15 @@ export async function sendSubscriptionChangeEmail({
     });
 
     // Determine email subject based on status
-    let subject = "Your SaaS Starter subscription has been updated";
+    let subject = "Your IPTRADE subscription has been updated";
     if (status === "active") {
-      subject = "Your SaaS Starter subscription is active";
+      subject = "Your IPTRADE subscription is active";
     } else if (status === "trialing") {
-      subject = "Your SaaS Starter trial has started";
+      subject = "Your IPTRADE trial has started";
     } else if (status === "canceled") {
-      subject = "Your SaaS Starter subscription has been canceled";
+      subject = "Your IPTRADE subscription has been canceled";
     } else if (status === "unpaid") {
-      subject = "There was a payment issue with your SaaS Starter subscription";
+      subject = "There was a payment issue with your IPTRADE subscription";
     }
 
     // Retry sending up to 3 times
@@ -175,7 +175,7 @@ export async function sendVersionUpdateEmail({
 
   const subject = isCritical
     ? `[CRITICAL UPDATE] New version ${newVersion} available`
-    : `New version ${newVersion} available for SaaS Starter`;
+    : `New version ${newVersion} available for IPTRADE`;
 
   return sendEmail({
     to: email,

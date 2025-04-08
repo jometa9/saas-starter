@@ -153,7 +153,7 @@ export function AboutContent() {
           </Card>
 
           <div className=" p-4 text-center">
-            <h2 className="text-2xl font-bold mb-4">Designed for Prop Traders</h2>
+            <h2 className="text-2xl font-bold mb-4 mt-8">Designed for Prop Traders</h2>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
               IPTRADE is built with prop firm traders in mind, offering specialized
               features to help you manage multiple challenge and evaluation accounts

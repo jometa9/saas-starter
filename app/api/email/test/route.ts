@@ -61,11 +61,11 @@ export async function POST(req: NextRequest) {
     // Enviar un email de prueba
     const emailResult = await sendEmail({
       to,
-      subject: '🧪 Email de prueba - SaaS Starter',
+      subject: '🧪 Email de prueba - IPTRADE',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h1>Email de prueba</h1>
-          <p>Este es un email de prueba enviado desde tu aplicación SaaS Starter.</p>
+          <p>Este es un email de prueba enviado desde tu aplicación IPTRADE.</p>
           <p>Si estás viendo esto, ¡la configuración de email funciona correctamente!</p>
           <hr />
           <p><strong>Detalles técnicos:</strong></p>
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
           </ul>
         </div>
       `,
-      text: `Email de prueba\n\nEste es un email de prueba enviado desde tu aplicación SaaS Starter.\nSi estás viendo esto, ¡la configuración de email funciona correctamente!\n\nDetalles técnicos:\n- Modo: ${process.env.NEXT_PUBLIC_EMAIL_MODE || process.env.NODE_ENV || 'unknown'}\n- Email de prueba: ${process.env.RESEND_TEST_EMAIL || 'No configurado'}\n- Resend API: ${process.env.RESEND_API_KEY ? 'Configurado' : 'No configurado'}\n- SMTP: ${process.env.SMTP_HOST ? 'Configurado' : 'No configurado'}\n- Timestamp: ${new Date().toISOString()}`
+      text: `Email de prueba\n\nEste es un email de prueba enviado desde tu aplicación IPTRADE.\nSi estás viendo esto, ¡la configuración de email funciona correctamente!\n\nDetalles técnicos:\n- Modo: ${process.env.NEXT_PUBLIC_EMAIL_MODE || process.env.NODE_ENV || 'unknown'}\n- Email de prueba: ${process.env.RESEND_TEST_EMAIL || 'No configurado'}\n- Resend API: ${process.env.RESEND_API_KEY ? 'Configurado' : 'No configurado'}\n- SMTP: ${process.env.SMTP_HOST ? 'Configurado' : 'No configurado'}\n- Timestamp: ${new Date().toISOString()}`
     });
     
     // Devolver los resultados

@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         // Email genérico de prueba
         result = await sendEmail({
           to: targetEmail,
-          subject: 'Prueba de Email desde SaaS Starter',
+          subject: 'Prueba de Email desde IPTRADE',
           html: `
             <h1>¡Prueba exitosa!</h1>
             <p>Si estás viendo este email, la configuración de email está funcionando correctamente.</p>

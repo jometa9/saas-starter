@@ -91,16 +91,16 @@ function getDefaultTemplate(templateName: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SaaS Starter</title>
+  <title>IPTRADE</title>
 </head>
 <body>
   <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="text-align: center; margin-bottom: 20px;">
-      <h1 style="color: #0ea5e9;">SaaS Starter</h1>
+      <h1 style="color: #0ea5e9;">IPTRADE</h1>
     </div>
     {{content}}
     <div style="text-align: center; margin-top: 20px; color: #64748b;">
-      <p>&copy; {{year}} SaaS Starter. All rights reserved.</p>
+      <p>&copy; {{year}} IPTRADE. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -114,7 +114,7 @@ function getDefaultTemplate(templateName: string): string {
 <body>
   <h1>New Version Available!</h1>
   <p>Hello {{name}},</p>
-  <p>A new version of SaaS Starter is now available.</p>
+  <p>A new version of IPTRADE is now available.</p>
   <p>Current version: {{currentVersion}}</p>
   <p>New version: {{newVersion}}</p>
   {{#if releaseNotes}}
@@ -144,10 +144,10 @@ function getDefaultTemplate(templateName: string): string {
     welcome: `<!DOCTYPE html>
 <html>
 <head>
-  <title>Welcome to SaaS Starter</title>
+  <title>Welcome to IPTRADE</title>
 </head>
 <body>
-  <h1>Welcome to SaaS Starter, {{name}}!</h1>
+  <h1>Welcome to IPTRADE, {{name}}!</h1>
   <p>Thank you for joining our platform.</p>
   <a href="{{loginUrl}}">Access your account</a>
 </body>

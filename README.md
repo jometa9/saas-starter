@@ -1,6 +1,6 @@
-# Next.js SaaS Starter
+# Next.js IPTRADE
 
-This is a starter template for building a SaaS application using **Next.js** with support for authentication, Stripe integration for payments, and a dashboard for logged-in users.
+This is a starter template for building a IPTRADE application using **Next.js** with support for authentication, Stripe integration for payments, and a dashboard for logged-in users.
 
 **Demo: [https://next-saas-start.vercel.app/](https://next-saas-start.vercel.app/)**
 
@@ -78,7 +78,7 @@ To test Stripe payments, use the following test card details:
 
 ## Going to Production
 
-When you're ready to deploy your SaaS application to production, follow these steps:
+When you're ready to deploy your IPTRADE application to production, follow these steps:
 
 ### Set up a production Stripe webhook
 
