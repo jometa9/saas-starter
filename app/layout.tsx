@@ -1,12 +1,17 @@
-import "./globals.css";
+import "@/app/globals.css";
 import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 import { UserProvider } from "@/lib/auth";
 import { getUser } from "@/lib/db/queries";
 import { Toaster } from "@/components/ui/toaster";
 
+const inter = Inter({ subsets: ["latin"] });
+
 export const metadata: Metadata = {
-  title: "IPTRADE",
-  description: "Get started quickly with Next.js, Postgres, and Stripe.",
+  title: "IPTRADE - Professional Trading Solutions",
+  description: "Copy trades between MetaTrader platforms seamlessly",
 };
 
 export const viewport: Viewport = {
@@ -21,13 +26,17 @@ export default function RootLayout({
   let userPromise = getUser();
 
   return (
-    <html
+    <html 
       lang="en"
       className="min-h-[100dvh] text-black dark:text-white"
     >
-      <body className="max-w-[1200px] mx-auto">
+      <body className={`${inter.className} max-w-[1200px] mx-auto`}>
         <UserProvider userPromise={userPromise}>
-          {children}
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            {children}
+            <Footer />
+          </div>
           <Toaster />
         </UserProvider>
       </body>
