@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { use, Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Home,
-  LogOut,
-} from "lucide-react";
+import { Home, LogOut } from "lucide-react";
 import { useUser } from "@/lib/auth";
 import { signOut } from "@/app/(login)/actions";
 import { useRouter } from "next/navigation";
@@ -71,29 +68,29 @@ export function Header() {
         <Link href="/" className="flex items-center cursor-pointer">
           <span className="text-xl font-semibold text-gray-900">IPTRADE</span>
         </Link>
-        
+
         {/* Navegación central */}
         <div className="hidden md:flex space-x-6">
-        <Link 
-            href="/" 
+          <Link
+            href="/"
             className="text-sm font-medium text-gray-700 hover:text-gray-900"
           >
             Home
           </Link>
-          <Link 
-            href="/about" 
+          <Link
+            href="/about"
             className="text-sm font-medium text-gray-700 hover:text-gray-900"
           >
             About
           </Link>
-          <Link 
-            href="/guide" 
+          <Link
+            href="/guide"
             className="text-sm font-medium text-gray-700 hover:text-gray-900"
           >
             Guide
           </Link>
         </div>
-        
+
         <div className="flex items-center space-x-4">
           <Suspense fallback={<div className="h-9" />}>
             <UserMenu />
@@ -102,4 +99,4 @@ export function Header() {
       </div>
     </header>
   );
-} 
+}

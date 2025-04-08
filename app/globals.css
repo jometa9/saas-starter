@@ -57,6 +57,109 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
+/* Gradient Animation */
+@keyframes lavaCircle {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  }
+  25% {
+    transform: translate(-45%, -55%) rotate(90deg) scale(1.2);
+    border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(180deg) scale(1);
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  }
+  75% {
+    transform: translate(-55%, -45%) rotate(270deg) scale(1.2);
+    border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg) scale(1);
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  }
+}
+
+.gradient {
+  --size: 500px;
+  --speed: 100s;
+  --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+  width: var(--size);
+  height: var(--size);
+  filter: blur(calc(var(--size) / 5));
+  background-image: linear-gradient(10deg, #F4542C, #F4542C);
+  animation: lavaCircle var(--speed) var(--easing) infinite;
+  position: absolute;
+  top: 50%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  z-index: -1;
+}
+
+@media (min-width: 720px) {
+  .gradient {
+    --size: 800px;
+  }
+}
+
+.gradient-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+  height: 100vh;
+  width: 100vw;
+  left: 0;
+  z-index: -1;
+  opacity: 1;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media (max-width: 600px) {
+  .gradient-container {
+    height: 300vh;
+    filter: opacity(0.5);
+  }
+  .gradient-container-coming-soon {
+    height: 210vh;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still

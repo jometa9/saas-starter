@@ -30,11 +30,13 @@ export default function RootLayout({
       lang="en"
       className="min-h-[100dvh] text-black dark:text-white"
     >
-      <body className={`${inter.className} max-w-[1200px] mx-auto`}>
+      <body className={`${inter.className}`}>
         <UserProvider userPromise={userPromise}>
-          <div className="flex min-h-screen flex-col">
+          <div className="flex min-h-screen flex-col relative w-full mx-auto max-w-[1200px]">
             <Header />
-            {children}
+            <main className="flex-1 w-full">
+              {children}
+            </main>
             <Footer />
           </div>
           <Toaster />
