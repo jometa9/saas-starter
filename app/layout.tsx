@@ -30,7 +30,7 @@ export default function RootLayout({
       lang="en"
       className="min-h-[100dvh] text-black dark:text-white"
     >
-      <body className={`${inter.className}`}>
+      <body className={`${inter.className}`} suppressHydrationWarning={true}>
         <UserProvider userPromise={userPromise}>
           <div className="flex min-h-screen flex-col relative w-full mx-auto max-w-[1200px]">
             <Header />
