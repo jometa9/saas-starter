@@ -3,15 +3,28 @@
 import { useEffect, useState, useRef } from "react";
 
 export function Terminal() {
-  const [logs, setLogs] = useState<string[]>([]);
   const logTemplatesRef = useRef<string[]>([
-    "[ID] BTCUSD SELL LIMIT 1.23 LOT PRICE 97380.60000 SL 102380.94329 TP 92380.20000",
-    "[ID] BTCUSD SELL LIMIT 3.01 LOT PRICE 98368.93000 SL 0.00000 TP 0.00000",
-    "[ID] BTCUSD SELL LIMIT 21.01 LOT PRICE 94674.44000 SL 94674.72000 TP 94674.22000",
-    "[TIME] [IP 192.168.0.102] [UPTIME] RECEIVING NEW ORDERS...",
-    "[ID] BTCUSD SELL LIMIT 1.23 LOT PRICE 97380.60000 SL 102380.94329 TP 92380.20000",
-    "[ID] BTCUSD SELL LIMIT 3.01 LOT PRICE 98368.93000 SL 0.00000 TP 0.00000",
-    "[ID] BTCUSD SELL LIMIT 21.01 LOT PRICE 94674.44000 SL 94674.72000 TP 94674.22000",
+    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
+    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
+    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
+    "[TIME] [IP 192.168.0.102] [UPTIME] LISTENING...",
+    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
+    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
+    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
+    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
+    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
+    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
+    "[TIME] [IP 192.168.0.102] [UPTIME] LISTENING...",
+    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
+    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
+    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
+    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
+    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
+    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
+    "[TIME] [IP 192.168.0.102] [UPTIME] LISTENING...",
+    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
+    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
+    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
   ]);
 
   const terminalRef = useRef<HTMLDivElement>(null);
@@ -19,6 +32,9 @@ export function Terminal() {
   const isTypingRef = useRef(false);
   const startTimeRef = useRef(Date.now());
   const orderIdBaseRef = useRef(1100574500);
+  
+  // Inicializamos con un array vacío para evitar problemas de hidratación
+  const [logs, setLogs] = useState<string[]>([]);
 
   const getCurrentTime = () => {
     const now = new Date();
@@ -64,6 +80,14 @@ export function Terminal() {
     return customizedLog;
   };
 
+  const generateInitialLogs = () => {
+    const initialLogs: string[] = [];
+    for (let i = 0; i < logTemplatesRef.current.length; i++) {
+      initialLogs.push(customizeLog(logTemplatesRef.current[i]));
+    }
+    return initialLogs;
+  };
+
   const addLog = () => {
     if (currentLineIndexRef.current >= logTemplatesRef.current.length) {
       currentLineIndexRef.current = 0;
@@ -92,28 +116,41 @@ export function Terminal() {
   };
 
   useEffect(() => {
+    // Generamos los logs iniciales SOLO en el cliente
+    if (logs.length === 0) {
+      setLogs(generateInitialLogs());
+    }
+    
+    // Actualizar el scrollTop para mostrar los últimos logs
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+
     const simulateNewLogs = () => {
       if (isTypingRef.current) return;
       isTypingRef.current = true;
 
-      addLog();
-
+      // Añadimos más logs después de un breve retraso
       const interval = setInterval(
         () => {
           addLog();
         },
-        500
+        250
       );
 
       return () => clearInterval(interval);
     };
 
-    simulateNewLogs();
+    // Pequeño retraso antes de iniciar la simulación de nuevos logs
+    const timeout = setTimeout(() => {
+      simulateNewLogs();
+    }, 500);
 
     return () => {
+      clearTimeout(timeout);
       isTypingRef.current = false;
     };
-  }, []);
+  }, [logs.length]);
 
   return (
     <div className="relative w-full max-w-xl mx-auto lg:max-w-none">

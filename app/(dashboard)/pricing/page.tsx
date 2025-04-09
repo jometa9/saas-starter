@@ -181,7 +181,7 @@ export default async function PricingPage() {
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Basic
                 </th>
-                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Trader
                 </th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-100">
@@ -391,7 +391,7 @@ function FeatureRow({ feature, free, base, plus }: {
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
         {free}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center bg-gray-50">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
         {base}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center bg-gray-100">

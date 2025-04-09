@@ -61,7 +61,237 @@ export default function HomePage() {
           between different MetaTrader platforms from the same computer.
         </p>
       </div>
-      
+
+      <div className="py-12 ">
+        <div className="flex items-center gap-10 justify-center">
+          <div className="flex flex-col items-center">
+            <div className="h-20 w-20 rounded-xl overflow-hidden shadow-2xl mx-auto">
+              <img
+                src="/assets/mt4.png"
+                alt="MetaTrader 4 Platform"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <h3 className="mt-4 text-xl font-semibold">MetaTrader 4</h3>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="h-20 w-20 rounded-xl overflow-hidden mx-auto shadow-2xl">
+              <img
+                src="/assets/mt5.png"
+                alt="MetaTrader 5 Platform"
+                className="w-full h-full object-cover "
+              />
+            </div>
+            <h3 className="mt-4 text-xl font-semibold">MetaTrader 5</h3>
+          </div>
+        </div>
+        <p className="mt-10 text-center text-gray-500">
+          Working with the bests.
+        </p>
+      </div>
+
+      {/* How It Works Section */}
+      <section className="py-16 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+              How IPTRADE Works
+            </h2>
+            <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-500">
+              Simple setup, powerful results. Copy trades between platforms
+              while maintaining your IP integrity.
+            </p>
+          </div>
+
+          <div className="relative">
+            {/* Connecting Line */}
+            <div
+              className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 transform -translate-x-1/2"
+              aria-hidden="true"
+            ></div>
+
+            {/* Step 1 */}
+            <div className="relative mb-12">
+              <div className="lg:flex items-center">
+                <div className="hidden lg:block w-1/2 pr-16 text-right">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    Install & Setup
+                  </h3>
+                  <p className="text-gray-500">
+                    Download IPTRADE and install it on your computer. The setup
+                    takes less than 2 minutes.
+                  </p>
+                </div>
+                <div className="lg:w-14 mx-auto lg:mx-0 flex justify-center items-center">
+                  <div className="h-14 w-14 rounded-full bg-black text-white flex items-center justify-center transform transition-all duration-500 hover:scale-110 hover:rotate-12">
+                    <span className="text-xl font-bold">1</span>
+                  </div>
+                </div>
+                <div className="mt-4 lg:mt-0 lg:w-1/2 lg:pl-16 text-center lg:text-left">
+                  <h3 className="block lg:hidden text-2xl font-bold text-gray-900 mb-3">
+                    Install & Setup
+                  </h3>
+                  <p className="block lg:hidden text-gray-500 mb-4">
+                    Download IPTRADE and install it on your computer. The setup
+                    takes less than 2 minutes.
+                  </p>
+                  <div className="relative h-64 w-full max-w-md mx-auto lg:mx-0 rounded-xl overflow-hidden shadow-xl border border-gray-200 bg-white group">
+                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="text-center p-6">
+                        <p className="text-sm text-gray-500">
+                          Our installer handles all the technical details. Just
+                          download, run, and follow the simple prompts.
+                        </p>
+                        <Button variant="outline" className="mt-4">
+                          <Download className="mr-2 h-4 w-4" />
+                          Get Started
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="h-full w-full flex items-center justify-center">
+                      <div className="animate-pulse">
+                        <Download className="h-16 w-16 text-black" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative mb-12">
+              <div className="lg:flex items-center">
+                <div className="lg:w-1/2 pr-16 text-center lg:text-right order-last lg:order-first">
+                  <div className="relative h-64 w-full max-w-md mx-auto lg:mx-0 lg:ml-auto rounded-xl overflow-hidden shadow-xl border border-gray-200 bg-white group">
+                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="text-center p-6">
+                        <p className="text-sm text-gray-500">
+                          Configure which accounts should copy trades from your
+                          master account with just a few clicks.
+                        </p>
+                        <Button variant="outline" className="mt-4">
+                          <BookOpen className="mr-2 h-4 w-4" />
+                          View Guide
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="h-full w-full flex items-center justify-center p-4">
+                      <div className="animate-bounce">
+                        <svg
+                          className="h-16 w-16 text-black"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M17 6.1H3" />
+                          <path d="M21 12.1H3" />
+                          <path d="M15.9 18.1H3" />
+                          <circle cx="19" cy="18" r="2" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="lg:w-14 mx-auto lg:mx-0 flex justify-center items-center my-6 lg:my-0">
+                  <div className="h-14 w-14 rounded-full bg-black text-white flex items-center justify-center transform transition-all duration-500 hover:scale-110 hover:rotate-12">
+                    <span className="text-xl font-bold">2</span>
+                  </div>
+                </div>
+                <div className="lg:w-1/2 lg:pl-16 text-center lg:text-left order-first lg:order-last">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    Configure Accounts
+                  </h3>
+                  <p className="text-gray-500">
+                    Connect your MetaTrader platforms and select which accounts
+                    should copy trades from your master account.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative">
+              <div className="lg:flex items-center">
+                <div className="hidden lg:block w-1/2 pr-16 text-right">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    Trade & Copy
+                  </h3>
+                  <p className="text-gray-500">
+                    Start trading on your master account and watch as trades are
+                    instantly copied to your follower accounts—all using the
+                    same IP address.
+                  </p>
+                </div>
+                <div className="lg:w-14 mx-auto lg:mx-0 flex justify-center items-center">
+                  <div className="h-14 w-14 rounded-full bg-black text-white flex items-center justify-center transform transition-all duration-500 hover:scale-110 hover:rotate-12">
+                    <span className="text-xl font-bold">3</span>
+                  </div>
+                </div>
+                <div className="mt-4 lg:mt-0 lg:w-1/2 lg:pl-16 text-center lg:text-left">
+                  <h3 className="block lg:hidden text-2xl font-bold text-gray-900 mb-3">
+                    Trade & Copy
+                  </h3>
+                  <p className="block lg:hidden text-gray-500 mb-4">
+                    Start trading on your master account and watch as trades are
+                    instantly copied to your follower accounts—all using the
+                    same IP address.
+                  </p>
+                  <div className="relative h-64 w-full max-w-md mx-auto lg:mx-0 rounded-xl overflow-hidden shadow-xl border border-gray-200 bg-white">
+                    <div className="h-full w-full overflow-hidden relative">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-full max-w-xs">
+                          <div className="space-y-2 font-mono text-xs text-gray-500">
+                            <div className="flex animate-pulse">
+                              <div className="h-4 w-full bg-gray-100 rounded"></div>
+                            </div>
+                            <div className="flex animate-pulse delay-100">
+                              <div className="h-4 w-full bg-gray-100 rounded"></div>
+                            </div>
+                            <div className="flex animate-pulse delay-200">
+                              <div className="h-4 w-full bg-gray-100 rounded"></div>
+                            </div>
+                            <div className="bg-green-100 p-2 rounded animate-pulse">
+                              <p className="text-green-800">
+                                [1100574562] BTCUSD BUY 1.23 LOT ✓
+                              </p>
+                            </div>
+                            <div className="bg-blue-100 p-2 rounded mt-1 animate-pulse delay-300">
+                              <p className="text-blue-800">
+                                [COPIED] → Account #2 ✓
+                              </p>
+                            </div>
+                            <div className="bg-blue-100 p-2 rounded mt-1 animate-pulse delay-500">
+                              <p className="text-blue-800">
+                                [COPIED] → Account #3 ✓
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-20">
+            <Button
+              asChild
+              className="bg-black hover:bg-gray-800 text-white border border-gray-200 rounded-full text-lg px-8 py-6 inline-flex items-center"
+            >
+              <a href="#download">
+                Get Started Now
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </a>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Software Download Section */}
       <section id="download" className="py-16 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -199,7 +429,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-gray-50">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
@@ -379,18 +609,10 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-
-          <div className="mt-10 text-center">
-            <Link href="/pricing">
-              <Button className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-md text-base font-medium">
-                View detailed comparison
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
 
-      <section className="py-16 bg-gray-50">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
             <div>
