@@ -35,7 +35,7 @@ export function GuideContent() {
       <section>
         <div className="px-4 pb-16">
           <div className="rounded-xl shadow-lg overflow-hidden">
-            <div className="p-6">
+            <div className="p-6 pb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Getting Started with IPTRADE
               </h2>
@@ -43,7 +43,7 @@ export function GuideContent() {
               <ol className="space-y-8">
                 <li className="flex">
                   <div className="flex-shrink-0 mr-5">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white">
                       <Download className="h-5 w-5" />
                     </div>
                   </div>
@@ -70,7 +70,7 @@ export function GuideContent() {
 
                 <li className="flex">
                   <div className="flex-shrink-0 mr-5">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white">
                       <Terminal className="h-5 w-5" />
                     </div>
                   </div>
@@ -114,7 +114,7 @@ export function GuideContent() {
 
                 <li className="flex">
                   <div className="flex-shrink-0 mr-5">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white">
                       <CreditCard className="h-5 w-5" />
                     </div>
                   </div>
@@ -165,7 +165,7 @@ export function GuideContent() {
 
                 <li className="flex">
                   <div className="flex-shrink-0 mr-5">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white">
                       <Settings className="h-5 w-5" />
                     </div>
                   </div>
@@ -226,7 +226,7 @@ export function GuideContent() {
 
                 <li className="flex">
                   <div className="flex-shrink-0 mr-5">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 text-white">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-900 text-white">
                       <Zap className="h-5 w-5" />
                     </div>
                   </div>
@@ -275,7 +275,7 @@ export function GuideContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div className="h-10 w-10 bg-black rounded-full flex items-center justify-center mb-3">
+              <div className="h-8 w-8 bg-black rounded-full flex items-center justify-center mb-3">
                 <Shield className="h-5 w-5 text-white" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-3">
@@ -318,7 +318,7 @@ export function GuideContent() {
             </div>
 
             <div className="p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div className="h-10 w-10 bg-black rounded-full flex items-center justify-center mb-3">
+              <div className="h-8 w-8 bg-black rounded-full flex items-center justify-center mb-3">
                 <Book className="h-5 w-5 text-white" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-3">
@@ -365,18 +365,21 @@ export function GuideContent() {
       {/* CTA Section */}
       <section className="p-12 pb-20">
         <div className="px-4 text-center">
-            <h2 className="text-3xl font-bold">Ready to transform your trading?</h2>
-            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-300">
-              Join thousands of traders who are already using IPTRADE to copy trades between platforms while maintaining IP integrity.
-            </p>
-            <div className="mt-8">
-              <Button asChild className="bg-white text-black hover:bg-gray-100">
-                <Link href="/dashboard">
-                  Get started today
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
+          <h2 className="text-3xl font-bold">
+            Ready to transform your trading?
+          </h2>
+          <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-300">
+            Join thousands of traders who are already using IPTRADE to copy
+            trades between platforms while maintaining IP integrity.
+          </p>
+          <div className="mt-8">
+            <Button asChild className="bg-white text-black hover:bg-gray-100">
+              <Link href="/dashboard">
+                Get started today
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
     </main>
