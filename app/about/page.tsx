@@ -26,7 +26,7 @@ export default function AboutPage() {
 
       <section className="pb-16">
         <div className="px-4">
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="rounded-xl shadow-lg overflow-hidden">
             <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center p-8">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900">Our Mission</h2>
