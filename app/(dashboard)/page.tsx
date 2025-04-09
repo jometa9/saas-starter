@@ -62,7 +62,7 @@ export default function HomePage() {
         </p>
       </div>
 
-      <div className="py-12 ">
+      <div className="pb-12 ">
         <div className="flex items-center gap-10 justify-center">
           <div className="flex flex-col items-center">
             <div className="h-20 w-20 rounded-xl overflow-hidden shadow-2xl mx-auto">
@@ -131,7 +131,7 @@ export default function HomePage() {
               </div>
 
               {/* Connecting Lines Container */}
-              <div className="relative h-14">
+              <div className="relative h-20">
                 {/* Horizontal Line */}
                 <div className="absolute left-1/6 right-1/6 top-1/2 h-px bg-gray-300"></div>
                 {/* Vertical Lines */}
@@ -150,8 +150,8 @@ export default function HomePage() {
                       className="w-16 h-16 object-contain rounded-xl"
                     />
                   </div>
-                  <h3 className="mt-2 mb-2 text-xl font-semibold text-gray-500">
-                    MetaTrader 4 Slave
+                  <h3 className="mt-4 mb-2 font-semibold text-gray-500">
+                    MT4 Slave
                   </h3>
                 </div>
 
@@ -163,21 +163,21 @@ export default function HomePage() {
                       className="w-16 h-16 object-contain rounded-xl"
                     />
                   </div>
-                  <h3 className="mt-2 mb-2 text-xl font-semibold text-gray-500">
-                    MetaTrader 5 Slave
+                  <h3 className="mt-4 mb-2 font-semibold text-gray-500">
+                    MT5 Slave
                   </h3>
                 </div>
 
                 <div className="text-center z-10">
                   <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto z-10">
                     <img
-                      src="/assets/mt5.png"
-                      alt="MetaTrader 5 Icon"
+                      src="/assets/mt4.png"
+                      alt="MetaTrader 4 Icon"
                       className="w-16 h-16 object-contain rounded-xl"
                     />
                   </div>
-                  <h3 className="mt-2 mb-2 text-xl font-semibold text-gray-500">
-                    MetaTrader 4 Slave
+                  <h3 className="mt-4 mb-2 font-semibold text-gray-500">
+                    MT4 Slave
                   </h3>
                 </div>
               </div>
