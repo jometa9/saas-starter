@@ -378,7 +378,7 @@ export default function HomePage() {
 
           <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto">
             {/* Free Plan */}
-            <div className="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200 bg-white">
+            <div className="border border-gray-200 rounded-lg shadow-xl divide-y divide-gray-200 bg-white">
               <div className="p-6">
                 <h3 className="text-lg font-medium text-gray-900">Free</h3>
                 <p className="mt-4 text-sm text-gray-500">
@@ -433,7 +433,7 @@ export default function HomePage() {
             </div>
 
             {/* Premium Plan */}
-            <div className="border-2 border-black rounded-lg shadow-sm divide-y divide-gray-200 bg-white">
+            <div className="border-2 border-black rounded-lg shadow-xl divide-y divide-gray-200 bg-white">
               <div className="p-6">
                 <h3 className="text-lg font-medium text-gray-900">Premium</h3>
                 <p className="mt-4 text-sm text-gray-500">
@@ -815,31 +815,43 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Final CTA Section */}
       <section className="py-12">
-        <div className="px-4">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-                Ready to revolutionize your trading?
-              </h2>
-              <p className="mt-3 max-w-3xl text-lg text-gray-500">
-                Our IPTRADE software provides everything you need to copy trades
-                between platforms with the same IP address. Perfect for prop
-                firm traders who want to maintain compliance while copying
-                trades.
-              </p>
-            </div>
-            <div className="mt-8 lg:mt-0 flex justify-center lg:justify-end">
+        <div className="px-8">
+          <div className="max-w-xl mx-auto text-center">
+            <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              Ready to <span className="text-black">revolutionize</span> your
+              trading?
+            </h2>
+            <p className="mt-6 text-xl text-gray-600 ">
+              Join thousands of traders who trust IPTRADE for lightning-fast
+              trade copying between platforms. Perfect for prop firm traders who
+              need to maintain compliance while maximizing efficiency.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center">
               <a href="#download">
-                <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-xl px-12 py-6 inline-flex items-center justify-center">
+                <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl">
                   Download now
-                  <Download className="ml-3 h-6 w-6" />
+                  <Download className="ml-3 h-5 w-5" />
                 </Button>
               </a>
+              <Link href="/dashboard/guide">
+                <Button
+                  variant="outline"
+                  className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center"
+                >
+                  View guide
+                  <ArrowRight className="ml-3 h-5 w-5" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
+
+      <p className="text-4xl font-bold text-gray-500 text-center py-12">
+        <i>See you copying trades in no time!</i>
+      </p>
     </main>
   );
 }
