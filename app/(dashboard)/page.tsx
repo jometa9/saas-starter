@@ -93,7 +93,7 @@ export default function HomePage() {
       {/* Benefits Section */}
       <section className="py-12">
         <div className="px-6">
-          <div className="text-center mb-16">
+          <div className="mb-16">
             <h2 className="text-3xl font-bold text-gray-900">
               Why Choose IPTRADE
             </h2>
@@ -280,7 +280,7 @@ export default function HomePage() {
 
       {/* Steps Section */}
       <section id="steps" className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
               Get Started with IPTRADE
@@ -290,108 +290,68 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="mt-12 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8  mx-auto">
             {/* Step 1 */}
-            <div className="relative pb-12">
-              <div
-                className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
-                aria-hidden="true"
-              ></div>
-              <div className="relative flex space-x-3">
-                <div>
-                  <span className="h-8 w-8 rounded-full bg-black flex items-center justify-center ring-8 ring-white">
-                    <span className="text-white font-medium">1</span>
-                  </span>
+            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-lg flex flex-col">
+              <div className="flex-grow">
+                <div className="h-12 w-12 bg-black rounded-full flex items-center justify-center mb-6">
+                  <Download className="h-6 w-6 text-white" />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <div>
-                    <div className="text-lg font-medium text-gray-900">
-                      Download IPTRADE App
-                    </div>
-                    <p className="mt-2 text-gray-500">
-                      Download and install the IPTRADE desktop application. This
-                      app acts as a central hub, receiving and sending orders
-                      between your trading accounts.
-                    </p>
-                  </div>
-                  <div className="mt-4">
-                    <a
-                      href="#download"
-                      className="inline-flex items-center text-sm font-medium text-black"
-                    >
-                      Go to downloads
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Download IPTRADE App</h3>
+                <p className="text-gray-600">
+                  Download and install the IPTRADE desktop application. This app acts as a central hub, receiving and sending orders between your trading accounts.
+                </p>
+              </div>
+              <div className="mt-6">
+                <a href="#download" className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600">
+                  Go to downloads
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
               </div>
             </div>
 
             {/* Step 2 */}
-            <div className="relative pb-12">
-              <div
-                className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
-                aria-hidden="true"
-              ></div>
-              <div className="relative flex space-x-3">
-                <div>
-                  <span className="h-8 w-8 rounded-full bg-black flex items-center justify-center ring-8 ring-white">
-                    <span className="text-white font-medium">2</span>
-                  </span>
+            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-lg flex flex-col">
+              
+              <div className="flex-grow">
+                <div className="h-12 w-12 bg-black rounded-full flex items-center justify-center mb-6">
+                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <div>
-                    <div className="text-lg font-medium text-gray-900">
-                      Install MetaTrader Platform
-                    </div>
-                    <p className="mt-2 text-gray-500">
-                      Download and install MetaTrader 4 or MetaTrader 5. We
-                      recommend downloading directly from the official MQL5
-                      website for the latest version and security updates.
-                    </p>
-                  </div>
-                  <div className="mt-4">
-                    <a
-                      href="#download"
-                      className="inline-flex items-center text-sm font-medium text-black"
-                    >
-                      Get MetaTrader
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Install MetaTrader Platform</h3>
+                <p className="text-gray-600">
+                  Download and install MetaTrader 4 or MetaTrader 5. We recommend downloading directly from the official MQL5 website for the latest version and security updates.
+                </p>
+              </div>
+              <div className="mt-6">
+                <a href="#download" className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600">
+                  Get MetaTrader
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
               </div>
             </div>
 
             {/* Step 3 */}
-            <div className="relative">
-              <div className="relative flex space-x-3">
-                <div>
-                  <span className="h-8 w-8 rounded-full bg-black flex items-center justify-center ring-8 ring-white">
-                    <span className="text-white font-medium">3</span>
-                  </span>
+            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-lg flex flex-col">
+              
+              <div className="flex-grow">
+                <div className="h-12 w-12 bg-black rounded-full flex items-center justify-center mb-6">
+                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <div>
-                    <div className="text-lg font-medium text-gray-900">
-                      Configure Your Accounts
-                    </div>
-                    <p className="mt-2 text-gray-500">
-                      Set up your master account and configure your slave
-                      accounts in the IPTRADE app. Follow our detailed guide for
-                      step-by-step instructions on account configuration.
-                    </p>
-                  </div>
-                  <div className="mt-4">
-                    <Link
-                      href="/dashboard/guide"
-                      className="inline-flex items-center text-sm font-medium text-black"
-                    >
-                      View configuration guide
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </div>
-                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Configure Your Accounts</h3>
+                <p className="text-gray-600">
+                  Set up your master account and configure your slave accounts in the IPTRADE app. Follow our detailed guide for step-by-step instructions on account configuration.
+                </p>
+              </div>
+              <div className="mt-6">
+                <Link href="/dashboard/guide" className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600">
+                  View configuration guide
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </div>
             </div>
           </div>
@@ -486,130 +446,155 @@ export default function HomePage() {
       {/* Pricing Section */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="mb-12">
             <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
               Simple Pricing
             </h2>
-            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
-              One plan, unlimited possibilities. Choose the plan that fits your
-              trading
+            <p className="mt-3 text-lg text-gray-500">
+              Choose the plan that fits your trading needs
             </p>
           </div>
 
-          <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Free Plan */}
-            <div className="border border-gray-200 rounded-lg shadow-xl divide-y divide-gray-200 bg-white">
-              <div className="p-6">
-                <h3 className="text-lg font-medium text-gray-900">Free</h3>
-                <p className="mt-4 text-sm text-gray-500">
-                  Perfect for getting started with trade copying
-                </p>
-                <p className="mt-8">
-                  <span className="text-4xl font-extrabold text-gray-900">
-                    $0
-                  </span>
-                  <span className="text-base font-medium text-gray-500">
-                    /mo
-                  </span>
-                </p>
-                <a
-                  href="#steps"
-                  className="mt-8 block w-full bg-white border border-gray-800 rounded-md py-2 text-sm font-semibold text-gray-900 text-center hover:bg-gray-50"
-                >
-                  Get Started
-                </a>
-              </div>
-              <div className="px-6 pt-6 pb-8">
-                <h4 className="text-sm font-medium text-gray-900 tracking-wide">
-                  What's included
-                </h4>
-                <ul className="mt-6 space-y-4">
-                  <li className="flex space-x-3">
-                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
-                    <span className="text-sm text-gray-500">
-                      Single master account
-                    </span>
-                  </li>
-                  <li className="flex space-x-3">
-                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
-                    <span className="text-sm text-gray-500">
-                      Up to 2 slave accounts
-                    </span>
-                  </li>
-                  <li className="flex space-x-3">
-                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
-                    <span className="text-sm text-gray-500">
-                      Fixed lot size (0.01)
-                    </span>
-                  </li>
-                  <li className="flex space-x-3">
-                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
-                    <span className="text-sm text-gray-500">
-                      Community support
-                    </span>
-                  </li>
-                </ul>
+            <div className="lg:col-span-5 border border-gray-200 rounded-2xl shadow-lg bg-white p-8">
+              <div className="flex flex-col h-full">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">Free</h3>
+                  <p className="mt-4 text-gray-600">
+                    Perfect for getting started with trade copying
+                  </p>
+                  <div className="mt-6">
+                    <span className="text-5xl font-bold text-gray-900">$0</span>
+                    <span className="text-xl text-gray-500">/month</span>
+                  </div>
+                </div>
+
+                <div className="mt-8 flex-grow">
+                  <ul className="space-y-4">
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Single master account
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Up to 2 slave accounts
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Fixed lot size (0.01)
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Community support
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="mt-8">
+                  <a href="#steps">
+                    <Button
+                      variant="outline"
+                      className="w-full py-6 text-lg border-black text-black hover:bg-black/5"
+                    >
+                      Get Started
+                    </Button>
+                  </a>
+                </div>
               </div>
             </div>
 
             {/* Premium Plan */}
-            <div className="border-2 border-black rounded-lg shadow-xl divide-y divide-gray-200 bg-white">
-              <div className="p-6">
-                <h3 className="text-lg font-medium text-gray-900">Premium</h3>
-                <p className="mt-4 text-sm text-gray-500">
-                  Advanced features for serious traders
-                </p>
-                <p className="mt-8">
-                  <span className="text-4xl font-extrabold text-gray-900">
-                    $20
-                  </span>
-                  <span className="text-base font-medium text-gray-500">
-                    /mo
-                  </span>
-                </p>
-                <Button
-                  asChild
-                  className="mt-8 block w-full bg-black border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-gray-800"
-                >
-                  <Link href="/pricing">Go Premium</Link>
-                </Button>
+            <div className="lg:col-span-7 border-2 border-black rounded-2xl shadow-xl bg-white p-8 relative">
+              <div className="absolute top-0 right-6 -translate-y-1/2">
+                <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium bg-green-50 text-green-700 border border-green-100">
+                  MOST POPULAR
+                </span>
               </div>
-              <div className="px-6 pt-6 pb-8">
-                <h4 className="text-sm font-medium text-gray-900 tracking-wide">
-                  What's included
-                </h4>
-                <ul className="mt-6 space-y-4">
-                  <li className="flex space-x-3">
-                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
-                    <span className="text-sm text-gray-500">
-                      All Free features
+
+              <div className="flex flex-col h-full">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">Premium</h3>
+                  <p className="mt-4 text-gray-600">
+                    Advanced features for serious traders
+                  </p>
+                  <div className="mt-6">
+                    <span className="text-5xl font-bold text-gray-900">
+                      $20
                     </span>
-                  </li>
-                  <li className="flex space-x-3">
-                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
-                    <span className="text-sm text-gray-500">
-                      Customizable lot sizes
-                    </span>
-                  </li>
-                  <li className="flex space-x-3">
-                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
-                    <span className="text-sm text-gray-500">
-                      Up to 5 slave accounts
-                    </span>
-                  </li>
-                  <li className="flex space-x-3">
-                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
-                    <span className="text-sm text-gray-500">
-                      Priority support
-                    </span>
-                  </li>
-                  <li className="flex space-x-3">
-                    <Check className="flex-shrink-0 h-5 w-5 text-green-500" />
-                    <span className="text-sm text-gray-500">
-                      Advanced risk management
-                    </span>
-                  </li>
-                </ul>
+                    <span className="text-xl text-gray-500">/month</span>
+                  </div>
+                </div>
+
+                <div className="mt-8 flex-grow">
+                  <ul className="space-y-4">
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        All Free features
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Customizable lot sizes
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Up to 5 slave accounts
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Priority support
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Advanced risk management
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="mt-8">
+                  <Button
+                    asChild
+                    className="w-full py-6 text-lg bg-black hover:bg-gray-800 text-white"
+                  >
+                    <Link href="/pricing">Go Premium</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
