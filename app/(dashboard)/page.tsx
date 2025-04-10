@@ -31,20 +31,20 @@ export default function HomePage() {
               </p>
               <div className="mt-8 flex flex-col items-center sm:flex-row sm:justify-center md:justify-center lg:justify-start gap-4 mx-auto lg:mx-0">
                 <a href="#download">
-                  <Button className="bg-black hover:bg-gray-800 text-white border border-gray-200 rounded-full text-lg px-8 py-4 inline-flex items-center justify-center cursor-pointer w-full sm:w-auto">
-                    Download Now
-                    <Download className="ml-2 h-5 w-5" />
+                  <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer">
+                    Download now
+                    <Download className="ml-3 h-5 w-5" />
                   </Button>
                 </a>
-                <a href="/guide">
+                <Link href="/dashboard/guide">
                   <Button
                     variant="outline"
-                    className="rounded-full text-lg px-8 py-4 inline-flex items-center justify-center cursor-pointer w-full sm:w-auto"
+                    className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer"
                   >
-                    Read the Guide
-                    <BookOpen className="ml-2 h-5 w-5" />
+                    View guide
+                    <ArrowRight className="ml-3 h-5 w-5" />
                   </Button>
-                </a>
+                </Link>
               </div>
             </div>
             <div className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
@@ -55,7 +55,9 @@ export default function HomePage() {
       </section>
 
       <div className="text-center py-12 pt-8 px-6">
-        <h2 className="text-5xl font-bold ">Your trades, One IP adress.</h2>
+        <h2 className="text-5xl font-bold ">
+          Your trades, <span className="text-gray-500">One IP adress.</span>
+        </h2>
         <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-500">
           Get our high-frequency trading software that allows you to copy trades
           between different MetaTrader platforms from the same computer.
@@ -93,20 +95,16 @@ export default function HomePage() {
       {/* Benefits Section */}
       <section className="py-12">
         <div className="px-6">
-          <div className="mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Why Choose IPTRADE
-            </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Discover the advantages that make IPTRADE the preferred choice for
-              professional traders
-            </p>
+          <div className="r mb-14">
+            <span className="text-3xl text-center text-gray-500 mb-8">
+              IPTRADE Features
+            </span>
+            
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto">
-            {/* Benefit 1 */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 px-4 mx-auto">
+            {/* Benefit 1 - Lightning Fast */}
             <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-blue-200">
                 <svg
                   className="w-6 h-6"
                   viewBox="0 0 24 24"
@@ -133,9 +131,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Benefit 2 */}
+            {/* Benefit 2 - Single IP */}
             <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+              <div className="w-12 h-12 bg-purple-600 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-purple-200">
                 <svg
                   className="w-6 h-6"
                   viewBox="0 0 24 24"
@@ -161,9 +159,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Benefit 3 */}
+            {/* Benefit 3 - Customizable */}
             <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+              <div className="w-12 h-12 bg-green-600 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-green-200">
                 <svg
                   className="w-6 h-6"
                   viewBox="0 0 24 24"
@@ -195,9 +193,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Benefit 4 */}
+            {/* Benefit 4 - Security */}
             <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+              <div className="w-12 h-12 bg-red-600 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-red-200">
                 <svg
                   className="w-6 h-6"
                   viewBox="0 0 24 24"
@@ -221,9 +219,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Benefit 5 */}
+            {/* Benefit 5 - Analytics */}
             <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+              <div className="w-12 h-12 bg-amber-500 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-amber-200">
                 <svg
                   className="w-6 h-6"
                   viewBox="0 0 24 24"
@@ -249,9 +247,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Benefit 6 */}
+            {/* Benefit 6 - Support */}
             <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+              <div className="w-12 h-12 bg-indigo-600 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-indigo-200">
                 <svg
                   className="w-6 h-6"
                   viewBox="0 0 24 24"
@@ -292,18 +290,25 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8  mx-auto">
             {/* Step 1 */}
-            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-lg flex flex-col">
+            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 border-2 shadow-lg flex flex-col">
               <div className="flex-grow">
-                <div className="h-12 w-12 bg-black rounded-full flex items-center justify-center mb-6">
-                  <Download className="h-6 w-6 text-white" />
+                <div className="h-12 w-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-blue-200 mb-6">
+                  <Download className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Download IPTRADE App</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  Download IPTRADE App
+                </h3>
                 <p className="text-gray-600">
-                  Download and install the IPTRADE desktop application. This app acts as a central hub, receiving and sending orders between your trading accounts.
+                  Download and install the IPTRADE desktop application. This app
+                  acts as a central hub, receiving and sending orders between
+                  your trading accounts.
                 </p>
               </div>
               <div className="mt-6">
-                <a href="#download" className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600">
+                <a
+                  href="#download"
+                  className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600 cursor-pointer"
+                >
                   Go to downloads
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
@@ -311,21 +316,37 @@ export default function HomePage() {
             </div>
 
             {/* Step 2 */}
-            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-lg flex flex-col">
-              
+            <div className="relative bg-white p-8 rounded-2xl border border-gray-400 border-2 shadow-lg flex flex-col">
               <div className="flex-grow">
-                <div className="h-12 w-12 bg-black rounded-full flex items-center justify-center mb-6">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                <div className="h-12 w-12 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-purple-200 mb-6">
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Install MetaTrader Platform</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  Install MetaTrader Platform
+                </h3>
                 <p className="text-gray-600">
-                  Download and install MetaTrader 4 or MetaTrader 5. We recommend downloading directly from the official MQL5 website for the latest version and security updates.
+                  Download and install MetaTrader 4 or MetaTrader 5. We
+                  recommend downloading directly from the official MQL5 website
+                  for the latest version and security updates.
                 </p>
               </div>
               <div className="mt-6">
-                <a href="#download" className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600">
+                <a
+                  href="#download"
+                  className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600 cursor-pointer"
+                >
                   Get MetaTrader
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
@@ -333,22 +354,43 @@ export default function HomePage() {
             </div>
 
             {/* Step 3 */}
-            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-lg flex flex-col">
-              
+            <div className="relative bg-white p-8 rounded-2xl border border-gray-500 border-2 shadow-lg flex flex-col">
               <div className="flex-grow">
-                <div className="h-12 w-12 bg-black rounded-full flex items-center justify-center mb-6">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <div className="h-12 w-12 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-green-200 mb-6">
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Configure Your Accounts</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  Configure Your Accounts
+                </h3>
                 <p className="text-gray-600">
-                  Set up your master account and configure your slave accounts in the IPTRADE app. Follow our detailed guide for step-by-step instructions on account configuration.
+                  Set up your master account and configure your slave accounts
+                  in the IPTRADE app. Follow our detailed guide for step-by-step
+                  instructions on account configuration.
                 </p>
               </div>
               <div className="mt-6">
-                <Link href="/dashboard/guide" className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600">
+                <Link
+                  href="/dashboard/guide"
+                  className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600 cursor-pointer"
+                >
                   View configuration guide
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -445,19 +487,17 @@ export default function HomePage() {
 
       {/* Pricing Section */}
       <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-              Simple Pricing
-            </h2>
-            <p className="mt-3 text-lg text-gray-500">
+        <div className="px-4">
+          <div className="r mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Simple Pricing</h2>
+            <p className="mt-3 max-w-2xl text-lg text-gray-600">
               Choose the plan that fits your trading needs
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Free Plan */}
-            <div className="lg:col-span-5 border border-gray-200 rounded-2xl shadow-lg bg-white p-8">
+            <div className="lg:col-span-4 border border-gray-200 rounded-2xl shadow-lg bg-white p-8">
               <div className="flex flex-col h-full">
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900">Free</h3>
@@ -511,7 +551,7 @@ export default function HomePage() {
                   <a href="#steps">
                     <Button
                       variant="outline"
-                      className="w-full py-6 text-lg border-black text-black hover:bg-black/5"
+                      className="w-full py-6 text-lg border-black text-black hover:bg-black/5 cursor-pointer"
                     >
                       Get Started
                     </Button>
@@ -521,7 +561,7 @@ export default function HomePage() {
             </div>
 
             {/* Premium Plan */}
-            <div className="lg:col-span-7 border-2 border-black rounded-2xl shadow-xl bg-white p-8 relative">
+            <div className="lg:col-span-4 border-2 border-black rounded-2xl shadow-xl bg-white p-8 relative">
               <div className="absolute top-0 right-6 -translate-y-1/2">
                 <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium bg-green-50 text-green-700 border border-green-100">
                   MOST POPULAR
@@ -590,9 +630,97 @@ export default function HomePage() {
                 <div className="mt-8">
                   <Button
                     asChild
-                    className="w-full py-6 text-lg bg-black hover:bg-gray-800 text-white"
+                    className="w-full py-6 text-lg bg-black hover:bg-gray-800 text-white cursor-pointer"
                   >
                     <Link href="/pricing">Go Premium</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Enterprise Plan */}
+            <div className="lg:col-span-4 border-2 border-purple-500 rounded-2xl shadow-xl bg-white p-8 relative">
+              <div className="absolute top-0 right-6 -translate-y-1/2">
+                <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium bg-purple-50 text-purple-700 border border-purple-100">
+                  MANAGED SERVICE
+                </span>
+              </div>
+
+              <div className="flex flex-col h-full">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    Managed VPS
+                  </h3>
+                  <p className="mt-4 text-gray-600">
+                    Fully managed trade copying service
+                  </p>
+                  <div className="mt-6">
+                    <span className="text-5xl font-bold text-gray-900">
+                      $499
+                    </span>
+                    <span className="text-xl text-gray-500">/month</span>
+                  </div>
+                </div>
+
+                <div className="mt-8 flex-grow">
+                  <ul className="space-y-4">
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        All Premium features
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Dedicated VPS server
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Single IP for all accounts
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Up to 10 slave accounts
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        24/7 server monitoring
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700">
+                        Full setup & configuration
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="mt-8">
+                  <Button
+                    asChild
+                    className="w-full py-6 text-lg bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
+                  >
+                    <Link href="/contact">Contact Sales</Link>
                   </Button>
                 </div>
               </div>
@@ -604,11 +732,11 @@ export default function HomePage() {
       {/* Software Download Section */}
       <section id="download" className="py-12 w-full">
         <div className="px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+          <div className="r mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">
               Download IPTRADE
             </h2>
-            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-600">
+            <p className="mt-3 max-w-2xl text-lg text-gray-600">
               Get everything you need to start copying trades between MetaTrader
               platforms
             </p>
@@ -636,7 +764,7 @@ export default function HomePage() {
                     <h4 className="font-medium text-lg">Windows Version</h4>
                     <p className="text-sm text-muted-foreground">v1.0.0</p>
                   </div>
-                  <Button variant="outline" className="ml-auto">
+                  <Button variant="outline" className="ml-auto cursor-pointer">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -653,7 +781,7 @@ export default function HomePage() {
                     <h4 className="font-medium text-lg">macOS Version</h4>
                     <p className="text-sm text-muted-foreground">v1.0.0</p>
                   </div>
-                  <Button variant="outline" className="ml-auto">
+                  <Button variant="outline" className="ml-auto cursor-pointer">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -689,7 +817,7 @@ export default function HomePage() {
                       MQL4 Source Code
                     </p>
                   </div>
-                  <Button variant="outline" className="ml-auto">
+                  <Button variant="outline" className="ml-auto cursor-pointer">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -708,7 +836,7 @@ export default function HomePage() {
                       MQL5 Source Code
                     </p>
                   </div>
-                  <Button variant="outline" className="ml-auto">
+                  <Button variant="outline" className="ml-auto cursor-pointer">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -748,8 +876,12 @@ export default function HomePage() {
                     href="https://www.mql5.com/en/download/mt4"
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="cursor-pointer"
                   >
-                    <Button variant="outline" className="ml-auto">
+                    <Button
+                      variant="outline"
+                      className="ml-auto cursor-pointer"
+                    >
                       <ArrowRight className="h-4 w-4 mr-2" />
                       Visit MQL5
                     </Button>
@@ -773,8 +905,12 @@ export default function HomePage() {
                     href="https://www.mql5.com/en/download/mt5"
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="cursor-pointer"
                   >
-                    <Button variant="outline" className="ml-auto">
+                    <Button
+                      variant="outline"
+                      className="ml-auto cursor-pointer"
+                    >
                       <ArrowRight className="h-4 w-4 mr-2" />
                       Visit MQL5
                     </Button>
@@ -791,7 +927,10 @@ export default function HomePage() {
           <div className="text-center mt-12">
             <p className="text-sm text-gray-500">
               Need help with setup? Check our{" "}
-              <Link href="/dashboard/guide" className="text-black font-medium">
+              <Link
+                href="/dashboard/guide"
+                className="text-black font-medium cursor-pointer"
+              >
                 guide
               </Link>{" "}
               for detailed installation instructions.
@@ -815,7 +954,7 @@ export default function HomePage() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center">
               <a href="#download">
-                <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl">
+                <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer">
                   Download now
                   <Download className="ml-3 h-5 w-5" />
                 </Button>
@@ -823,7 +962,7 @@ export default function HomePage() {
               <Link href="/dashboard/guide">
                 <Button
                   variant="outline"
-                  className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center"
+                  className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer"
                 >
                   View guide
                   <ArrowRight className="ml-3 h-5 w-5" />
@@ -834,7 +973,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <p className="text-3xl font-bold text-gray-200 text-center py-12">
+      <p className="text-3xl font-bold text-gray-200 text-center py-12 px-6">
         <i>See you copying trades!</i>
       </p>
     </main>
