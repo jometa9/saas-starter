@@ -1,6 +1,3 @@
-hacer funcional todo lo que este en dashboard
-
-- cambiar el brandin a lo que vaya acorde a iptrader
 - secciones explicando a modo de pasos que hace el producto
 - seccion de precios mas linda
 - seccion try for free sin login ni nada
