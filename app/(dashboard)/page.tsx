@@ -278,6 +278,126 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Steps Section */}
+      <section id="steps" className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+              Get Started with IPTRADE
+            </h2>
+            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
+              Follow these simple steps to set up your trade copying system
+            </p>
+          </div>
+
+          <div className="mt-12 max-w-3xl mx-auto">
+            {/* Step 1 */}
+            <div className="relative pb-12">
+              <div
+                className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
+                aria-hidden="true"
+              ></div>
+              <div className="relative flex space-x-3">
+                <div>
+                  <span className="h-8 w-8 rounded-full bg-black flex items-center justify-center ring-8 ring-white">
+                    <span className="text-white font-medium">1</span>
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div>
+                    <div className="text-lg font-medium text-gray-900">
+                      Download IPTRADE App
+                    </div>
+                    <p className="mt-2 text-gray-500">
+                      Download and install the IPTRADE desktop application. This
+                      app acts as a central hub, receiving and sending orders
+                      between your trading accounts.
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <a
+                      href="#download"
+                      className="inline-flex items-center text-sm font-medium text-black"
+                    >
+                      Go to downloads
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative pb-12">
+              <div
+                className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
+                aria-hidden="true"
+              ></div>
+              <div className="relative flex space-x-3">
+                <div>
+                  <span className="h-8 w-8 rounded-full bg-black flex items-center justify-center ring-8 ring-white">
+                    <span className="text-white font-medium">2</span>
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div>
+                    <div className="text-lg font-medium text-gray-900">
+                      Install MetaTrader Platform
+                    </div>
+                    <p className="mt-2 text-gray-500">
+                      Download and install MetaTrader 4 or MetaTrader 5. We
+                      recommend downloading directly from the official MQL5
+                      website for the latest version and security updates.
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <a
+                      href="#download"
+                      className="inline-flex items-center text-sm font-medium text-black"
+                    >
+                      Get MetaTrader
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative">
+              <div className="relative flex space-x-3">
+                <div>
+                  <span className="h-8 w-8 rounded-full bg-black flex items-center justify-center ring-8 ring-white">
+                    <span className="text-white font-medium">3</span>
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div>
+                    <div className="text-lg font-medium text-gray-900">
+                      Configure Your Accounts
+                    </div>
+                    <p className="mt-2 text-gray-500">
+                      Set up your master account and configure your slave
+                      accounts in the IPTRADE app. Follow our detailed guide for
+                      step-by-step instructions on account configuration.
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <Link
+                      href="/dashboard/guide"
+                      className="inline-flex items-center text-sm font-medium text-black"
+                    >
+                      View configuration guide
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How It Works Section */}
       {/*
       <section className="py-16 bg-white">
@@ -695,126 +815,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Steps Section */}
-      <section id="steps" className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-              Get Started with IPTRADE
-            </h2>
-            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
-              Follow these simple steps to set up your trade copying system
-            </p>
-          </div>
-
-          <div className="mt-12 max-w-3xl mx-auto">
-            {/* Step 1 */}
-            <div className="relative pb-12">
-              <div
-                className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
-                aria-hidden="true"
-              ></div>
-              <div className="relative flex space-x-3">
-                <div>
-                  <span className="h-8 w-8 rounded-full bg-black flex items-center justify-center ring-8 ring-white">
-                    <span className="text-white font-medium">1</span>
-                  </span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div>
-                    <div className="text-lg font-medium text-gray-900">
-                      Download IPTRADE App
-                    </div>
-                    <p className="mt-2 text-gray-500">
-                      Download and install the IPTRADE desktop application. This
-                      app acts as a central hub, receiving and sending orders
-                      between your trading accounts.
-                    </p>
-                  </div>
-                  <div className="mt-4">
-                    <a
-                      href="#download"
-                      className="inline-flex items-center text-sm font-medium text-black"
-                    >
-                      Go to downloads
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="relative pb-12">
-              <div
-                className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
-                aria-hidden="true"
-              ></div>
-              <div className="relative flex space-x-3">
-                <div>
-                  <span className="h-8 w-8 rounded-full bg-black flex items-center justify-center ring-8 ring-white">
-                    <span className="text-white font-medium">2</span>
-                  </span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div>
-                    <div className="text-lg font-medium text-gray-900">
-                      Install MetaTrader Platform
-                    </div>
-                    <p className="mt-2 text-gray-500">
-                      Download and install MetaTrader 4 or MetaTrader 5. We
-                      recommend downloading directly from the official MQL5
-                      website for the latest version and security updates.
-                    </p>
-                  </div>
-                  <div className="mt-4">
-                    <a
-                      href="#download"
-                      className="inline-flex items-center text-sm font-medium text-black"
-                    >
-                      Get MetaTrader
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative">
-              <div className="relative flex space-x-3">
-                <div>
-                  <span className="h-8 w-8 rounded-full bg-black flex items-center justify-center ring-8 ring-white">
-                    <span className="text-white font-medium">3</span>
-                  </span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div>
-                    <div className="text-lg font-medium text-gray-900">
-                      Configure Your Accounts
-                    </div>
-                    <p className="mt-2 text-gray-500">
-                      Set up your master account and configure your slave
-                      accounts in the IPTRADE app. Follow our detailed guide for
-                      step-by-step instructions on account configuration.
-                    </p>
-                  </div>
-                  <div className="mt-4">
-                    <Link
-                      href="/dashboard/guide"
-                      className="inline-flex items-center text-sm font-medium text-black"
-                    >
-                      View configuration guide
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Final CTA Section */}
       <section className="py-12">
         <div className="px-8">
@@ -849,8 +849,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <p className="text-4xl font-bold text-gray-500 text-center py-12">
-        <i>See you copying trades in no time!</i>
+      <p className="text-3xl font-bold text-gray-200 text-center py-12">
+        <i>See you copying trades!</i>
       </p>
     </main>
   );
