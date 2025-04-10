@@ -90,22 +90,200 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* How It Works Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Benefits Section */}
+      <section className="py-16">
+        <div className="px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900">
-              How IPTRADE Works
+              Why Choose IPTRADE
             </h2>
             <p className="mt-4 text-lg text-gray-600">
-              Simple and efficient trade copying between your MetaTrader
-              accounts
+              Discover the advantages that make IPTRADE the preferred choice for
+              professional traders
             </p>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto">
+            {/* Benefit 1 */}
+            <div className="flex items-start gap-6">
+              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">
+                  Lightning-Fast Trade Copying
+                </h3>
+                <p className="text-gray-600">
+                  Experience minimal latency between your master and slave
+                  accounts. Our optimized copying system ensures your trades are
+                  replicated instantly.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit 2 */}
+            <div className="flex items-start gap-6">
+              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">
+                  Single IP Address Trading
+                </h3>
+                <p className="text-gray-600">
+                  Maintain compliance with prop firm requirements by ensuring
+                  all your trading accounts operate from the same IP address.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit 3 */}
+            <div className="flex items-start gap-6">
+              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">
+                  Customizable Parameters
+                </h3>
+                <p className="text-gray-600">
+                  Fine-tune your trading setup with adjustable lot sizes, risk
+                  management settings, and custom trade filters.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit 4 */}
+            <div className="flex items-start gap-6">
+              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">Enterprise Security</h3>
+                <p className="text-gray-600">
+                  Trade with confidence knowing your data and connections are
+                  protected by industry-standard encryption protocols.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit 5 */}
+            <div className="flex items-start gap-6">
+              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">
+                  Performance Analytics
+                </h3>
+                <p className="text-gray-600">
+                  Monitor your trading performance with detailed statistics and
+                  real-time analytics across all connected accounts.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit 6 */}
+            <div className="flex items-start gap-6">
+              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">24/7 Support</h3>
+                <p className="text-gray-600">
+                  Get expert assistance whenever you need it with our dedicated
+                  support team available around the clock.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      {/*
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
             <div className="relative">
-              {/* Master Account */}
               <div className="text-center z-10">
                   <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto z-10">
                     <img
@@ -119,10 +297,8 @@ export default function HomePage() {
                   </h3>
                 </div>
 
-              {/* Connecting Line from Master to IPTRADE */}
               <div className="w-px h-12 bg-gray-300 mx-auto"></div>
 
-              {/* IPTRADE Server */}
               <div className="text-center">
                 <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto">
                   <img
@@ -134,17 +310,13 @@ export default function HomePage() {
                 <h3 className="mt-2 mb-2 text-xl font-semibold">IPTRADE APP</h3>
               </div>
 
-              {/* Connecting Lines Container */}
               <div className="relative h-20">
-                {/* Horizontal Line */}
                 <div className="absolute left-1/6 right-1/6 top-1/2 h-px bg-gray-300"></div>
-                {/* Vertical Lines */}
                 <div className="absolute left-1/6 top-1/2 h-full w-px bg-gray-300"></div>
                 <div className="absolute left-1/2 top-0 h-full w-px bg-gray-300"></div>
                 <div className="absolute left-5/6 top-1/2 h-full w-px bg-gray-300"></div>
               </div>
 
-              {/* Slave Accounts */}
               <div className="grid grid-cols-3">
                 <div className="text-center z-10">
                   <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto z-10">
@@ -189,150 +361,196 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Benefits Section */}
-      <section className="pb-16">
-        <div className="px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">Why Choose IPTRADE</h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Discover the advantages that make IPTRADE the preferred choice for professional traders
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            {/* Benefit 1 */}
-            <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Lightning-Fast Trade Copying</h3>
-                <p className="text-gray-600">
-                  Experience minimal latency between your master and slave accounts. Our optimized copying system ensures your trades are replicated instantly across all connected accounts.
-                </p>
-              </div>
-            </div>
-
-            {/* Benefit 2 */}
-            <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Single IP Address Trading</h3>
-                <p className="text-gray-600">
-                  Maintain compliance with prop firm requirements by ensuring all your trading accounts operate from the same IP address, eliminating the risk of account violations.
-                </p>
-              </div>
-            </div>
-
-            {/* Benefit 3 */}
-            <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Customizable Trading Parameters</h3>
-                <p className="text-gray-600">
-                  Fine-tune your trading setup with adjustable lot sizes, risk management settings, and custom trade filters for each connected account.
-                </p>
-              </div>
-            </div>
-
-            {/* Benefit 4 */}
-            <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Enterprise-Grade Security</h3>
-                <p className="text-gray-600">
-                  Trade with confidence knowing your data and connections are protected by industry-standard encryption and security protocols.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      */}
 
       {/* Software Download Section */}
       <section id="download" className="py-16 w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
               Download IPTRADE
             </h2>
-            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
-              Get our high-frequency trading software that allows you to copy
-              trades between different MetaTrader platforms from the same
-              computer.
+            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-600">
+              Get everything you need to start copying trades between MetaTrader
+              platforms
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-medium text-lg">Windows Version</h3>
-                  <p className="text-sm text-muted-foreground">v1.0.0</p>
-                </div>
-                <Button variant="outline" className="ml-auto">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </Button>
+          {/* IPTRADE Desktop App */}
+          <div className="mb-16">
+            <div className="flex items-center  mb-4 gap-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
+                <img
+                  src="/assets/iconShadow025.png"
+                  alt="IPTRADE Icon"
+                  className="w-12 h-12 object-contain"
+                />
               </div>
-              <p className="text-sm text-gray-500">
-                Compatible with Windows 10 and above. Supports MetaTrader 4 & 5
-                for high-frequency trading with IPTRADE.
-              </p>
+              <h3 className="text-xl font-bold text-gray-900">
+                IPTRADE Desktop App
+              </h3>
             </div>
 
-            <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-medium text-lg">macOS Version</h3>
-                  <p className="text-sm text-muted-foreground">v1.0.0</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="font-medium text-lg">Windows Version</h4>
+                    <p className="text-sm text-muted-foreground">v1.0.0</p>
+                  </div>
+                  <Button variant="outline" className="ml-auto">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
                 </div>
-                <Button variant="outline" className="ml-auto">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </Button>
+                <p className="text-sm text-gray-500">
+                  Compatible with Windows 10 and above. Supports MetaTrader 4 &
+                  5 for high-frequency trading with IPTRADE.
+                </p>
               </div>
-              <p className="text-sm text-gray-500">
-                Compatible with macOS Monterey and above. Optimized for Apple
-                Silicon with IPTRADE support.
-              </p>
-            </div>
 
-            <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-medium text-lg">Linux Version</h3>
-                  <p className="text-sm text-muted-foreground">v1.0.0</p>
+              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="font-medium text-lg">macOS Version</h4>
+                    <p className="text-sm text-muted-foreground">v1.0.0</p>
+                  </div>
+                  <Button variant="outline" className="ml-auto">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
                 </div>
-                <Button variant="outline" className="ml-auto">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </Button>
+                <p className="text-sm text-gray-500">
+                  Compatible with macOS Monterey and above. Optimized for Apple
+                  Silicon with IPTRADE support.
+                </p>
               </div>
-              <p className="text-sm text-gray-500">
-                For Linux distributions with Wine support. Ideal for
-                server-based trading setups.
-              </p>
             </div>
           </div>
 
-          <div className="text-center mt-8">
+          {/* EA Source Code */}
+          <div className="mb-16">
+            <div className="flex items-center  mb-4 gap-4">
+              <div className="w-16 h-16 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
+                <img
+                  src="/assets/metatrader5_expert_advisors_logo.png"
+                  alt="Expert Advisor"
+                  className="w-10 h-10 object-contain bg-gray-50"
+                />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">
+                EA Source Code
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="font-medium text-lg">MT4 Expert Advisor</h4>
+                    <p className="text-sm text-muted-foreground">
+                      MQL4 Source Code
+                    </p>
+                  </div>
+                  <Button variant="outline" className="ml-auto">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-500">
+                  Download the source code for the MetaTrader 4 Expert Advisor
+                  to customize and compile.
+                </p>
+              </div>
+
+              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="font-medium text-lg">MT5 Expert Advisor</h4>
+                    <p className="text-sm text-muted-foreground">
+                      MQL5 Source Code
+                    </p>
+                  </div>
+                  <Button variant="outline" className="ml-auto">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-500">
+                  Download the source code for the MetaTrader 5 Expert Advisor
+                  to customize and compile.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* MetaTrader Platforms */}
+          <div>
+            <div className="flex items-center  mb-4 gap-4">
+              <div className="w-16 h-16 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
+                <img
+                  src="/assets/mql5_logo__2.jpg"
+                  alt="MQL5 Logo"
+                  className="w-10 h-10 object-contain"
+                />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">
+                MQL5 Download Links
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="font-medium text-lg">MetaTrader 4</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Official Platform
+                    </p>
+                  </div>
+                  <a
+                    href="https://www.mql5.com/en/download/mt4"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="outline" className="ml-auto">
+                      <ArrowRight className="h-4 w-4 mr-2" />
+                      Visit MQL5
+                    </Button>
+                  </a>
+                </div>
+                <p className="text-sm text-gray-500">
+                  Download the official MetaTrader 4 trading platform from the
+                  MQL5 website.
+                </p>
+              </div>
+
+              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="font-medium text-lg">MetaTrader 5</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Official Platform
+                    </p>
+                  </div>
+                  <a
+                    href="https://www.mql5.com/en/download/mt5"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="outline" className="ml-auto">
+                      <ArrowRight className="h-4 w-4 mr-2" />
+                      Visit MQL5
+                    </Button>
+                  </a>
+                </div>
+                <p className="text-sm text-gray-500">
+                  Download the official MetaTrader 5 trading platform from the
+                  MQL5 website.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
             <p className="text-sm text-gray-500">
               Need help with setup? Check our{" "}
               <Link href="/dashboard/guide" className="text-black font-medium">
