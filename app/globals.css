@@ -370,3 +370,7 @@ html {
     @apply bg-background text-foreground;
   }
 }
+
+.animate-pulse-icon {
+  animation: pulse 2s ease-in-out infinite;
+}

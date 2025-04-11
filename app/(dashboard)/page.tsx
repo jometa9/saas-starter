@@ -26,7 +26,7 @@ export default function HomePage() {
                 <a href="/sign-up">
                   <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer">
                     Start now
-                    <Zap className="ml-3 h-5 w-5" />
+                    <Zap className="ml-3 h-5 w-5 animate-pulse-icon" />
                   </Button>
                 </a>
                 <Link href="/dashboard/guide">
@@ -1016,7 +1016,7 @@ export default function HomePage() {
               <a href="/sign-in">
                 <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer">
                   Start now
-                  <Zap className="ml-3 h-5 w-5" />
+                  <Zap className="ml-3 h-5 w-5 animate-pulse-icon" />
                 </Button>
               </a>
               <Link href="/dashboard/guide">
