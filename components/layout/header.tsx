@@ -23,12 +23,16 @@ function UserMenu() {
   if (!user) {
     return (
       <div className="flex items-center space-x-3">
-        <Button asChild variant="ghost" className="text-sm">
+        <Button
+          asChild
+          variant="ghost"
+          className="text-black hover:bg-black/5 rounded-full px-4 py-0 inline-flex items-center justify-center cursor-pointer"
+        >
           <Link href="/sign-in">Log In</Link>
         </Button>
         <Button
           asChild
-          className="bg-black hover:bg-gray-800 text-white text-sm"
+          className="bg-gradient-to-r from-gray-500 to-black hover:from-gray-600 hover:to-gray-800 text-white border border-gray-900 rounded-full px-4 py-0 inline-flex items-center justify-center shadow-xl transition-all duration-300 hover:shadow-xl cursor-pointer border-2"
         >
           <Link href="/sign-up">Sign Up</Link>
         </Button>

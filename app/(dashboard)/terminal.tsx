@@ -166,6 +166,19 @@ export function Terminal() {
     }
   };
 
+  const simulateNewLogs = () => {
+    if (isTypingRef.current) return;
+    isTypingRef.current = true;
+
+    const addLogWithRandomInterval = () => {
+      addLog();
+      const randomInterval = Math.floor(Math.random() * (500 - 100 + 1)) + 100;
+      setTimeout(addLogWithRandomInterval, randomInterval);
+    };
+
+    addLogWithRandomInterval();
+  };
+
   useEffect(() => {
     if (logs.length === 0) {
       setLogs(generateInitialLogs());
@@ -174,17 +187,6 @@ export function Terminal() {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
-
-    const simulateNewLogs = () => {
-      if (isTypingRef.current) return;
-      isTypingRef.current = true;
-
-      const interval = setInterval(() => {
-        addLog();
-      }, 250);
-
-      return () => clearInterval(interval);
-    };
 
     const timeout = setTimeout(() => {
       simulateNewLogs();
@@ -202,7 +204,7 @@ export function Terminal() {
         <div className="rounded-lg border border-gray-300 shadow-2xl">
           <div
             ref={terminalRef}
-            className="p-4 pb-2 h-80 text-[10px] text-gray-700 font-mono overflow-hidden opacity-80"
+            className="p-3 pb-2 h-80 text-[10px] text-gray-700 font-mono overflow-hidden opacity-80"
           >
             {logs.map((log, index) => {
               // Extract the order type from the log

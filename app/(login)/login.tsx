@@ -104,7 +104,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={pending}>
+            <Button type="submit" className="w-full bg-gradient-to-r from-gray-400 to-gray-600 hover:from-gray-500 hover:to-gray-700 text-white border border-gray-600 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-xl transition-all duration-300 hover:shadow-xl cursor-pointer border-2" disabled={pending}>
               {pending ? (
                 <>
                   <Loader2 className="animate-spin mr-2 h-4 w-4" />
@@ -131,7 +131,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
             }${priceId ? `&priceId=${priceId}` : ""}`}
             className="w-full"
           >
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer border-2">
               {mode === "signin"
                 ? "Create an account"
                 : "Sign in to existing account"}
