@@ -278,7 +278,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center justify-center">
@@ -715,7 +715,7 @@ export default function HomePage() {
                   </p>
                   <div className="mt-6">
                     <span className="text-5xl font-bold text-gray-900">
-                      $499
+                      $999
                     </span>
                     <span className="text-xl text-gray-500">/month</span>
                   </div>
@@ -752,7 +752,7 @@ export default function HomePage() {
                         <Check className="h-5 w-5 text-green-600" />
                       </div>
                       <p className="ml-3 text-base text-gray-700 text-sm">
-                        Up to 10 slave accounts
+                        Up to 50 slave accounts
                       </p>
                     </li>
                     <li className="flex items-start">
