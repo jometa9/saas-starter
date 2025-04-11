@@ -68,10 +68,10 @@ export default function AboutPage() {
               <div className="mt-10 lg:mt-0">
                 <div className="relative h-96 rounded-lg overflow-hidden shadow-xl">
                   <Image
-                    src="/assets/mission.jpg"
+                    src="/assets/macbookProMockColor.png"
                     alt="IPTRADE Mission"
                     fill
-                    className="object-cover"
+                    className="object-cover grayscale"
                   />
                 </div>
               </div>
