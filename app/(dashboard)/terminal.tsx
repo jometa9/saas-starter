@@ -4,27 +4,27 @@ import { useEffect, useState, useRef } from "react";
 
 export function Terminal() {
   const logTemplatesRef = useRef<string[]>([
-    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
-    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
-    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
-    "[TIME] [IP 192.168.0.102] [UPTIME] LISTENING...",
-    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
-    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
-    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
-    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
-    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
-    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
-    "[TIME] [IP 192.168.0.102] [UPTIME] LISTENING...",
-    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
-    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
-    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
-    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
-    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
-    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
-    "[TIME] [IP 192.168.0.102] [UPTIME] LISTENING...",
-    "[ID] BTCUSD SELL 1.23 LOT PRICE 97380.60 SL 99380.94 TP 92380.20",
-    "[ID] BTCUSD SELL 3.01 LOT PRICE 98368.93 SL 0.00 TP 0.00",
-    "[ID] BTCUSD SELL 21.01 LOT PRICE 94674.44 SL 94674.72 TP 94674.22",
+    "[ID]",
+    "[ID]",
+    "[ID]",
+    "[TIME] [IP 192.168.0.104] [UPTIME] LISTENING...",
+    "[ID]",
+    "[ID]",
+    "[ID]",
+    "[ID]",
+    "[ID]",
+    "[ID]",
+    "[TIME] [IP 192.168.0.104] [UPTIME] LISTENING...",
+    "[ID]",
+    "[ID]",
+    "[ID]",
+    "[ID]",
+    "[ID]",
+    "[ID]",
+    "[TIME] [IP 192.168.0.104] [UPTIME] LISTENING...",
+    "[ID]",
+    "[ID]",
+    "[ID]",
   ]);
 
   const terminalRef = useRef<HTMLDivElement>(null);
@@ -32,8 +32,39 @@ export function Terminal() {
   const isTypingRef = useRef(false);
   const startTimeRef = useRef(Date.now());
   const orderIdBaseRef = useRef(1100574500);
-  
-  // Inicializamos con un array vacío para evitar problemas de hidratación
+
+  const forexPairs = [
+    "EURUSD",
+    "GBPUSD",
+    "USDJPY",
+    "AUDUSD",
+    "USDCAD",
+    "NZDUSD",
+    "EURGBP",
+    "EURJPY",
+    "GBPJPY",
+    "AUDNZD",
+  ];
+
+  const getRandomForexPair = () => {
+    return forexPairs[Math.floor(Math.random() * forexPairs.length)];
+  };
+
+  const getRandomLot = () => {
+    return (Math.random() * 5).toFixed(2);
+  };
+
+  const getRandomPrice = () => {
+    return (Math.random() * 100000).toFixed(2);
+  };
+
+  const getRandomTPandSL = (price: string) => {
+    const priceNum = parseFloat(price);
+    const tp = (priceNum + Math.random() * 1000).toFixed(2);
+    const sl = (priceNum - Math.random() * 1000).toFixed(2);
+    return { tp, sl };
+  };
+
   const [logs, setLogs] = useState<string[]>([]);
 
   const getCurrentTime = () => {
@@ -74,7 +105,27 @@ export function Terminal() {
     }
 
     if (customizedLog.includes("[ID]")) {
-      customizedLog = customizedLog.replace("[ID]", `[${generateOrderId()}]`);
+      const forexPair = getRandomForexPair();
+      const lot = getRandomLot();
+      const price = getRandomPrice();
+      const { tp, sl } = getRandomTPandSL(price);
+      const orderId = generateOrderId();
+
+      const orderTypes = [
+        "BUY",
+        "SELL",
+        "BUY LIMIT",
+        "SELL LIMIT",
+        "BUY STOP",
+        "SELL STOP",
+      ];
+      const orderType =
+        orderTypes[Math.floor(Math.random() * orderTypes.length)];
+
+      customizedLog = customizedLog.replace(
+        "[ID]",
+        `[${orderId}] ${forexPair} ${orderType} ${lot} LOT PRICE ${price} SL ${sl} TP ${tp}`
+      );
     }
 
     return customizedLog;
@@ -116,12 +167,10 @@ export function Terminal() {
   };
 
   useEffect(() => {
-    // Generamos los logs iniciales SOLO en el cliente
     if (logs.length === 0) {
       setLogs(generateInitialLogs());
     }
-    
-    // Actualizar el scrollTop para mostrar los últimos logs
+
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
@@ -130,18 +179,13 @@ export function Terminal() {
       if (isTypingRef.current) return;
       isTypingRef.current = true;
 
-      // Añadimos más logs después de un breve retraso
-      const interval = setInterval(
-        () => {
-          addLog();
-        },
-        250
-      );
+      const interval = setInterval(() => {
+        addLog();
+      }, 250);
 
       return () => clearInterval(interval);
     };
 
-    // Pequeño retraso antes de iniciar la simulación de nuevos logs
     const timeout = setTimeout(() => {
       simulateNewLogs();
     }, 500);
