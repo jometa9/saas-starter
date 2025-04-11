@@ -1,20 +1,14 @@
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  CreditCard,
-  Database,
-  BookOpen,
-  Check,
-  Download,
-} from "lucide-react";
-import { Terminal } from "./terminal";
 import Link from "next/link";
+import { ArrowRight, Check, Download, Zap } from "lucide-react";
+
+import { Terminal } from "./terminal";
 
 export default function HomePage() {
   return (
     <main>
       <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
               <h1 className="text-3xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
@@ -25,15 +19,14 @@ export default function HomePage() {
               </h1>
               <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                 Copy trades instantly between MetaTrader accounts while
-                maintaining the same IP address. Perfect for prop firm traders
-                who need lightning-fast execution without triggering IP security
-                alerts.
+                maintaining the same IP address. Perfect for traders who need
+                lightning-fast execution without triggering IP security alerts.
               </p>
               <div className="mt-8 flex flex-col items-center sm:flex-row sm:justify-center md:justify-center lg:justify-start gap-4 mx-auto lg:mx-0">
-                <a href="#download">
+                <a href="/sign-up">
                   <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer">
-                    Download now
-                    <Download className="ml-3 h-5 w-5" />
+                    Start now
+                    <Zap className="ml-3 h-5 w-5" />
                   </Button>
                 </a>
                 <Link href="/dashboard/guide">
@@ -119,10 +112,10 @@ export default function HomePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2">
+                <h3 className="text-lg font-bold mb-2">
                   Lightning-Fast Trade Copying
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm">
                   Experience minimal latency between your master and slave
                   accounts. Our optimized copying system ensures your trades are
                   replicated instantly.
@@ -148,17 +141,17 @@ export default function HomePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2">
+                <h3 className="text-lg font-bold mb-2">
                   Single IP Address Trading
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm">
                   Maintain compliance with prop firm requirements by ensuring
                   all your trading accounts operate from the same IP address.
                 </p>
               </div>
             </div>
 
-            {/* Benefit 3 - Customizable */}
+            {/* Benefit 7 - Data Privacy */}
             <div className="flex items-start gap-6">
               <div className="w-12 h-12 bg-green-600 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-green-200">
                 <svg
@@ -182,19 +175,19 @@ export default function HomePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2">
-                  Customizable Parameters
-                </h3>
-                <p className="text-gray-600">
-                  Fine-tune your trading setup with adjustable lot sizes, risk
-                  management settings, and custom trade filters.
+                <h3 className="text-lg font-bold mb-2">Data Privacy First</h3>
+                <p className="text-gray-600 text-sm">
+                  Your trading data is never stored or shared. Each request to
+                  IPTRADE is processed in real-time and immediately discarded,
+                  ensuring complete privacy and confidentiality of your trading
+                  activities.
                 </p>
               </div>
             </div>
 
-            {/* Benefit 4 - Security */}
+            {/* Benefit 8 - Unlimited Accounts */}
             <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-red-600 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-red-200">
+              <div className="w-12 h-12 bg-orange-600 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-orange-200">
                 <svg
                   className="w-6 h-6"
                   viewBox="0 0 24 24"
@@ -205,48 +198,24 @@ export default function HomePage() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
                   />
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2">Enterprise Security</h3>
-                <p className="text-gray-600">
-                  Trade with confidence knowing your data and connections are
-                  protected by industry-standard encryption protocols.
-                </p>
-              </div>
-            </div>
-
-            {/* Benefit 5 - Analytics */}
-            <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-amber-500 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-amber-200">
-                <svg
-                  className="w-6 h-6"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">
-                  Performance Analytics
+                <h3 className="text-lg font-bold mb-2">
+                  Unlimited Account Connections
                 </h3>
-                <p className="text-gray-600">
-                  Monitor your trading performance with detailed statistics and
-                  real-time analytics across all connected accounts.
+                <p className="text-gray-600 text-sm">
+                  Connect as many trading accounts as you need - there's no
+                  limit since IPTRADE runs locally on your computer. Perfect for
+                  managing multiple prop firm accounts or extensive trading
+                  portfolios.
                 </p>
               </div>
             </div>
 
-            {/* Benefit 6 - Support */}
+            {/* Benefit 10 - Cross Platform */}
             <div className="flex items-start gap-6">
               <div className="w-12 h-12 bg-indigo-600 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-indigo-200">
                 <svg
@@ -259,16 +228,120 @@ export default function HomePage() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
-                    d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2">24/7 Support</h3>
-                <p className="text-gray-600">
-                  Get expert assistance whenever you need it with our dedicated
-                  support team available around the clock.
+                <h3 className="text-lg font-bold mb-2">
+                  Cross-Platform Compatibility
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Run IPTRADE seamlessly on both Windows and macOS. The
+                  application is natively optimized for each operating system,
+                  ensuring the same high-performance trade copying experience
+                  regardless of your platform choice.
                 </p>
+              </div>
+            </div>
+
+            {/* Benefit 11 - Offline Mode */}
+            <div className="flex items-start gap-6">
+              <div className="w-12 h-12 bg-rose-600 text-white rounded-full flex-shrink-0 flex items-center justify-center shadow-lg border-4 border-rose-200">
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold mb-2">
+                  Local Network Operation
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  IPTRADE operates entirely on your local network, requiring no
+                  constant internet connection for trade copying. This ensures
+                  maximum security and minimal latency, as all operations are
+                  processed directly on your machine.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-center justify-center">
+              {/* MT5 Master */}
+              <div className="text-center z-10">
+                <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto shadow-xl">
+                  <img
+                    src="/assets/mt5.png"
+                    alt="MetaTrader 5 Icon"
+                    className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                  />
+                </div>
+                <h3 className="mt-2 mb-2 font-semibold text-gray-500">
+                  Master
+                </h3>
+              </div>
+
+              {/* Connecting Line */}
+              <div className="w-20 mb-10 h-px bg-gray-300"></div>
+
+              {/* IPTRADE APP */}
+              <div className="text-center z-20">
+                <div className="w-32 h-32 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto shadow-xl">
+                  <img
+                    src="/assets/iconShadow025.png"
+                    alt="IPTRADE Icon"
+                    className="w-24 h-24 object-contain"
+                  />
+                </div>
+                <h3 className="mt-2 mb-2 text-lg font-semibold">IPTRADE APP</h3>
+              </div>
+
+              {/* Connecting Line */}
+              <div className="w-20 mb-10 h-px bg-gray-300"></div>
+
+              {/* Slave Accounts Container */}
+              <div className="text-center gap-4 z-10">
+                <div className="text-center flex bg-gray-100 rounded-xl border-2 border-gray-200 shadow-xl">
+                  <div className="w-24 h-24 flex justify-center items-center">
+                    <img
+                      src="/assets/mt4.png"
+                      alt="MetaTrader 4 Icon"
+                      className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                    />
+                  </div>
+                  <div className="w-24 h-24 flex justify-center items-center">
+                    <img
+                      src="/assets/mt5.png"
+                      alt="MetaTrader 5 Icon"
+                      className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                    />
+                  </div>
+                  <div className="w-24 h-24 flex justify-center items-center">
+                    <img
+                      src="/assets/mt4.png"
+                      alt="MetaTrader 4 Icon"
+                      className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                    />
+                  </div>
+                </div>
+                <h3 className="mt-2 mb-2 font-semibold text-gray-500">
+                  Slaves
+                </h3>
               </div>
             </div>
           </div>
@@ -399,91 +472,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      {/*
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto">
-            <div className="relative">
-              <div className="text-center z-10">
-                  <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto z-10">
-                    <img
-                      src="/assets/mt5.png"
-                      alt="MetaTrader 5 Icon"
-                      className="w-16 h-16 object-contain rounded-xl"
-                    />
-                  </div>
-                  <h3 className="mt-2 mb-2 font-semibold text-gray-500">
-                    MT5 Slave
-                  </h3>
-                </div>
-
-              <div className="w-px h-12 bg-gray-300 mx-auto"></div>
-
-              <div className="text-center">
-                <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto">
-                  <img
-                    src="/assets/iconShadow025.png"
-                    alt="IPTRADE Icon"
-                    className="w-16 h-16 object-contain"
-                  />
-                </div>
-                <h3 className="mt-2 mb-2 text-xl font-semibold">IPTRADE APP</h3>
-              </div>
-
-              <div className="relative h-20">
-                <div className="absolute left-1/6 right-1/6 top-1/2 h-px bg-gray-300"></div>
-                <div className="absolute left-1/6 top-1/2 h-full w-px bg-gray-300"></div>
-                <div className="absolute left-1/2 top-0 h-full w-px bg-gray-300"></div>
-                <div className="absolute left-5/6 top-1/2 h-full w-px bg-gray-300"></div>
-              </div>
-
-              <div className="grid grid-cols-3">
-                <div className="text-center z-10">
-                  <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto z-10">
-                    <img
-                      src="/assets/mt4.png"
-                      alt="MetaTrader 4 Icon"
-                      className="w-16 h-16 object-contain rounded-xl"
-                    />
-                  </div>
-                  <h3 className="mt-2 mb-2 font-semibold text-gray-500">
-                    MT4 Slave
-                  </h3>
-                </div>
-
-                <div className="text-center z-10">
-                  <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto z-10">
-                    <img
-                      src="/assets/mt5.png"
-                      alt="MetaTrader 5 Icon"
-                      className="w-16 h-16 object-contain rounded-xl"
-                    />
-                  </div>
-                  <h3 className="mt-2 mb-2 font-semibold text-gray-500">
-                    MT5 Slave
-                  </h3>
-                </div>
-
-                <div className="text-center z-10">
-                  <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto z-10">
-                    <img
-                      src="/assets/mt4.png"
-                      alt="MetaTrader 4 Icon"
-                      className="w-16 h-16 object-contain rounded-xl"
-                    />
-                  </div>
-                  <h3 className="mt-2 mb-2 font-semibold text-gray-500">
-                    MT4 Slave
-                  </h3>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      */}
-
       {/* Pricing Section */}
       <section className="py-12">
         <div className="px-4">
@@ -496,7 +484,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Free Plan */}
-            <div className="lg:col-span-4 border border-gray-200 rounded-2xl shadow-lg bg-white p-8">
+            <div className="lg:col-span-3 border border-gray-200 rounded-2xl shadow-lg bg-white p-8">
               <div className="flex flex-col h-full">
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900">Free</h3>
@@ -513,41 +501,33 @@ export default function HomePage() {
                   <ul className="space-y-4">
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         Single master account
                       </p>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
-                        Up to 2 slave accounts
+                      <p className="ml-3 text-base text-gray-700 text-sm">
+                        Unlimited accounts
                       </p>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         Fixed lot size (0.01)
-                      </p>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
-                      </div>
-                      <p className="ml-3 text-base text-gray-700">
-                        Community support
                       </p>
                     </li>
                   </ul>
                 </div>
 
                 <div className="mt-8">
-                  <a href="#steps">
+                  <a href="/sign-up">
                     <Button
                       variant="outline"
                       className="w-full py-6 text-lg border-black text-black hover:bg-black/5 cursor-pointer"
@@ -560,7 +540,7 @@ export default function HomePage() {
             </div>
 
             {/* Premium Plan */}
-            <div className="lg:col-span-4 border-2 border-black rounded-2xl shadow-xl bg-white p-8 relative">
+            <div className="lg:col-span-3 border-2 border-black rounded-2xl shadow-xl bg-white p-8 relative">
               <div className="absolute top-0 right-6 -translate-y-1/2">
                 <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium bg-green-50 text-green-700 border border-green-100">
                   MOST POPULAR
@@ -585,41 +565,41 @@ export default function HomePage() {
                   <ul className="space-y-4">
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
-                        All Free features
-                      </p>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
-                      </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         Customizable lot sizes
                       </p>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
-                        Up to 5 slave accounts
+                      <p className="ml-3 text-base text-gray-700 text-sm">
+                        Up to 10 total accounts (master and slave)
                       </p>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
+                        Single IP for all accounts
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-5 w-5 text-green-600" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         Priority support
                       </p>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         Advanced risk management
                       </p>
                     </li>
@@ -631,14 +611,94 @@ export default function HomePage() {
                     asChild
                     className="w-full py-6 text-lg bg-black hover:bg-gray-800 text-white cursor-pointer"
                   >
-                    <Link href="/pricing">Go Premium</Link>
+                    <Link href="/sign-up">Go Premium</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Unlimited Plan */}
+            <div className="lg:col-span-3 border-2 border-blue-500 rounded-2xl shadow-xl bg-white p-8 relative">
+              <div className="absolute top-0 right-6 -translate-y-1/2">
+                <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                  UNLIMITED ACCOUNTS
+                </span>
+              </div>
+
+              <div className="flex flex-col h-full">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    Unlimited
+                  </h3>
+                  <p className="mt-4 text-gray-600">
+                    No limits on connected accounts
+                  </p>
+                  <div className="mt-6">
+                    <span className="text-5xl font-bold text-gray-900">
+                      $50
+                    </span>
+                    <span className="text-xl text-gray-500">/month</span>
+                  </div>
+                </div>
+
+                <div className="mt-8 flex-grow">
+                  <ul className="space-y-4">
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-5 w-5 text-green-600" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700 text-sm">
+                        All Premium features
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-5 w-5 text-green-600" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700 text-sm">
+                        Unlimited slave accounts
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-5 w-5 text-green-600" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700 text-sm">
+                        Multiple master accounts
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-5 w-5 text-green-600" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700 text-sm">
+                        Single IP for all accounts
+                      </p>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Check className="h-5 w-5 text-green-600" />
+                      </div>
+                      <p className="ml-3 text-base text-gray-700 text-sm">
+                        24/7 Priority support
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="mt-8">
+                  <Button
+                    asChild
+                    className="w-full py-6 text-lg bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                  >
+                    <Link href="/sign-up">Go Unlimited</Link>
                   </Button>
                 </div>
               </div>
             </div>
 
             {/* Enterprise Plan */}
-            <div className="lg:col-span-4 border-2 border-purple-500 rounded-2xl shadow-xl bg-white p-8 relative">
+            <div className="lg:col-span-3 border-2 border-purple-500 rounded-2xl shadow-xl bg-white p-8 relative">
               <div className="absolute top-0 right-6 -translate-y-1/2">
                 <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium bg-purple-50 text-purple-700 border border-purple-100">
                   MANAGED SERVICE
@@ -665,49 +725,49 @@ export default function HomePage() {
                   <ul className="space-y-4">
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         All Premium features
                       </p>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         Dedicated VPS server
                       </p>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         Single IP for all accounts
                       </p>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         Up to 10 slave accounts
                       </p>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         24/7 server monitoring
                       </p>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
-                        <Check className="h-6 w-6 text-green-500" />
+                        <Check className="h-5 w-5 text-green-600" />
                       </div>
-                      <p className="ml-3 text-base text-gray-700">
+                      <p className="ml-3 text-base text-gray-700 text-sm">
                         Full setup & configuration
                       </p>
                     </li>
@@ -758,7 +818,7 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="border border-black border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h4 className="font-medium text-lg">Windows Version</h4>
@@ -775,7 +835,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="border border-black border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h4 className="font-medium text-lg">macOS Version</h4>
@@ -809,7 +869,7 @@ export default function HomePage() {
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="border border-blue-800 border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h4 className="font-medium text-lg">MT4 Expert Advisor</h4>
@@ -828,7 +888,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="border border-blue-800 border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h4 className="font-medium text-lg">MT5 Expert Advisor</h4>
@@ -864,7 +924,7 @@ export default function HomePage() {
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="border border-yellow-600 border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h4 className="font-medium text-lg">MetaTrader 4</h4>
@@ -893,7 +953,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="border border-yellow-600 border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h4 className="font-medium text-lg">MetaTrader 5</h4>
@@ -953,10 +1013,10 @@ export default function HomePage() {
               need to maintain compliance while maximizing efficiency.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center">
-              <a href="#download">
+              <a href="/sign-in">
                 <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer">
-                  Download now
-                  <Download className="ml-3 h-5 w-5" />
+                  Start now
+                  <Zap className="ml-3 h-5 w-5" />
                 </Button>
               </a>
               <Link href="/dashboard/guide">
