@@ -24,15 +24,15 @@ export default function HomePage() {
               </p>
               <div className="mt-8 flex flex-col items-center sm:flex-row sm:justify-center md:justify-center lg:justify-start gap-4 mx-auto lg:mx-0">
                 <a href="/sign-up">
-                  <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer">
+                  <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white border border-yellow-600 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-xl transition-all duration-300 hover:shadow-xl cursor-pointer border-2">
                     Start now
-                    <Zap className="ml-3 h-5 w-5 animate-pulse-icon" />
+                    <Zap className="ml-3 h-5 w-5" />
                   </Button>
                 </a>
                 <Link href="/dashboard/guide">
                   <Button
                     variant="outline"
-                    className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer"
+                    className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer border-2"
                   >
                     View guide
                     <ArrowRight className="ml-3 h-5 w-5" />
@@ -1014,15 +1014,15 @@ export default function HomePage() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center">
               <a href="/sign-in">
-                <Button className="bg-black hover:bg-gray-800 text-white border border-transparent rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer">
+              <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white border border-yellow-600 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-xl transition-all duration-300 hover:shadow-xl cursor-pointer border-2">
                   Start now
-                  <Zap className="ml-3 h-5 w-5 animate-pulse-icon" />
+                  <Zap className="ml-3 h-5 w-5" />
                 </Button>
               </a>
               <Link href="/dashboard/guide">
                 <Button
                   variant="outline"
-                  className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer"
+                  className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer border-2"
                 >
                   View guide
                   <ArrowRight className="ml-3 h-5 w-5" />

@@ -81,8 +81,8 @@ export function Terminal() {
   const getUptime = () => {
     const uptimeMs = Date.now() - startTimeRef.current;
     const uptimeSec = Math.floor(uptimeMs / 1000);
-    const hours = Math.floor(uptimeSec / 3600);
-    const minutes = Math.floor((uptimeSec % 3600) / 60);
+    const hours = Math.floor(uptimeSec / 3700);
+    const minutes = Math.floor((uptimeSec % 3700) / 60);
     const seconds = uptimeSec % 60;
     return `UPTIME ${hours}H ${minutes}M ${seconds}S`;
   };
@@ -202,11 +202,64 @@ export function Terminal() {
         <div className="rounded-lg border border-gray-300 shadow-2xl">
           <div
             ref={terminalRef}
-            className="p-4 h-80  text-xs text-gray-500 font-mono overflow-hidden"
+            className="p-4 pb-2 h-80 text-[10px] text-gray-700 font-mono overflow-hidden opacity-80"
           >
-            {logs.map((log, index) => (
-              <div key={index}>{log}</div>
-            ))}
+            {logs.map((log, index) => {
+              // Extract the order type from the log
+              const orderTypeMatch = log.match(/BUY|SELL|BUY LIMIT|SELL LIMIT|BUY STOP|SELL STOP/);
+              const orderType = orderTypeMatch ? orderTypeMatch[0] : '';
+              
+              // Extract the forex pair from the log
+              const forexPairMatch = log.match(/[A-Z]{6}/);
+              const forexPair = forexPairMatch ? forexPairMatch[0] : '';
+
+              // Extract the IP address with brackets
+              const ipMatch = log.match(/\[IP 192\.168\.0\.\d+\]/);
+              const ipAddress = ipMatch ? ipMatch[0] : '';
+
+              // Extract the uptime with brackets
+              const uptimeMatch = log.match(/\[UPTIME \d+H \d+M \d+S\]/);
+              const uptime = uptimeMatch ? uptimeMatch[0] : '';
+
+              return (
+                <div key={index}>
+                  {log.split(' ').map((word, wordIndex) => {
+                    // Color the forex pair in black
+                    if (word === forexPair) {
+                      return <span key={wordIndex} className="text-black">{word} </span>;
+                    }
+                    // Color the IP address in red
+                    if (ipAddress.includes(word)) {
+                      return <span key={wordIndex} className="text-red-700">{word} </span>;
+                    }
+                    // Color LISTENING... in green
+                    if (word === 'LISTENING...') {
+                      return <span key={wordIndex} className="text-green-700">{word} </span>;
+                    }
+                    // Color the uptime in blue
+                    if (word === 'UPTIME' || uptime.includes(word)) {
+                      return <span key={wordIndex} className="text-blue-700">{word} </span>;
+                    }
+                    // Color the order type based on its type
+                    if (word === 'BUY' || word === 'SELL') {
+                      let orderColor = 'text-gray-700';
+                      if (orderType.includes('LIMIT') || orderType.includes('STOP')) {
+                        orderColor = 'text-blue-700';
+                      } else if (word === 'BUY') {
+                        orderColor = 'text-green-700';
+                      } else if (word === 'SELL') {
+                        orderColor = 'text-red-700';
+                      }
+                      return <span key={wordIndex} className={`${orderColor}`}>{word} </span>;
+                    }
+                    if (word === 'LIMIT' || word === 'STOP') {
+                      return <span key={wordIndex} className="text-blue-700">{word} </span>;
+                    }
+                    return <span key={wordIndex}>{word} </span>;
+                  })}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
