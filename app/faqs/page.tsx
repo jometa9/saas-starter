@@ -10,6 +10,7 @@ import {
   Shield,
   CreditCard,
   Terminal,
+  Phone,
   Download,
 } from "lucide-react";
 import Link from "next/link";
@@ -155,60 +156,65 @@ export default function FAQsPage() {
 
   return (
     <main className="flex-1">
-      <section className="py-16">
-        <div className="px-8">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Frequently Asked Questions
-            </h1>
-            <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-4 md:max-w-3xl">
-              Find answers to common questions about IPTRADE and how to use our
-              software effectively
-            </p>
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+            <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
+              <h1 className="text-4xl text-center font-bold text-gray-900 tracking-tight sm:text-5xl sm:text-left md:text-6xl">
+                <span className="italic">IPTRADE</span>
+                <span className="block text-black text-gray-500">
+                  FAQs
+                </span>
+              </h1>
+              <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl text-center sm:text-left">
+                Find answers to common questions about IPTRADE and how to use our
+                software effectively
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="pb-8">
-        <div className="px-4">
-          <div className="space-y-8">
+        <div className="px-6">
+          <div className="space-y-12">
             {faqCategories.map((category) => (
               <div
                 key={category.id}
-                className=" rounded-xl shadow-lg overflow-hidden"
+                className="bg-white rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300"
               >
-                <div className="p-4">
-                  <div className="flex items-center mb-4">
-                    <div className="h-8 w-8 bg-black rounded-full flex items-center justify-center mr-3">
+                <div className="p-8">
+                  <div className="flex items-center mb-6">
+                    <div className="h-12 w-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-blue-200 mr-4">
                       {category.icon}
                     </div>
-                    <h2 className="text-lg font-bold text-gray-900">
+                    <h2 className="text-2xl font-bold text-gray-900">
                       {category.title}
                     </h2>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {category.questions.map((item) => (
                       <div
                         key={item.id}
-                        className="border border-gray-200 rounded-lg overflow-hidden"
+                        className="border border-gray-200 rounded-lg overflow-hidden hover:border-gray-300 transition-colors"
                       >
                         <button
                           onClick={() => toggleItem(item.id)}
-                          className="w-full flex justify-between items-center p-3 text-left bg-gray-50 hover:bg-gray-100 transition-colors"
+                          className="w-full flex justify-between items-center p-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors"
                         >
-                          <h3 className="font-medium text-sm text-gray-900">
+                          <h3 className="font-medium text-base text-gray-900">
                             {item.question}
                           </h3>
                           {openItems[item.id] ? (
-                            <ChevronUp className="h-4 w-4 text-gray-500" />
+                            <ChevronUp className="h-5 w-5 text-gray-500" />
                           ) : (
-                            <ChevronDown className="h-4 w-4 text-gray-500" />
+                            <ChevronDown className="h-5 w-5 text-gray-500" />
                           )}
                         </button>
                         {openItems[item.id] && (
-                          <div className="p-3 ">
-                            <p className="text-sm text-gray-600">
+                          <div className="p-4 bg-white">
+                            <p className="text-base text-gray-600">
                               {item.answer}
                             </p>
                           </div>
@@ -224,29 +230,40 @@ export default function FAQsPage() {
       </section>
 
       {/* Still Have Questions Section */}
-      <section className="py-12 pb-16">
+      <section className="py-12">
         <div className="px-8">
-          <div className="text-center">
-            <h2 className="text-lg font-bold text-gray-900 mb-3">
-              Still have questions?
+          <div className="max-w-xl mx-auto text-center">
+            <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              Still have <span className="text-black">questions</span>?
             </h2>
-            <p className="text-sm text-gray-500 mb-4 max-w-2xl mx-auto">
+            <p className="mt-6 text-xl text-gray-600">
               Can't find the answer you're looking for? Our support team is here
-              to help you with any questions about IPTRADE sending email to
-              support@iptradecopier.com.
+              to help you with any questions about IPTRADE.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
-                asChild
-                variant="outline"
-                className="border-black text-black hover:bg-gray-100 text-sm"
-              >
-                <Link href="/guide">View User Guide</Link>
-              </Button>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center">
+              <a href="mailto:support@iptradecopier.com">
+                <Button className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white border border-blue-600 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-xl transition-all duration-300 hover:shadow-xl cursor-pointer border-2">
+                  Contact Support
+                  <Phone className="ml-3 h-5 w-5" />
+                </Button>
+              </a>
+              <Link href="/guide">
+                <Button
+                  variant="outline"
+                  className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer border-2"
+                >
+                  View Guide
+                  <ArrowRight className="ml-3 h-5 w-5" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
+
+      <p className="text-3xl font-bold text-gray-200 text-center py-12 px-6">
+        <i>See you copying trades!</i>
+      </p>
     </main>
   );
 }

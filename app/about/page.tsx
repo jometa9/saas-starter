@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Linkedin, Globe, Instagram, Zap } from "lucide-react";
+import { ArrowRight, Linkedin, Globe, Instagram, Zap, Youtube } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
@@ -224,6 +224,14 @@ export default function AboutPage() {
                     className="flex items-center gap-2 text-gray-300 hover:text-black transition-colors"
                   >
                     <Instagram className="h-5 w-5" />
+                  </a>
+                  <a
+                    href="https://youtube.com/@joaquinmetayer"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-gray-300 hover:text-black transition-colors"
+                  >
+                    <Youtube className="h-5 w-5" />
                   </a>
                 </div>
               </div>
