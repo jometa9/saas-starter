@@ -99,7 +99,6 @@ export default function HomePage() {
             <span className="text-3xl text-center text-gray-500 mb-8">
               IPTRADE Features
             </span>
-            
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 px-4 mx-auto">
             {/* Benefit 1 - Lightning Fast */}
