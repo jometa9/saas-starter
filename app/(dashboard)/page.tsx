@@ -718,6 +718,7 @@ export default function HomePage() {
                   <Button
                     asChild
                     className="w-full py-6 text-lg bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
+                    disabled
                   >
                     <Link href="/contact">Contact Sales</Link>
                   </Button>
