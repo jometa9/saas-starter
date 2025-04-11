@@ -11,13 +11,13 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-              <h1 className="text-3xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
+              <h1 className="text-4xl text-center font-bold text-gray-900 tracking-tight sm:text-5xl sm:text-left md:text-6xl">
                 <span className="italic ">Lightning-Fast</span>
                 <span className="block text-black text-gray-500">
                   Trade Copier
                 </span>
               </h1>
-              <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
+              <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl text-center sm:text-left">
                 Copy trades instantly between MetaTrader accounts while
                 maintaining the same IP address. Perfect for traders who need
                 lightning-fast execution without triggering IP security alerts.

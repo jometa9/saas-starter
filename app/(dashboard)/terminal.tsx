@@ -204,7 +204,7 @@ export function Terminal() {
         <div className="rounded-lg border border-gray-300 shadow-2xl">
           <div
             ref={terminalRef}
-            className="p-3 pb-2 h-80 text-[10px] text-gray-700 font-mono overflow-hidden opacity-80"
+            className="p-3 pb-2 h-80 text-[10px] text-gray-700 font-mono overflow-hidden"
           >
             {logs.map((log, index) => {
               // Extract the order type from the log

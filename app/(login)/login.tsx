@@ -35,7 +35,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
         <h2 className="text-3xl font-bold">
           {mode === "signin"
             ? "Sign in to IPTRADE"
-            : "Create your IPTRADE account"}
+            : "Create your account"}
         </h2>
         <p className="text-sm text-muted-foreground mt-2">
           {mode === "signin"
