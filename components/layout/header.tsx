@@ -81,12 +81,7 @@ export function Header() {
           >
             Home
           </Link>
-          <Link
-            href="/about"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900"
-          >
-            About
-          </Link>
+
           <Link
             href="/guide"
             className="text-sm font-medium text-gray-700 hover:text-gray-900"
@@ -98,6 +93,18 @@ export function Header() {
             className="text-sm font-medium text-gray-700 hover:text-gray-900"
           >
             FAQS
+          </Link>
+          <Link
+            href="/about"
+            className="text-sm font-medium text-gray-700 hover:text-gray-900"
+          >
+            About
+          </Link>
+          <Link
+            href="/contact"
+            className="text-sm font-medium text-gray-700 hover:text-gray-900"
+          >
+            Contact
           </Link>
         </div>
 
