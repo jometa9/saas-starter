@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Linkedin, Github, Twitter } from "lucide-react";
+import { ArrowRight, Linkedin, Globe, Instagram, Zap } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
@@ -12,23 +12,29 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <main>
-      <section className="py-16">
-        <div className="px-8">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              About IPTRADE
-            </h1>
-            <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-4 md:max-w-3xl">
-              We're building the future of trading technology, making it easier
-              for traders to copy trades between platforms.
-            </p>
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+            <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
+              <h1 className="text-4xl text-center font-bold text-gray-900 tracking-tight sm:text-5xl sm:text-left md:text-6xl">
+                <span className="italic">About</span>
+                <span className="block text-black text-gray-500">
+                  IPTRADE
+                </span>
+              </h1>
+              <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl text-center sm:text-left">
+                We're building the future of trading technology, making it easier
+                for traders to copy trades between platforms while maintaining
+                IP integrity.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="pb-16">
-        <div className="px-4">
-          <div className="rounded-xl shadow-lg overflow-hidden">
+      <section className="py-12">
+        <div className="px-6">
+          <div className="rounded-xl shadow-lg overflow-hidden border border-gray-200">
             <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center p-8">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900">
@@ -50,7 +56,7 @@ export default function AboutPage() {
                 <div className="mt-8">
                   <Button
                     asChild
-                    className="bg-black hover:bg-gray-800 text-white"
+                    className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white border border-blue-600 rounded-full px-4 py-0 inline-flex items-center justify-center shadow-xl transition-all duration-300 hover:shadow-xl cursor-pointer border-2"
                   >
                     <Link href="/guide">
                       Learn how it works
@@ -74,8 +80,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="pb-16">
-        <div className="px-4">
+      <section className="py-12">
+        <div className="px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900">Our Values</h2>
             <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
@@ -83,12 +89,12 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <div className=" p-8 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div className="h-8 w-8 bg-black rounded-full flex items-center justify-center mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+              <div className="h-12 w-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-blue-200 mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-white"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -109,11 +115,11 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div className="h-8 w-8 bg-black rounded-full flex items-center justify-center mb-4">
+            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+              <div className="h-12 w-12 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-purple-200 mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-white"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -134,11 +140,11 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div className="h-8 w-8 bg-black rounded-full flex items-center justify-center mb-4">
+            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+              <div className="h-12 w-12 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-green-200 mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-white"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -168,12 +174,12 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="pb-16">
-        <div className="px-4">
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      <section className="py-10 max-w-4xl mx-auto">
+        <div className="px-6">
+          <div className="overflow-hidden">
             <div className="lg:grid lg:grid-cols-3 lg:gap-8 p-8">
               <div className="lg:col-span-1 flex justify-center">
-                <div className="relative h-80 w-80 rounded-full overflow-hidden shadow-xl border-4 border-white">
+                <div className="relative h-60 w-60 rounded-full overflow-hidden shadow-xl border-4 border-white">
                   <Image
                     src="/assets/founder.jpg"
                     alt="IPTRADE Founder"
@@ -188,36 +194,15 @@ export default function AboutPage() {
                   Joaquin Metayer
                 </h3>
                 <p className="mt-1 text-lg text-gray-500">Founder & CEO</p>
-
-                <div className="mt-6 prose prose-lg text-gray-500">
-                  <p>
-                    Joaquin Metayer is a seasoned trader and software developer
-                    with over 10 years of experience in the financial markets.
-                    After facing the challenges of copying trades between
-                    different MetaTrader platforms while maintaining IP
-                    integrity, Joaquin decided to create a solution that would
-                    benefit the entire trading community.
-                  </p>
-                  <p>
-                    With a background in computer science and a passion for
-                    trading, Joaquin combined his technical expertise with his
-                    market knowledge to develop IPTRADE. His vision was to
-                    create a tool that would make trading more efficient and
-                    accessible while ensuring compliance with prop firm
-                    policies.
-                  </p>
-                  <p>
-                    "I created IPTRADE because I was tired of the limitations
-                    and risks associated with traditional trade copying methods.
-                    I wanted a solution that would work seamlessly while
-                    maintaining the same IP address, and I couldn't find one
-                    that met my needs. So I built it myself."
-                  </p>
-                </div>
-
-                <div className="mt-8 flex flex-wrap gap-4">
+                <p className="mt-4 text-gray-500">
+                  As a passionate trader and software developer, I created IPTRADE
+                  to solve a critical problem I faced while trading with multiple
+                  prop firms. Our mission is to make trading more accessible and
+                  efficient for everyone.
+                </p>
+                <div className="mt-6 flex space-x-4">
                   <a
-                    href="https://linkedin.com"
+                    href="https://linkedin.com/in/joaquinmetayer"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-gray-300 hover:text-black transition-colors"
@@ -225,75 +210,20 @@ export default function AboutPage() {
                     <Linkedin className="h-5 w-5" />
                   </a>
                   <a
-                    href="https://github.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-gray-300 hover:text-black transition-colors"
-                  >
-                    <Github className="h-5 w-5" />
-                  </a>
-                  <a
-                    href="https://instagram.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-gray-300 hover:text-black transition-colors"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                    </svg>
-                  </a>
-                  <a
-                    href="https://youtube.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-gray-300 hover:text-black transition-colors"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  </a>
-                  <a
                     href="https://iptrade.com"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-gray-300 hover:text-black transition-colors"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                      />
-                    </svg>
+                    <Globe className="h-5 w-5" />
+                  </a>
+                  <a
+                    href="https://instagram.com/joaquinmetayer"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-gray-300 hover:text-black transition-colors"
+                  >
+                    <Instagram className="h-5 w-5" />
                   </a>
                 </div>
               </div>
@@ -302,25 +232,42 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="p-12 pb-20">
-        <div className="px-4 text-center">
-          <h2 className="text-3xl font-bold">
-            Ready to transform your trading?
-          </h2>
-          <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-300">
-            Join thousands of traders who are already using IPTRADE to copy
-            trades between platforms while maintaining IP integrity.
-          </p>
-          <div className="mt-8">
-            <Button asChild className="bg-white text-black hover:bg-gray-100">
-              <Link href="/dashboard">
-                Get started today
-                <ArrowRight className="ml-2 h-4 w-4" />
+      <section className="py-12">
+        <div className="px-8">
+          <div className="max-w-xl mx-auto text-center">
+            <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              Ready to <span className="text-black">revolutionize</span> your
+              trading?
+            </h2>
+            <p className="mt-6 text-xl text-gray-600">
+              Join thousands of traders who trust IPTRADE for lightning-fast
+              trade copying between platforms. Perfect for prop firm traders who
+              need to maintain compliance while maximizing efficiency.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center">
+              <a href="/sign-in">
+                <Button className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white border border-blue-600 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-xl transition-all duration-300 hover:shadow-xl cursor-pointer border-2">
+                  Start now
+                  <Zap className="ml-3 h-5 w-5" />
+                </Button>
+              </a>
+              <Link href="/dashboard/guide">
+                <Button
+                  variant="outline"
+                  className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer border-2"
+                >
+                  View guide
+                  <ArrowRight className="ml-3 h-5 w-5" />
+                </Button>
               </Link>
-            </Button>
+            </div>
           </div>
         </div>
       </section>
+
+      <p className="text-3xl font-bold text-gray-200 text-center py-12 px-6">
+        <i>See you copying trades!</i>
+      </p>
     </main>
   );
 }
