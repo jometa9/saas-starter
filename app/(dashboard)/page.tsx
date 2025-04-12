@@ -278,195 +278,249 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex items-center justify-center">
-              {/* MT5 Master */}
-              <div className="text-center z-10">
-                <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto shadow-xl">
-                  <img
-                    src="/assets/mt5.png"
-                    alt="MetaTrader 5 Icon"
-                    className="w-16 h-16 object-contain rounded-xl shadow-lg"
-                  />
-                </div>
-                <h3 className="mt-2 mb-2 font-semibold text-gray-500">
-                  Master
-                </h3>
-              </div>
-
-              {/* Connecting Line */}
-              <div className="w-20 mb-10 h-px bg-gray-300"></div>
-
-              {/* IPTRADE APP */}
-              <div className="text-center z-20">
-                <div className="w-32 h-32 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto shadow-xl">
-                  <img
-                    src="/assets/iconShadow025.png"
-                    alt="IPTRADE Icon"
-                    className="w-24 h-24 object-contain"
-                  />
-                </div>
-                <h3 className="mt-2 mb-2 text-lg font-semibold">IPTRADE APP</h3>
-              </div>
-
-              {/* Connecting Line */}
-              <div className="w-20 mb-10 h-px bg-gray-300"></div>
-
-              {/* Slave Accounts Container */}
-              <div className="text-center gap-4 z-10">
-                <div className="text-center flex bg-gray-100 rounded-xl border-2 border-gray-200 shadow-xl">
-                  <div className="w-24 h-24 flex justify-center items-center">
-                    <img
-                      src="/assets/mt4.png"
-                      alt="MetaTrader 4 Icon"
-                      className="w-16 h-16 object-contain rounded-xl shadow-lg"
-                    />
-                  </div>
-                  <div className="w-24 h-24 flex justify-center items-center">
-                    <img
-                      src="/assets/mt5.png"
-                      alt="MetaTrader 5 Icon"
-                      className="w-16 h-16 object-contain rounded-xl shadow-lg"
-                    />
-                  </div>
-                  <div className="w-24 h-24 flex justify-center items-center">
-                    <img
-                      src="/assets/mt4.png"
-                      alt="MetaTrader 4 Icon"
-                      className="w-16 h-16 object-contain rounded-xl shadow-lg"
-                    />
-                  </div>
-                </div>
-                <h3 className="mt-2 mb-2 font-semibold text-gray-500">
-                  Slaves
-                </h3>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Steps Section */}
-      <section id="steps" className="py-12">
+      {/* Comparison Section */}
+      <section className="py-12">
         <div className="px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-              Get Started with IPTRADE
-            </h2>
+            <h2 className="text-3xl font-bold text-gray-900">Why Choose IPTRADE?</h2>
             <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
-              Follow these simple steps to set up your trade copying system
+              Compare IPTRADE with other trade copying solutions
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8  mx-auto">
-            {/* Step 1 */}
-            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 border-2 shadow-lg flex flex-col">
-              <div className="flex-grow">
-                <div className="h-12 w-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-blue-200 mb-6">
-                  <Download className="h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Download IPTRADE App
-                </h3>
-                <p className="text-gray-600">
-                  Download and install the IPTRADE desktop application. This app
-                  acts as a central hub, receiving and sending orders between
-                  your trading accounts.
-                </p>
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b-2 border-gray-200">
+                  <th className="p-4 text-left"></th>
+                  <th className="p-4 text-center">
+                    <div className="flex flex-col items-center">
+                      <img
+                        src="/assets/iconShadow025.png"
+                        alt="IPTRADE Icon"
+                        className="w-12 h-12 object-contain mb-2"
+                      />
+                      <span className="font-bold">IPTRADE</span>
+                    </div>
+                  </th>
+                  <th className="p-4 text-center">
+                    <div className="flex flex-col items-center">
+                      <img
+                        src="/assets/socialtradertools.png"
+                        alt="Social Trade Tools Icon"
+                        className="w-12 h-12 object-contain mb-2"
+                      />
+                      <span className="font-bold">Social Trade Tools</span>
+                    </div>
+                  </th>
+                  <th className="p-4 text-center">
+                    <div className="flex flex-col items-center">
+                      <img
+                        src="/assets/tradersconnect.png"
+                        alt="Traders Connect Icon"
+                        className="w-12 h-12 object-contain mb-2"
+                      />
+                      <span className="font-bold">Traders Connect</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-gray-100">
+                  <td className="p-4 font-medium">Local Network Operation</td>
+                  <td className="p-4 text-center">
+                    <Check className="h-5 w-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="p-4 text-center">
+                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </td>
+                  <td className="p-4 text-center">
+                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-100">
+                  <td className="p-4 font-medium">Unlimited Account Connections</td>
+                  <td className="p-4 text-center">
+                    <Check className="h-5 w-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="p-4 text-center">
+                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </td>
+                  <td className="p-4 text-center">
+                    <Check className="h-5 w-5 text-green-600 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-100">
+                  <td className="p-4 font-medium">Cross-Platform Compatibility</td>
+                  <td className="p-4 text-center">
+                    <Check className="h-5 w-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="p-4 text-center">
+                    <Check className="h-5 w-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="p-4 text-center">
+                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-100">
+                  <td className="p-4 font-medium">No Data Storage</td>
+                  <td className="p-4 text-center">
+                    <Check className="h-5 w-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="p-4 text-center">
+                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </td>
+                  <td className="p-4 text-center">
+                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-4 font-medium">Lightning-Fast Execution</td>
+                  <td className="p-4 text-center">
+                    <Check className="h-5 w-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="p-4 text-center">
+                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </td>
+                  <td className="p-4 text-center">
+                    <Check className="h-5 w-5 text-green-600 mx-auto" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-6">
+            {/* IPTRADE Card */}
+            <div className="bg-white p-6 rounded-2xl border-2 border-blue-600 shadow-lg">
+              <div className="flex items-center justify-center mb-4">
+                <img
+                  src="/assets/iconShadow025.png"
+                  alt="IPTRADE Icon"
+                  className="w-12 h-12 object-contain"
+                />
+                <h3 className="ml-4 text-2xl font-bold">IPTRADE</h3>
               </div>
-              <div className="mt-6">
-                <a
-                  href="#download"
-                  className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600 cursor-pointer"
-                >
-                  Go to downloads
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
-              </div>
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="ml-3 text-gray-700">Local Network Operation</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="ml-3 text-gray-700">Unlimited Account Connections</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="ml-3 text-gray-700">Cross-Platform Compatibility</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="ml-3 text-gray-700">No Data Storage</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="ml-3 text-gray-700">Lightning-Fast Execution</span>
+                </li>
+              </ul>
             </div>
 
-            {/* Step 2 */}
-            <div className="relative bg-white p-8 rounded-2xl border border-gray-400 border-2 shadow-lg flex flex-col">
-              <div className="flex-grow">
-                <div className="h-12 w-12 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-purple-200 mb-6">
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    />
+            {/* Social Trade Tools Card */}
+            <div className="bg-white p-6 rounded-2xl border-2 border-gray-200 shadow-lg">
+              <div className="flex items-center justify-center mb-4">
+                <img
+                  src="/assets/socialtradertools.png"
+                  alt="Social Trade Tools Icon"
+                  className="w-12 h-12 object-contain"
+                />
+                <h3 className="ml-4 text-2xl font-bold">Social Trade Tools</h3>
+              </div>
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Install MetaTrader Platform
-                </h3>
-                <p className="text-gray-600">
-                  Download and install MetaTrader 4 or MetaTrader 5. We
-                  recommend downloading directly from the official MQL5 website
-                  for the latest version and security updates.
-                </p>
-              </div>
-              <div className="mt-6">
-                <a
-                  href="#download"
-                  className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600 cursor-pointer"
-                >
-                  Get MetaTrader
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
-              </div>
+                  <span className="ml-3 text-gray-700">Local Network Operation</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="ml-3 text-gray-700">Unlimited Account Connections</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="ml-3 text-gray-700">Cross-Platform Compatibility</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="ml-3 text-gray-700">No Data Storage</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="ml-3 text-gray-700">Lightning-Fast Execution</span>
+                </li>
+              </ul>
             </div>
 
-            {/* Step 3 */}
-            <div className="relative bg-white p-8 rounded-2xl border border-gray-500 border-2 shadow-lg flex flex-col">
-              <div className="flex-grow">
-                <div className="h-12 w-12 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-green-200 mb-6">
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
+            {/* Traders Connect Card */}
+            <div className="bg-white p-6 rounded-2xl border-2 border-gray-200 shadow-lg">
+              <div className="flex items-center justify-center mb-4">
+                <img
+                  src="/assets/tradersconnect.png"
+                  alt="Traders Connect Icon"
+                  className="w-12 h-12 object-contain"
+                />
+                <h3 className="ml-4 text-2xl font-bold">Traders Connect</h3>
+              </div>
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Configure Your Accounts
-                </h3>
-                <p className="text-gray-600">
-                  Set up your master account and configure your slave accounts
-                  in the IPTRADE app. Follow our detailed guide for step-by-step
-                  instructions on account configuration.
-                </p>
-              </div>
-              <div className="mt-6">
-                <Link
-                  href="/dashboard/guide"
-                  className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600 cursor-pointer"
-                >
-                  View configuration guide
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </div>
+                  <span className="ml-3 text-gray-700">Local Network Operation</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="ml-3 text-gray-700">Unlimited Account Connections</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="ml-3 text-gray-700">Cross-Platform Compatibility</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="ml-3 text-gray-700">No Data Storage</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="ml-3 text-gray-700">Lightning-Fast Execution</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
