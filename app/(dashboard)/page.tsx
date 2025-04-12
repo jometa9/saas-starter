@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight, Check, Download, Zap } from "lucide-react";
+import { ArrowRight, Check, Download, Zap, ExternalLink } from "lucide-react";
 
 import { Terminal } from "./terminal";
 
@@ -278,7 +278,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-12 pb-10 hidden md:block">
+      <section className="py-16 bg-white hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center justify-center">
@@ -348,425 +348,125 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Comparison Section */}
-      <section className="py-12">
+      {/* Steps Section */}
+      <section id="steps" className="py-12">
         <div className="px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Why Choose IPTRADE?
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+              Get Started with IPTRADE
             </h2>
             <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
-              Compare IPTRADE with other trade copying solutions
+              Follow these simple steps to set up your trade copying system
             </p>
           </div>
 
-          {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto">
-            <div className="border-2 border-gray-200 rounded-xl shadow overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="p-4 text-left rounded-tl-xl"></th>
-                    <th className="p-4 text-center">
-                      <div className="flex flex-col items-center">
-                        <img
-                          src="/assets/iconShadow025.png"
-                          alt="IPTRADE Icon"
-                          className="w-12 h-12 object-contain mb-2"
-                        />
-                        <span className="font-bold">IPTRADE</span>
-                      </div>
-                    </th>
-                    <th className="p-4 text-center">
-                      <div className="flex flex-col items-center">
-                        <img
-                          src="/assets/socialtradertools.png"
-                          alt="Social Trade Tools Icon"
-                          className="w-18 h-10 object-contain mb-2"
-                        />
-                        <span className="font-bold">Social Trade Tools</span>
-                      </div>
-                    </th>
-                    <th className="p-4 text-center rounded-tr-xl">
-                      <div className="flex flex-col items-center">
-                        <img
-                          src="/assets/tradersconnect.png"
-                          alt="Traders Connect Icon"
-                          className="w-10 h-10 p-1 object-contain mb-2"
-                        />
-                        <span className="font-bold">Traders Connect</span>
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b-2 border-gray-100">
-                    <td className="p-4 font-medium text-lg">
-                      Local Network Operation
-                    </td>
-                    <td className="p-4 text-center">
-                      <Check className="h-5 w-5 text-green-600 mx-auto" />
-                    </td>
-                    <td className="p-4 text-center">
-                      <svg
-                        className="h-5 w-5 text-red-500 mx-auto"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </td>
-                    <td className="p-4 text-center">
-                      <svg
-                        className="h-5 w-5 text-red-500 mx-auto"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </td>
-                  </tr>
-                  <tr className="border-b-2 border-gray-100">
-                    <td className="p-4 font-medium text-lg">
-                      Unlimited Account Connections
-                    </td>
-                    <td className="p-4 text-center">
-                      <Check className="h-5 w-5 text-green-600 mx-auto" />
-                    </td>
-                    <td className="p-4 text-center">
-                      <svg
-                        className="h-5 w-5 text-red-500 mx-auto"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </td>
-                    <td className="p-4 text-center">
-                      <Check className="h-5 w-5 text-green-600 mx-auto" />
-                    </td>
-                  </tr>
-                  <tr className="border-b-2 border-gray-100">
-                    <td className="p-4 font-medium text-lg">
-                      Cross-Platform Compatibility
-                    </td>
-                    <td className="p-4 text-center">
-                      <Check className="h-5 w-5 text-green-600 mx-auto" />
-                    </td>
-                    <td className="p-4 text-center">
-                      <Check className="h-5 w-5 text-green-600 mx-auto" />
-                    </td>
-                    <td className="p-4 text-center">
-                      <svg
-                        className="h-5 w-5 text-red-500 mx-auto"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </td>
-                  </tr>
-                  <tr className="border-b-2 border-gray-100">
-                    <td className="p-4 font-medium text-lg">No Data Storage</td>
-                    <td className="p-4 text-center">
-                      <Check className="h-5 w-5 text-green-600 mx-auto" />
-                    </td>
-                    <td className="p-4 text-center">
-                      <svg
-                        className="h-5 w-5 text-red-500 mx-auto"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </td>
-                    <td className="p-4 text-center">
-                      <svg
-                        className="h-5 w-5 text-red-500 mx-auto"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-medium text-lg rounded-bl-xl">
-                      Lightning-Fast Execution
-                    </td>
-                    <td className="p-4 text-center">
-                      <Check className="h-5 w-5 text-green-600 mx-auto" />
-                    </td>
-                    <td className="p-4 text-center">
-                      <svg
-                        className="h-5 w-5 text-red-500 mx-auto"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </td>
-                    <td className="p-4 text-center rounded-br-xl">
-                      <Check className="h-5 w-5 text-green-600 mx-auto" />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Mobile Cards */}
-          <div className="md:hidden space-y-6">
-            {/* IPTRADE Card */}
-            <div className="bg-white p-6 rounded-2xl border-2 border-blue-600 shadow-lg">
-              <div className="flex items-center justify-center mb-4">
-                <img
-                  src="/assets/iconShadow025.png"
-                  alt="IPTRADE Icon"
-                  className="w-12 h-12 object-contain"
-                />
-                <h3 className="ml-4 text-2xl font-bold">IPTRADE</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8  mx-auto">
+            {/* Step 1 */}
+            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 border-2 shadow-lg flex flex-col">
+              <div className="flex-grow">
+                <div className="h-12 w-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-blue-200 mb-6">
+                  <Download className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  Download IPTRADE App
+                </h3>
+                <p className="text-gray-600">
+                  Download and install the IPTRADE desktop application. This app
+                  acts as a central hub, receiving and sending orders between
+                  your trading accounts.
+                </p>
               </div>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">
-                    Local Network Operation
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">
-                    Unlimited Account Connections
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">
-                    Cross-Platform Compatibility
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">No Data Storage</span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">
-                    Lightning-Fast Execution
-                  </span>
-                </li>
-              </ul>
+              <div className="mt-6">
+                <a
+                  href="#download"
+                  className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600 cursor-pointer"
+                >
+                  Go to downloads
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              </div>
             </div>
 
-            {/* Social Trade Tools Card */}
-            <div className="bg-white p-6 rounded-2xl border-2 border-gray-200 shadow-lg">
-              <div className="flex items-center justify-center mb-4">
-                <img
-                  src="/assets/socialtradertools.png"
-                  alt="Social Trade Tools Icon"
-                  className="w-12 h-12 object-contain"
-                />
-                <h3 className="ml-4 text-2xl font-bold">Social Trade Tools</h3>
+            {/* Step 2 */}
+            <div className="relative bg-white p-8 rounded-2xl border border-gray-400 border-2 shadow-lg flex flex-col">
+              <div className="flex-grow">
+                <div className="h-12 w-12 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-purple-200 mb-6">
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  Install MetaTrader Platform
+                </h3>
+                <p className="text-gray-600">
+                  Download and install MetaTrader 4 or MetaTrader 5. We
+                  recommend downloading directly from the official MQL5 website
+                  for the latest version and security updates.
+                </p>
               </div>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <svg
-                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  <span className="ml-3 text-gray-700">
-                    Local Network Operation
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <svg
-                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  <span className="ml-3 text-gray-700">
-                    Unlimited Account Connections
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">
-                    Cross-Platform Compatibility
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <svg
-                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  <span className="ml-3 text-gray-700">No Data Storage</span>
-                </li>
-                <li className="flex items-start">
-                  <svg
-                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  <span className="ml-3 text-gray-700">
-                    Lightning-Fast Execution
-                  </span>
-                </li>
-              </ul>
+              <div className="mt-6">
+                <a
+                  href="#download"
+                  className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600 cursor-pointer"
+                >
+                  Get MetaTrader
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              </div>
             </div>
 
-            {/* Traders Connect Card */}
-            <div className="bg-white p-6 rounded-2xl border-2 border-gray-200 shadow-lg">
-              <div className="flex items-center justify-center mb-4">
-                <img
-                  src="/assets/tradersconnect.png"
-                  alt="Traders Connect Icon"
-                  className="w-12 h-12 object-contain"
-                />
-                <h3 className="ml-4 text-2xl font-bold">Traders Connect</h3>
+            {/* Step 3 */}
+            <div className="relative bg-white p-8 rounded-2xl border border-gray-500 border-2 shadow-lg flex flex-col">
+              <div className="flex-grow">
+                <div className="h-12 w-12 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-green-200 mb-6">
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  Configure Your Accounts
+                </h3>
+                <p className="text-gray-600">
+                  Set up your master account and configure your slave accounts
+                  in the IPTRADE app. Follow our detailed guide for step-by-step
+                  instructions on account configuration.
+                </p>
               </div>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <svg
-                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  <span className="ml-3 text-gray-700">
-                    Local Network Operation
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">
-                    Unlimited Account Connections
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <svg
-                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  <span className="ml-3 text-gray-700">
-                    Cross-Platform Compatibility
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <svg
-                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  <span className="ml-3 text-gray-700">No Data Storage</span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">
-                    Lightning-Fast Execution
-                  </span>
-                </li>
-              </ul>
+              <div className="mt-6">
+                <Link
+                  href="/dashboard/guide"
+                  className="inline-flex items-center text-sm font-medium text-black hover:text-gray-600 cursor-pointer"
+                >
+                  View configuration guide
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -840,7 +540,7 @@ export default function HomePage() {
             </div>
 
             {/* Premium Plan */}
-            <div className="lg:col-span-3 border-2 border-green-600 rounded-2xl shadow-xl bg-white p-8 relative">
+            <div className="lg:col-span-3 border-2 border-black rounded-2xl shadow-xl bg-white p-8 relative">
               <div className="absolute top-0 right-6 -translate-y-1/2">
                 <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium bg-green-50 text-green-700 border border-green-100">
                   MOST POPULAR
@@ -909,7 +609,7 @@ export default function HomePage() {
                 <div className="mt-8">
                   <Button
                     asChild
-                    className="w-full py-6 text-lg bg-green-700 hover:bg-green-900 text-white cursor-pointer"
+                    className="w-full py-6 text-lg bg-black hover:bg-gray-800 text-white cursor-pointer"
                   >
                     <Link href="/sign-up">Go Premium</Link>
                   </Button>
@@ -1102,189 +802,143 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* IPTRADE Desktop App */}
-          <div className="mb-6">
-            <div className="flex items-center mb-4 gap-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
-                <img
-                  src="/assets/iconShadow025.png"
-                  alt="IPTRADE Icon"
-                  className="w-12 h-12 object-contain"
-                />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">
-                IPTRADE Desktop App
-              </h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="border border-black border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h4 className="font-medium text-lg">Windows Version</h4>
-                    <p className="text-sm text-muted-foreground">v1.0.0</p>
-                  </div>
-                  <Button variant="outline" className="ml-auto cursor-pointer">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* IPTRADE Desktop App */}
+            <div className="mb-6 w-full">
+              <div className="flex items-center mb-4 gap-4">
+                <div className="w-16 h-16 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
+                  <img
+                    src="/assets/iconShadow025.png"
+                    alt="IPTRADE Icon"
+                    className="w-12 h-12 object-contain"
+                  />
                 </div>
-                <p className="text-sm text-gray-500">
-                  Compatible with Windows 10 and above. Supports MetaTrader 4 &
-                  5 for high-frequency trading with IPTRADE.
-                </p>
+                <h3 className="text-xl font-bold text-gray-900">IPTRADE App</h3>
               </div>
 
-              <div className="border border-black border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h4 className="font-medium text-lg">macOS Version</h4>
-                    <p className="text-sm text-muted-foreground">v1.0.0</p>
+              <div>
+                <div className="border border-black border-2 rounded-lg p-6 shadow-sm hover:shadow-lg transition-shadow mb-4 cursor-pointer bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-lg">Windows Version</h4>
+                      <p className="text-sm text-muted-foreground">v1.0.0</p>
+                    </div>
+                    <Download className="h-8 w-8 p-1" />
                   </div>
-                  <Button variant="outline" className="ml-auto cursor-pointer">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
                 </div>
-                <p className="text-sm text-gray-500">
-                  Compatible with macOS Monterey and above. Optimized for Apple
-                  Silicon with IPTRADE support.
-                </p>
-              </div>
-            </div>
-          </div>
 
-          {/* EA Source Code */}
-          <div className="mb-6">
-            <div className="flex items-center  mb-4 gap-4">
-              <div className="w-16 h-16 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
-                <img
-                  src="/assets/metatrader5_expert_advisors_logo.png"
-                  alt="Expert Advisor"
-                  className="w-10 h-10 object-contain bg-gray-50"
-                />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">
-                EA Source Code
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="border border-blue-800 border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h4 className="font-medium text-lg">MT4 Expert Advisor</h4>
-                    <p className="text-sm text-muted-foreground">
-                      MQL4 Source Code
-                    </p>
+                <div className="border border-black border-2 rounded-lg p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-lg">macOS Version</h4>
+                      <p className="text-sm text-muted-foreground">v1.0.0</p>
+                    </div>
+                    <Download className="h-8 w-8 p-1" />
                   </div>
-                  <Button variant="outline" className="ml-auto cursor-pointer">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
                 </div>
-                <p className="text-sm text-gray-500">
-                  Download the source code for the MetaTrader 4 Expert Advisor
-                  to customize and compile.
-                </p>
               </div>
+            </div>
 
-              <div className="border border-blue-800 border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h4 className="font-medium text-lg">MT5 Expert Advisor</h4>
-                    <p className="text-sm text-muted-foreground">
-                      MQL5 Source Code
-                    </p>
-                  </div>
-                  <Button variant="outline" className="ml-auto cursor-pointer">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
+            {/* EA Source Code */}
+            <div className="mb-6 w-full">
+              <div className="flex items-center  mb-4 gap-4">
+                <div className="w-16 h-16 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
+                  <img
+                    src="/assets/metatrader5_expert_advisors_logo.png"
+                    alt="Expert Advisor"
+                    className="w-10 h-10 object-contain bg-gray-50"
+                  />
                 </div>
-                <p className="text-sm text-gray-500">
-                  Download the source code for the MetaTrader 5 Expert Advisor
-                  to customize and compile.
-                </p>
+                <h3 className="text-xl font-bold text-gray-900">EA File</h3>
               </div>
-            </div>
-          </div>
-
-          {/* MetaTrader Platforms */}
-          <div>
-            <div className="flex items-center mb-4 gap-4">
-              <div className="w-16 h-16 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
-                <img
-                  src="/assets/mql5_logo__2.jpg"
-                  alt="MQL5 Logo"
-                  className="w-10 h-10 object-contain"
-                />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">
-                MQL5 Download Links
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="border border-yellow-600 border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h4 className="font-medium text-lg">MetaTrader 4</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Official Platform
-                    </p>
+              <div>
+                <div className="border border-blue-800 border-2 rounded-lg p-6 bg-blue-50 shadow-sm hover:shadow-lg transition-shadow mb-4 cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-lg">
+                        MT4 Expert Advisor
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        MQL4 Source Code
+                      </p>
+                    </div>
+                    <Download className="h-8 w-8 p-1" />
                   </div>
-                  <a
-                    href="https://www.mql5.com/en/download/mt4"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="cursor-pointer"
-                  >
-                    <Button
-                      variant="outline"
-                      className="ml-auto cursor-pointer"
+                </div>
+
+                <div className="border border-blue-800 border-2 rounded-lg p-6 bg-blue-50 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-lg">
+                        MT5 Expert Advisor
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        MQL5 Source Code
+                      </p>
+                    </div>
+                    <Download className="h-8 w-8 p-1" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* MetaTrader Platforms */}
+            <div className="w-full">
+              <div className="flex items-center mb-4 gap-4">
+                <div className="w-16 h-16 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
+                  <img
+                    src="/assets/mql5_logo__2.jpg"
+                    alt="MQL5 Logo"
+                    className="w-10 h-10 object-contain"
+                  />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  MQL5 Download
+                </h3>
+              </div>
+              <div>
+                <div className="border border-yellow-600 border-2 rounded-lg p-6 bg-yellow-50 shadow-sm hover:shadow-lg transition-shadow mb-4 cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-lg">MetaTrader 4</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Official Platform
+                      </p>
+                    </div>
+                    <a
+                      href="https://www.mql5.com/en/download/mt4"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="cursor-pointer"
                     >
-                      <ArrowRight className="h-4 w-4 mr-2" />
-                      Visit MQL5
-                    </Button>
-                  </a>
-                </div>
-                <p className="text-sm text-gray-500">
-                  Download the official MetaTrader 4 trading platform from the
-                  MQL5 website.
-                </p>
-              </div>
-
-              <div className="border border-yellow-600 border-2 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h4 className="font-medium text-lg">MetaTrader 5</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Official Platform
-                    </p>
+                      <ExternalLink className="h-8 w-8 p-1" />
+                    </a>
                   </div>
-                  <a
-                    href="https://www.mql5.com/en/download/mt5"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="cursor-pointer"
-                  >
-                    <Button
-                      variant="outline"
-                      className="ml-auto cursor-pointer"
-                    >
-                      <ArrowRight className="h-4 w-4 mr-2" />
-                      Visit MQL5
-                    </Button>
-                  </a>
                 </div>
-                <p className="text-sm text-gray-500">
-                  Download the official MetaTrader 5 trading platform from the
-                  MQL5 website.
-                </p>
+
+                <div className="border border-yellow-600 border-2 rounded-lg p-6 bg-yellow-50 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-lg">MetaTrader 5</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Official Platform
+                      </p>
+                    </div>
+                    <a
+                      href="https://www.mql5.com/en/download/mt5"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="cursor-pointer"
+                    >
+                      <ExternalLink className="h-8 w-8 p-1" />
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-8">
             <p className="text-sm text-gray-500">
               Need help with setup? Check our{" "}
               <Link

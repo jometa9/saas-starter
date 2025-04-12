@@ -43,7 +43,7 @@ export function Downloads() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {downloads.map((download) => (
-          <Card key={download.id} className="hover:shadow-lg transition-shadow">
+          <Card key={download.id} className="hover:shadow-lg transition-shadow w-full">
             <CardHeader>
               <div className="flex items-center gap-4">
                 <div className="p-2 bg-gray-100 rounded-lg">

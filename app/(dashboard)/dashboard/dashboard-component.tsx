@@ -576,7 +576,7 @@ export function Dashboard({
         </CardHeader>
         <CardContent className="flex flex-col gap-4 p-4 pt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-0">
-            <Card className="border border-gray-200 hover:shadow-md transition-shadow">
+            <Card className="border border-gray-200 hover:shadow-md transition-shadow w-full">
               <CardContent className="p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center gap-3">
@@ -601,7 +601,7 @@ export function Dashboard({
               </CardContent>
             </Card>
 
-            <Card className="border border-gray-200 hover:shadow-md transition-shadow">
+            <Card className="border border-gray-200 hover:shadow-md transition-shadow w-full">
               <CardContent className="p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center gap-3">
