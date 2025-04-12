@@ -112,7 +112,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold mb-2">
+                <h3 className="text-xl font-bold mb-2">
                   Lightning-Fast Trade Copying
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -141,7 +141,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold mb-2">
+                <h3 className="text-xl font-bold mb-2">
                   Single IP Address Trading
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -175,7 +175,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold mb-2">Data Privacy First</h3>
+                <h3 className="text-xl font-bold mb-2">Data Privacy First</h3>
                 <p className="text-gray-600 text-sm">
                   Your trading data is never stored or shared. Each request to
                   IPTRADE is processed in real-time and immediately discarded,
@@ -203,7 +203,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold mb-2">
+                <h3 className="text-xl font-bold mb-2">
                   Unlimited Account Connections
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -233,7 +233,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold mb-2">
+                <h3 className="text-xl font-bold mb-2">
                   Cross-Platform Compatibility
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -263,7 +263,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold mb-2">
+                <h3 className="text-xl font-bold mb-2">
                   Local Network Operation
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -278,11 +278,83 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="py-12 pb-10 hidden md:block">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-center justify-center">
+              {/* MT5 Master */}
+              <div className="text-center z-10">
+                <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto shadow-xl">
+                  <img
+                    src="/assets/mt5.png"
+                    alt="MetaTrader 5 Icon"
+                    className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                  />
+                </div>
+                <h3 className="mt-2 mb-2 font-semibold text-gray-500">
+                  Master
+                </h3>
+              </div>
+
+              {/* Connecting Line */}
+              <div className="w-20 mb-10 h-px bg-gray-300"></div>
+
+              {/* IPTRADE APP */}
+              <div className="text-center z-20">
+                <div className="w-32 h-32 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto shadow-xl">
+                  <img
+                    src="/assets/iconShadow025.png"
+                    alt="IPTRADE Icon"
+                    className="w-24 h-24 object-contain"
+                  />
+                </div>
+                <h3 className="mt-2 mb-2 text-lg font-semibold">IPTRADE APP</h3>
+              </div>
+
+              {/* Connecting Line */}
+              <div className="w-20 mb-10 h-px bg-gray-300"></div>
+
+              {/* Slave Accounts Container */}
+              <div className="text-center gap-4 z-10">
+                <div className="text-center flex bg-gray-100 rounded-xl border-2 border-gray-200 shadow-xl">
+                  <div className="w-24 h-24 flex justify-center items-center">
+                    <img
+                      src="/assets/mt4.png"
+                      alt="MetaTrader 4 Icon"
+                      className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                    />
+                  </div>
+                  <div className="w-24 h-24 flex justify-center items-center">
+                    <img
+                      src="/assets/mt5.png"
+                      alt="MetaTrader 5 Icon"
+                      className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                    />
+                  </div>
+                  <div className="w-24 h-24 flex justify-center items-center">
+                    <img
+                      src="/assets/mt4.png"
+                      alt="MetaTrader 4 Icon"
+                      className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                    />
+                  </div>
+                </div>
+                <h3 className="mt-2 mb-2 font-semibold text-gray-500">
+                  Slaves
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Comparison Section */}
       <section className="py-12">
         <div className="px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Why Choose IPTRADE?</h2>
+            <h2 className="text-3xl font-bold text-gray-900">
+              Why Choose IPTRADE?
+            </h2>
             <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
               Compare IPTRADE with other trade copying solutions
             </p>
@@ -290,119 +362,199 @@ export default function HomePage() {
 
           {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b-2 border-gray-200">
-                  <th className="p-4 text-left"></th>
-                  <th className="p-4 text-center">
-                    <div className="flex flex-col items-center">
-                      <img
-                        src="/assets/iconShadow025.png"
-                        alt="IPTRADE Icon"
-                        className="w-12 h-12 object-contain mb-2"
-                      />
-                      <span className="font-bold">IPTRADE</span>
-                    </div>
-                  </th>
-                  <th className="p-4 text-center">
-                    <div className="flex flex-col items-center">
-                      <img
-                        src="/assets/socialtradertools.png"
-                        alt="Social Trade Tools Icon"
-                        className="w-12 h-12 object-contain mb-2"
-                      />
-                      <span className="font-bold">Social Trade Tools</span>
-                    </div>
-                  </th>
-                  <th className="p-4 text-center">
-                    <div className="flex flex-col items-center">
-                      <img
-                        src="/assets/tradersconnect.png"
-                        alt="Traders Connect Icon"
-                        className="w-12 h-12 object-contain mb-2"
-                      />
-                      <span className="font-bold">Traders Connect</span>
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-gray-100">
-                  <td className="p-4 font-medium">Local Network Operation</td>
-                  <td className="p-4 text-center">
-                    <Check className="h-5 w-5 text-green-600 mx-auto" />
-                  </td>
-                  <td className="p-4 text-center">
-                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </td>
-                  <td className="p-4 text-center">
-                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="p-4 font-medium">Unlimited Account Connections</td>
-                  <td className="p-4 text-center">
-                    <Check className="h-5 w-5 text-green-600 mx-auto" />
-                  </td>
-                  <td className="p-4 text-center">
-                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </td>
-                  <td className="p-4 text-center">
-                    <Check className="h-5 w-5 text-green-600 mx-auto" />
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="p-4 font-medium">Cross-Platform Compatibility</td>
-                  <td className="p-4 text-center">
-                    <Check className="h-5 w-5 text-green-600 mx-auto" />
-                  </td>
-                  <td className="p-4 text-center">
-                    <Check className="h-5 w-5 text-green-600 mx-auto" />
-                  </td>
-                  <td className="p-4 text-center">
-                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="p-4 font-medium">No Data Storage</td>
-                  <td className="p-4 text-center">
-                    <Check className="h-5 w-5 text-green-600 mx-auto" />
-                  </td>
-                  <td className="p-4 text-center">
-                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </td>
-                  <td className="p-4 text-center">
-                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-4 font-medium">Lightning-Fast Execution</td>
-                  <td className="p-4 text-center">
-                    <Check className="h-5 w-5 text-green-600 mx-auto" />
-                  </td>
-                  <td className="p-4 text-center">
-                    <svg className="h-5 w-5 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </td>
-                  <td className="p-4 text-center">
-                    <Check className="h-5 w-5 text-green-600 mx-auto" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="border-2 border-gray-200 rounded-xl shadow overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="p-4 text-left rounded-tl-xl"></th>
+                    <th className="p-4 text-center">
+                      <div className="flex flex-col items-center">
+                        <img
+                          src="/assets/iconShadow025.png"
+                          alt="IPTRADE Icon"
+                          className="w-12 h-12 object-contain mb-2"
+                        />
+                        <span className="font-bold">IPTRADE</span>
+                      </div>
+                    </th>
+                    <th className="p-4 text-center">
+                      <div className="flex flex-col items-center">
+                        <img
+                          src="/assets/socialtradertools.png"
+                          alt="Social Trade Tools Icon"
+                          className="w-18 h-10 object-contain mb-2"
+                        />
+                        <span className="font-bold">Social Trade Tools</span>
+                      </div>
+                    </th>
+                    <th className="p-4 text-center rounded-tr-xl">
+                      <div className="flex flex-col items-center">
+                        <img
+                          src="/assets/tradersconnect.png"
+                          alt="Traders Connect Icon"
+                          className="w-10 h-10 p-1 object-contain mb-2"
+                        />
+                        <span className="font-bold">Traders Connect</span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b-2 border-gray-100">
+                    <td className="p-4 font-medium text-lg">
+                      Local Network Operation
+                    </td>
+                    <td className="p-4 text-center">
+                      <Check className="h-5 w-5 text-green-600 mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <svg
+                        className="h-5 w-5 text-red-500 mx-auto"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </td>
+                    <td className="p-4 text-center">
+                      <svg
+                        className="h-5 w-5 text-red-500 mx-auto"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </td>
+                  </tr>
+                  <tr className="border-b-2 border-gray-100">
+                    <td className="p-4 font-medium text-lg">
+                      Unlimited Account Connections
+                    </td>
+                    <td className="p-4 text-center">
+                      <Check className="h-5 w-5 text-green-600 mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <svg
+                        className="h-5 w-5 text-red-500 mx-auto"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </td>
+                    <td className="p-4 text-center">
+                      <Check className="h-5 w-5 text-green-600 mx-auto" />
+                    </td>
+                  </tr>
+                  <tr className="border-b-2 border-gray-100">
+                    <td className="p-4 font-medium text-lg">
+                      Cross-Platform Compatibility
+                    </td>
+                    <td className="p-4 text-center">
+                      <Check className="h-5 w-5 text-green-600 mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <Check className="h-5 w-5 text-green-600 mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <svg
+                        className="h-5 w-5 text-red-500 mx-auto"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </td>
+                  </tr>
+                  <tr className="border-b-2 border-gray-100">
+                    <td className="p-4 font-medium text-lg">No Data Storage</td>
+                    <td className="p-4 text-center">
+                      <Check className="h-5 w-5 text-green-600 mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <svg
+                        className="h-5 w-5 text-red-500 mx-auto"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </td>
+                    <td className="p-4 text-center">
+                      <svg
+                        className="h-5 w-5 text-red-500 mx-auto"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-medium text-lg rounded-bl-xl">
+                      Lightning-Fast Execution
+                    </td>
+                    <td className="p-4 text-center">
+                      <Check className="h-5 w-5 text-green-600 mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <svg
+                        className="h-5 w-5 text-red-500 mx-auto"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </td>
+                    <td className="p-4 text-center rounded-br-xl">
+                      <Check className="h-5 w-5 text-green-600 mx-auto" />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Mobile Cards */}
@@ -420,15 +572,21 @@ export default function HomePage() {
               <ul className="space-y-4">
                 <li className="flex items-start">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">Local Network Operation</span>
+                  <span className="ml-3 text-gray-700">
+                    Local Network Operation
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">Unlimited Account Connections</span>
+                  <span className="ml-3 text-gray-700">
+                    Unlimited Account Connections
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">Cross-Platform Compatibility</span>
+                  <span className="ml-3 text-gray-700">
+                    Cross-Platform Compatibility
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
@@ -436,7 +594,9 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-start">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">Lightning-Fast Execution</span>
+                  <span className="ml-3 text-gray-700">
+                    Lightning-Fast Execution
+                  </span>
                 </li>
               </ul>
             </div>
@@ -453,32 +613,80 @@ export default function HomePage() {
               </div>
               <ul className="space-y-4">
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
-                  <span className="ml-3 text-gray-700">Local Network Operation</span>
+                  <span className="ml-3 text-gray-700">
+                    Local Network Operation
+                  </span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
-                  <span className="ml-3 text-gray-700">Unlimited Account Connections</span>
+                  <span className="ml-3 text-gray-700">
+                    Unlimited Account Connections
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">Cross-Platform Compatibility</span>
+                  <span className="ml-3 text-gray-700">
+                    Cross-Platform Compatibility
+                  </span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                   <span className="ml-3 text-gray-700">No Data Storage</span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
-                  <span className="ml-3 text-gray-700">Lightning-Fast Execution</span>
+                  <span className="ml-3 text-gray-700">
+                    Lightning-Fast Execution
+                  </span>
                 </li>
               </ul>
             </div>
@@ -495,30 +703,68 @@ export default function HomePage() {
               </div>
               <ul className="space-y-4">
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
-                  <span className="ml-3 text-gray-700">Local Network Operation</span>
+                  <span className="ml-3 text-gray-700">
+                    Local Network Operation
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">Unlimited Account Connections</span>
+                  <span className="ml-3 text-gray-700">
+                    Unlimited Account Connections
+                  </span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
-                  <span className="ml-3 text-gray-700">Cross-Platform Compatibility</span>
+                  <span className="ml-3 text-gray-700">
+                    Cross-Platform Compatibility
+                  </span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                   <span className="ml-3 text-gray-700">No Data Storage</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="ml-3 text-gray-700">Lightning-Fast Execution</span>
+                  <span className="ml-3 text-gray-700">
+                    Lightning-Fast Execution
+                  </span>
                 </li>
               </ul>
             </div>
@@ -594,7 +840,7 @@ export default function HomePage() {
             </div>
 
             {/* Premium Plan */}
-            <div className="lg:col-span-3 border-2 border-black rounded-2xl shadow-xl bg-white p-8 relative">
+            <div className="lg:col-span-3 border-2 border-green-600 rounded-2xl shadow-xl bg-white p-8 relative">
               <div className="absolute top-0 right-6 -translate-y-1/2">
                 <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium bg-green-50 text-green-700 border border-green-100">
                   MOST POPULAR
@@ -663,7 +909,7 @@ export default function HomePage() {
                 <div className="mt-8">
                   <Button
                     asChild
-                    className="w-full py-6 text-lg bg-black hover:bg-gray-800 text-white cursor-pointer"
+                    className="w-full py-6 text-lg bg-green-700 hover:bg-green-900 text-white cursor-pointer"
                   >
                     <Link href="/sign-up">Go Premium</Link>
                   </Button>
