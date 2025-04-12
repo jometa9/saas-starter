@@ -66,6 +66,14 @@ function UserMenu() {
 }
 
 export function Header() {
+  const navigationLinks = [
+    { href: "/", label: "Home" },
+    { href: "/guide", label: "Guide" },
+    { href: "/faqs", label: "FAQS" },
+    { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
+  ];
+
   return (
     <header>
       <div className="mx-auto p-4 flex justify-between items-center">
@@ -75,37 +83,15 @@ export function Header() {
 
         {/* Navegación central */}
         <div className="hidden md:flex space-x-6">
-          <Link
-            href="/"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900"
-          >
-            Home
-          </Link>
-
-          <Link
-            href="/guide"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900"
-          >
-            Guide
-          </Link>
-          <Link
-            href="/faqs"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900"
-          >
-            FAQS
-          </Link>
-          <Link
-            href="/about"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900"
-          >
-            About
-          </Link>
-          <Link
-            href="/contact"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900"
-          >
-            Contact
-          </Link>
+          {navigationLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-gray-700 hover:text-gray-900"
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
 
         <div className="flex items-center space-x-4">
