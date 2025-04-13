@@ -15,19 +15,17 @@ export function Footer() {
 
       <div className="flex space-x-4 text-sm">
         <Link
-          href="https://instagram.com"
+          href="https://www.instagram.com/iptradecopier/"
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-full text-gray-600 hover:text-black hover:bg-gray-200 transition-colors flex items-center justify-center"
           aria-label="Instagram"
         >
           Instagram
         </Link>
         <Link
-          href="https://linkedin.com"
+          href="https://www.linkedin.com/company/iptrade"
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-full text-gray-600 hover:text-black hover:bg-gray-200 transition-colors flex items-center justify-center"
           aria-label="LinkedIn"
         >
           LinkedIn
