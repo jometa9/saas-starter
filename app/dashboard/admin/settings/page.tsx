@@ -1,32 +1,119 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 export default function AdminSettingsPage() {
   const [isSending, setIsSending] = useState(false);
+  const [isAssigningSubscription, setIsAssigningSubscription] = useState(false);
+  const [email, setEmail] = useState("");
+  const [plan, setPlan] = useState("");
+  const [duration, setDuration] = useState("1");
+  const [forceAssign, setForceAssign] = useState(false);
+  const [subscriptionWarning, setSubscriptionWarning] = useState<{
+    message: string;
+    existingSubscription: {
+      planName: string;
+      status: string;
+      isPaid: boolean;
+    };
+  } | null>(null);
 
   const handleTestEmails = async () => {
     try {
       setIsSending(true);
-      const response = await fetch('/api/admin/test-emails', {
-        method: 'POST',
+      const response = await fetch("/api/admin/test-emails", {
+        method: "POST",
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to send test emails');
+        throw new Error(data.error || "Failed to send test emails");
       }
 
-      toast.success('Test emails sent successfully! Check your inbox.');
+      toast.success("Test emails sent successfully! Check your inbox.");
     } catch (error) {
-      console.error('Error sending test emails:', error);
-      toast.error('Failed to send test emails. Please try again.');
+      console.error("Error sending test emails:", error);
+      toast.error("Failed to send test emails. Please try again.");
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleAssignFreeSubscription = async () => {
+    try {
+      setIsAssigningSubscription(true);
+      setSubscriptionWarning(null);
+
+      if (!email || !plan || !duration) {
+        toast.error("Please fill in all fields");
+        return;
+      }
+
+      const response = await fetch("/api/admin/assign-free-subscription", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          plan,
+          duration: parseInt(duration, 10),
+          force: forceAssign,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 409 && data.warning) {
+        // Usuario tiene una suscripción activa, mostrar advertencia
+        setSubscriptionWarning({
+          message: data.message,
+          existingSubscription: data.existingSubscription,
+        });
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to assign free subscription");
+      }
+
+      // Si había una advertencia previa, limpiarla
+      setSubscriptionWarning(null);
+
+      toast.success(data.message || "Free subscription assigned successfully!");
+
+      // Resetear el formulario solo en caso de éxito
+      setEmail("");
+      setPlan("");
+      setDuration("1");
+      setForceAssign(false);
+    } catch (error) {
+      console.error("Error assigning free subscription:", error);
+      toast.error("Failed to assign free subscription. Please try again.");
+    } finally {
+      setIsAssigningSubscription(false);
     }
   };
 
@@ -39,16 +126,17 @@ export default function AdminSettingsPage() {
           <CardHeader>
             <CardTitle>Email Templates</CardTitle>
             <CardDescription>
-              Send test emails to verify how they look in different email clients.
+              Send test emails to verify how they look in different email
+              clients.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
-              onClick={handleTestEmails} 
+            <Button
+              onClick={handleTestEmails}
               disabled={isSending}
               className="w-full sm:w-auto"
             >
-              {isSending ? 'Sending...' : 'Send Test Emails'}
+              {isSending ? "Sending..." : "Send Test Emails"}
             </Button>
             <p className="text-sm text-muted-foreground mt-2">
               This will send one email of each type to your admin email address.
@@ -58,4 +146,4 @@ export default function AdminSettingsPage() {
       </div>
     </div>
   );
-} 
+}

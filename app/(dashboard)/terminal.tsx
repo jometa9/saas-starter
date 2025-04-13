@@ -35,15 +35,26 @@ export function Terminal() {
 
   const forexPairs = [
     "EURUSD",
+    "GBPJPY",
+    "AUDJPY",
+    "USDCHF",
+    "EURJPY",
     "GBPUSD",
     "USDJPY",
     "AUDUSD",
     "USDCAD",
     "NZDUSD",
     "EURGBP",
-    "EURJPY",
     "GBPJPY",
     "AUDNZD",
+    "AUDCAD",
+    "AUDCHF",
+    "BTCUSD",
+    "ETHUSD",
+    "LTCUSD",
+    "XRPUSD",
+    "XAUUSD",
+    "XAGUSD",
   ];
 
   const getRandomForexPair = () => {

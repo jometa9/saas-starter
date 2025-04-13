@@ -45,7 +45,6 @@ import { useRouter } from "next/navigation";
 import { AccountInfoCard } from "@/components/account-info-card";
 import Link from "next/link";
 
-import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -64,6 +63,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 export function Dashboard({
   user,
@@ -99,6 +100,116 @@ export function Dashboard({
     ctaUrl: "",
     isImportant: false,
   });
+  const [isSending, setIsSending] = useState(false);
+  const [isAssigningSubscription, setIsAssigningSubscription] = useState(false);
+  const [email, setEmail] = useState("");
+  const [plan, setPlan] = useState("");
+  const [duration, setDuration] = useState("1");
+  const [forceAssign, setForceAssign] = useState(false);
+  const [subscriptionWarning, setSubscriptionWarning] = useState<{
+    message: string;
+    existingSubscription: {
+      planName: string;
+      status: string;
+      isPaid: boolean;
+    };
+  } | null>(null);
+
+  const handleTestEmails = async () => {
+    try {
+      setIsSending(true);
+      const response = await fetch("/api/admin/test-emails", {
+        method: "POST",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send test emails");
+      }
+
+      toast({
+        title: "Success",
+        description: "Test emails sent successfully! Check your inbox.",
+      });
+    } catch (error) {
+      console.error("Error sending test emails:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send test emails. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleAssignFreeSubscription = async () => {
+    try {
+      setIsAssigningSubscription(true);
+      setSubscriptionWarning(null);
+
+      if (!email || !plan || !duration) {
+        toast({
+          title: "Error",
+          description: "Please fill in all fields",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await fetch("/api/admin/assign-free-subscription", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          plan,
+          duration: parseInt(duration, 10),
+          force: forceAssign,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 409 && data.warning) {
+        // Usuario tiene una suscripción activa, mostrar advertencia
+        setSubscriptionWarning({
+          message: data.message,
+          existingSubscription: data.existingSubscription,
+        });
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to assign free subscription");
+      }
+
+      // Si había una advertencia previa, limpiarla
+      setSubscriptionWarning(null);
+
+      toast({
+        title: "Success",
+        description: data.message || "Free subscription assigned successfully!",
+      });
+      
+      // Resetear el formulario solo en caso de éxito
+      setEmail("");
+      setPlan("");
+      setDuration("1");
+      setForceAssign(false);
+    } catch (error) {
+      console.error("Error assigning free subscription:", error);
+      toast({
+        title: "Error",
+        description: "Failed to assign free subscription. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAssigningSubscription(false);
+    }
+  };
 
   const isAdmin = user?.role === "admin";
 
@@ -309,6 +420,8 @@ export function Dashboard({
         return "Past Due";
       case "unpaid":
         return "Unpaid";
+      case "expired":
+        return "Expired";
       default:
         return user.subscriptionStatus;
     }
@@ -328,6 +441,8 @@ export function Dashboard({
         return "bg-yellow-100 text-yellow-800";
       case "unpaid":
         return "bg-orange-100 text-orange-800";
+      case "expired":
+        return "bg-purple-100 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -348,6 +463,8 @@ export function Dashboard({
         return <AlertCircle className="h-5 w-5 text-yellow-500" />;
       case "unpaid":
         return <AlertCircle className="h-5 w-5 text-orange-500" />;
+      case "expired":
+        return <Clock className="h-5 w-5 text-purple-500" />;
       default:
         return <Info className="h-5 w-5 text-gray-500" />;
     }
@@ -557,12 +674,29 @@ export function Dashboard({
                         (Trial Period)
                       </span>
                     )}
+                    {user.subscriptionExpiryDate && (
+                      <span className="ml-1 text-gray-600">
+                        (Valid until:{" "}
+                        {new Date(
+                          user.subscriptionExpiryDate
+                        ).toLocaleDateString()}
+                        )
+                      </span>
+                    )}
                   </p>
                 </div>
               ) : (
                 <p>
-                  <span className="text-red-500 font-medium">
-                    No active license available.
+                  <span
+                    className={
+                      user.subscriptionStatus === "expired"
+                        ? "text-purple-500 font-medium"
+                        : "text-red-500 font-medium"
+                    }
+                  >
+                    {user.subscriptionStatus === "expired"
+                      ? "Your subscription has expired."
+                      : "No active license available."}
                   </span>{" "}
                   Subscribe to get your license key and access premium features.
                 </p>
@@ -1017,6 +1151,191 @@ export function Dashboard({
                     )}
                   </Button>
                 </form>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Subscription Management</CardTitle>
+              <CardDescription>
+                Check and update expired free subscriptions and validate Stripe
+                subscriptions.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Button
+                  onClick={async () => {
+                    try {
+                      setIsSending(true);
+                      const response = await fetch("/api/subscription-check", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({}),
+                      });
+
+                      const data = await response.json();
+
+                      if (!response.ok) {
+                        throw new Error(
+                          data.error || "Failed to check subscriptions"
+                        );
+                      }
+
+                      // Mostrar resultados detallados
+                      const { results } = data;
+                      const summaryMessage = [
+                        `✅ ${results.freeExpired} free subscriptions expired`,
+                        `🔄 ${results.stripeUpdated} Stripe subscriptions updated`,
+                        `❌ ${results.stripeCanceled} Stripe subscriptions canceled`,
+                        `⚠️ ${results.inconsistencies} subscriptions with inconsistencies`,
+                        `📧 ${results.notifications} notifications sent`,
+                      ].join('\n');
+
+                      toast({
+                        title: "Success",
+                        description: `Subscription check completed successfully!\n${summaryMessage}`,
+                      });
+                    } catch (error) {
+                      console.error("Error checking subscriptions:", error);
+                      toast({
+                        title: "Error",
+                        description: "Failed to check subscriptions. Please try again.",
+                        variant: "destructive",
+                      });
+                    } finally {
+                      setIsSending(false);
+                    }
+                  }}
+                  disabled={isSending}
+                  className="w-full sm:w-auto"
+                >
+                  {isSending ? "Processing..." : "Check All Subscriptions"}
+                </Button>
+                <p className="text-sm text-muted-foreground mt-2">
+                  This will find and update expired free subscriptions, verify
+                  Stripe subscription statuses, and detect inconsistencies in
+                  the database.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Promotional Free Subscriptions</CardTitle>
+              <CardDescription>
+                Assign free subscriptions to users for promotional purposes.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {subscriptionWarning && (
+                  <Alert
+                    variant="warning"
+                    className="bg-amber-50 border-amber-200"
+                  >
+                    <ExclamationTriangleIcon className="h-4 w-4 text-amber-500" />
+                    <AlertTitle>Warning</AlertTitle>
+                    <AlertDescription>
+                      <p>{subscriptionWarning.message}</p>
+                      <p className="mt-2">
+                        Current subscription:{" "}
+                        {subscriptionWarning.existingSubscription.planName} (
+                        {subscriptionWarning.existingSubscription.status})
+                        {subscriptionWarning.existingSubscription.isPaid && (
+                          <span className="font-semibold text-amber-700">
+                            {" "}
+                            (paid subscription)
+                          </span>
+                        )}
+                      </p>
+                      <div className="mt-4 flex items-center space-x-2">
+                        <Checkbox
+                          id="force-assign"
+                          checked={forceAssign}
+                          onCheckedChange={(checked) =>
+                            setForceAssign(!!checked)
+                          }
+                        />
+                        <label
+                          htmlFor="force-assign"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Force assignment (overrides existing subscription)
+                        </label>
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">User Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="user@example.com"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      // Al cambiar el email, resetear la advertencia
+                      setSubscriptionWarning(null);
+                      setForceAssign(false);
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="plan">Subscription Plan</Label>
+                  <Select value={plan} onValueChange={setPlan}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a plan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Standard">Standard</SelectItem>
+                      <SelectItem value="Premium">Premium</SelectItem>
+                      <SelectItem value="Managed Service">
+                        Managed Service
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="duration">Duration (months)</Label>
+                  <Select value={duration} onValueChange={setDuration}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select duration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 month</SelectItem>
+                      <SelectItem value="3">3 months</SelectItem>
+                      <SelectItem value="6">6 months</SelectItem>
+                      <SelectItem value="12">12 months</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button
+                  onClick={handleAssignFreeSubscription}
+                  disabled={
+                    isAssigningSubscription ||
+                    !email ||
+                    !plan ||
+                    !duration ||
+                    (subscriptionWarning && !forceAssign)
+                  }
+                  className="w-full sm:w-auto mt-2"
+                >
+                  {isAssigningSubscription
+                    ? "Assigning..."
+                    : subscriptionWarning
+                      ? "Override Existing Subscription"
+                      : "Assign Free Subscription"}
+                </Button>
               </div>
             </CardContent>
           </Card>

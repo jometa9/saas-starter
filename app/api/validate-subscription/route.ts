@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserByApiKey, updateUserSubscription } from "@/lib/db/queries";
 import { stripe } from "@/lib/payments/stripe";
+import { db } from "@/lib/db/drizzle";
+import { users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -15,14 +18,12 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Verificar el origen de la solicitud solo si NO es un cliente Electron
   if (!isElectronClient) {
     const origin = request.headers.get("origin");
-    
-    // Obtener los dominios permitidos del .env o usar un valor predeterminado
+
     const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
     const isValidOrigin = !origin || allowedOrigins.includes(origin);
-    
+
     if (!isValidOrigin && allowedOrigins.length > 0) {
       return NextResponse.json(
         { error: "Unauthorized request origin" },
@@ -39,35 +40,97 @@ export async function GET(request: NextRequest) {
         { status: 401 }
       );
     }
-    
-    // Verificar con Stripe si hay cambios en la suscripción
+
+    let statusChanged = false;
+    let statusReason = "";
+    const now = new Date();
+
     if (user.stripeSubscriptionId) {
       try {
-        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
-        
+        const subscription = await stripe.subscriptions.retrieve(
+          user.stripeSubscriptionId
+        );
+
         // Si el estado en Stripe es diferente al de la base de datos, actualizar
         if (subscription.status !== user.subscriptionStatus) {
           const plan = subscription.items.data[0]?.plan;
-          
+
           await updateUserSubscription(user.id, {
             stripeSubscriptionId: subscription.id,
             stripeProductId: plan?.product as string,
-            planName: user.planName, // Mantener el nombre del plan actual
-            subscriptionStatus: subscription.status
+            planName: user.planName,
+            subscriptionStatus: subscription.status,
           });
-          
-          // Actualizar el objeto user para reflejar los cambios
+
+          statusChanged = true;
+          statusReason = "Stripe subscription status updated";
           user.subscriptionStatus = subscription.status;
         }
       } catch (stripeError) {
-        // Si hay un error al consultar Stripe, continuar con los datos de la base de datos
-        console.error("Error retrieving subscription from Stripe:", stripeError);
+        console.error(
+          "Error retrieving subscription from Stripe:",
+          stripeError
+        );
+        if (
+          user.subscriptionExpiryDate &&
+          user.subscriptionExpiryDate < now &&
+          (user.subscriptionStatus === "active" ||
+            user.subscriptionStatus === "trialing")
+        ) {
+          await db
+            .update(users)
+            .set({
+              subscriptionStatus: "past_due",
+              updatedAt: now,
+            })
+            .where(eq(users.id, user.id));
+
+          statusChanged = true;
+          statusReason = "Payment appears to be overdue";
+          user.subscriptionStatus = "past_due";
+        }
       }
+    } else if (
+      !user.stripeSubscriptionId &&
+      user.subscriptionStatus === "active" &&
+      user.subscriptionExpiryDate
+    ) {
+      if (user.subscriptionExpiryDate < now) {
+        await db
+          .update(users)
+          .set({
+            subscriptionStatus: "expired",
+            updatedAt: now,
+          })
+          .where(eq(users.id, user.id));
+
+        statusChanged = true;
+        statusReason = "Free subscription has expired";
+        user.subscriptionStatus = "expired";
+      }
+    } else if (
+      user.subscriptionStatus === "active" &&
+      !user.subscriptionExpiryDate &&
+      !user.stripeSubscriptionId
+    ) {
+      console.warn(
+        `User ID ${user.id} has active status but no subscription details`
+      );
     }
-    
+
     const isSubscriptionActive =
       user.subscriptionStatus === "active" ||
       user.subscriptionStatus === "trialing";
+
+    const timeRemaining = user.subscriptionExpiryDate
+      ? Math.max(
+          0,
+          Math.floor(
+            (user.subscriptionExpiryDate.getTime() - now.getTime()) /
+              (1000 * 60 * 60 * 24)
+          )
+        )
+      : undefined;
 
     return NextResponse.json({
       userId: user.id,
@@ -76,6 +139,17 @@ export async function GET(request: NextRequest) {
       subscriptionStatus: user.subscriptionStatus,
       planName: user.planName,
       isActive: isSubscriptionActive,
+      expiryDate: user.subscriptionExpiryDate
+        ? user.subscriptionExpiryDate.toISOString()
+        : undefined,
+      daysRemaining: timeRemaining,
+      statusChanged,
+      statusReason: statusChanged ? statusReason : undefined,
+      subscriptionType: user.stripeSubscriptionId
+        ? "paid"
+        : user.subscriptionStatus === "active"
+          ? "free"
+          : "none",
     });
   } catch (error) {
     console.error("Error validating subscription:", error);
