@@ -193,7 +193,7 @@ export function Dashboard({
         title: "Success",
         description: data.message || "Free subscription assigned successfully!",
       });
-      
+
       // Resetear el formulario solo en caso de éxito
       setEmail("");
       setPlan("");
@@ -582,7 +582,9 @@ export function Dashboard({
   };
 
   const isManagedServicePlan = () => {
-    return user.planName === "Managed Service";
+    return (
+      user.planName === "Managed Service" || user.planName === "Self Hosted"
+    );
   };
 
   return (
@@ -1193,7 +1195,7 @@ export function Dashboard({
                         `❌ ${results.stripeCanceled} Stripe subscriptions canceled`,
                         `⚠️ ${results.inconsistencies} subscriptions with inconsistencies`,
                         `📧 ${results.notifications} notifications sent`,
-                      ].join('\n');
+                      ].join("\n");
 
                       toast({
                         title: "Success",
@@ -1203,7 +1205,8 @@ export function Dashboard({
                       console.error("Error checking subscriptions:", error);
                       toast({
                         title: "Error",
-                        description: "Failed to check subscriptions. Please try again.",
+                        description:
+                          "Failed to check subscriptions. Please try again.",
                         variant: "destructive",
                       });
                     } finally {
@@ -1347,6 +1350,31 @@ export function Dashboard({
 
 function ManagedServiceForm({ user }: { user: User }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [accountToDelete, setAccountToDelete] = useState<string | null>(null);
+  const [editingAccount, setEditingAccount] = useState<any>(null);
+  const [accounts, setAccounts] = useState([
+    {
+      id: "1",
+      brokerName: "IC Markets",
+      accountNumber: "12345678",
+      platform: "mt4",
+      server: "ICMarkets-Live1",
+      password: "••••••••",
+      copyingTo: ["MT5 Demo Account", "FXCM Live"],
+    },
+    {
+      id: "2",
+      brokerName: "FXCM",
+      accountNumber: "87654321",
+      platform: "mt5",
+      server: "FXCM-Real",
+      password: "••••••••",
+      copyingTo: [],
+    },
+  ]);
+
   const [formState, setFormState] = useState({
     brokerName: "",
     serverIp: "",
@@ -1367,19 +1395,110 @@ function ManagedServiceForm({ user }: { user: User }) {
     setFormState((prev) => ({ ...prev, platform: value }));
   };
 
+  const handleAddAccount = () => {
+    setEditingAccount(null);
+    setFormState({
+      brokerName: "",
+      serverIp: "",
+      accountNumber: "",
+      password: "",
+      additionalInfo: "",
+      platform: "mt4",
+    });
+    setShowAddAccountModal(true);
+  };
+
+  const handleEditAccount = (account: any) => {
+    setEditingAccount(account);
+    setFormState({
+      brokerName: account.brokerName,
+      serverIp: account.server,
+      accountNumber: account.accountNumber,
+      password: "",
+      additionalInfo: "",
+      platform: account.platform,
+    });
+    setShowAddAccountModal(true);
+  };
+
+  const handleDeleteAccount = (id: string) => {
+    setAccountToDelete(id);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const confirmDeleteAccount = () => {
+    if (accountToDelete) {
+      // En una aplicación real, aquí haríamos una llamada a la API para eliminar la cuenta
+      setAccounts(accounts.filter((account) => account.id !== accountToDelete));
+
+      toast({
+        title: "Account Removed",
+        description:
+          "The trading account has been successfully removed from your configuration.",
+      });
+
+      setShowDeleteConfirmModal(false);
+      setAccountToDelete(null);
+    }
+  };
+
+  const cancelDeleteAccount = () => {
+    setShowDeleteConfirmModal(false);
+    setAccountToDelete(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      // Simular una llamada a la API
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast({
-        title: "Information Submitted",
-        description:
-          "We've received your account information and will configure your server shortly. We'll contact you with further details.",
-      });
+      if (editingAccount) {
+        // Actualizar cuenta existente
+        setAccounts(
+          accounts.map((acc) =>
+            acc.id === editingAccount.id
+              ? {
+                  ...acc,
+                  brokerName: formState.brokerName,
+                  server: formState.serverIp,
+                  accountNumber: formState.accountNumber,
+                  platform: formState.platform,
+                  password: formState.password ? "••••••••" : acc.password,
+                }
+              : acc
+          )
+        );
 
+        toast({
+          title: "Account Updated",
+          description: "Your trading account has been updated successfully.",
+        });
+      } else {
+        // Agregar nueva cuenta
+        setAccounts([
+          ...accounts,
+          {
+            id: Date.now().toString(),
+            brokerName: formState.brokerName,
+            accountNumber: formState.accountNumber,
+            platform: formState.platform,
+            server: formState.serverIp,
+            password: "••••••••",
+            copyingTo: [],
+          },
+        ]);
+
+        toast({
+          title: "Account Added",
+          description:
+            "Your trading account has been added successfully. You can now configure copy trading for this account.",
+        });
+      }
+
+      setShowAddAccountModal(false);
       setFormState({
         brokerName: "",
         serverIp: "",
@@ -1389,7 +1508,7 @@ function ManagedServiceForm({ user }: { user: User }) {
         platform: "mt4",
       });
     } catch (error) {
-      console.error("Error submitting managed service form:", error);
+      console.error("Error submitting trading account:", error);
       toast({
         title: "Error",
         description:
@@ -1401,103 +1520,284 @@ function ManagedServiceForm({ user }: { user: User }) {
     }
   };
 
+  const getPlatformIcon = (platform: string) => {
+    switch (platform) {
+      case "mt4":
+        return (
+          <div className="bg-blue-100 p-1 rounded-md text-blue-800 text-xs font-medium">
+            MT4
+          </div>
+        );
+      case "mt5":
+        return (
+          <div className="bg-green-100 p-1 rounded-md text-green-800 text-xs font-medium">
+            MT5
+          </div>
+        );
+      case "both":
+        return (
+          <div className="bg-purple-100 p-1 rounded-md text-purple-800 text-xs font-medium">
+            MT4/5
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Managed Service Setup</CardTitle>
-        <CardDescription>
-          As a Managed Service subscriber, we need some information to configure
-          your trading environment. Our team will set up and manage your server
-          infrastructure.
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Trading Accounts Configuration</CardTitle>
+            <CardDescription>
+              Manage your trading accounts and copy trading configuration
+            </CardDescription>
+          </div>
+          <Button onClick={handleAddAccount} className="ml-auto">
+            Add Trading Account
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="brokerName">Broker Name</Label>
-              <Input
-                id="brokerName"
-                name="brokerName"
-                placeholder="e.g. IC Markets, FXCM"
-                value={formState.brokerName}
-                onChange={handleChange}
-                required
-              />
+        {accounts.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+              <CircleCheckIcon className="h-6 w-6 text-muted-foreground" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="serverIp">Server IP or Hostname</Label>
-              <Input
-                id="serverIp"
-                name="serverIp"
-                placeholder="e.g. 192.168.1.1 or srv1.broker.com"
-                value={formState.serverIp}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="accountNumber">Account Number</Label>
-              <Input
-                id="accountNumber"
-                name="accountNumber"
-                placeholder="Your trading account number"
-                value={formState.accountNumber}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Account Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Your trading account password"
-                value={formState.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="platform">Platform</Label>
-              <Select
-                value={formState.platform}
-                onValueChange={handleSelectChange}
-              >
-                <SelectTrigger id="platform">
-                  <SelectValue placeholder="Select platform" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="mt4">MetaTrader 4</SelectItem>
-                  <SelectItem value="mt5">MetaTrader 5</SelectItem>
-                  <SelectItem value="both">Both MT4 & MT5</SelectItem>
-                </SelectContent>
-              </Select>
+            <h3 className="font-medium text-lg mb-2">
+              No Trading Accounts Configured
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Add your first trading account to start configuring copy trading
+            </p>
+            <Button onClick={handleAddAccount}>Add Trading Account</Button>
+          </div>
+        ) : (
+          <div className="rounded-md border">
+            <div className="overflow-x-auto">
+              <table className="w-full divide-y divide-gray-200">
+                <thead>
+                  <tr className="bg-muted">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Broker
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Account
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Platform
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Server
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Copying to
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-card divide-y divide-gray-200">
+                  {accounts.map((account) => (
+                    <tr key={account.id} className="hover:bg-muted/50">
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="font-medium">{account.brokerName}</div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        {account.accountNumber}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        {getPlatformIcon(account.platform)}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm">
+                        {account.server}
+                      </td>
+                      <td className="px-4 py-4">
+                        {account.copyingTo.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {account.copyingTo.map(
+                              (target: string, idx: number) => (
+                                <span
+                                  key={idx}
+                                  className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700"
+                                >
+                                  {target}
+                                </span>
+                              )
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">
+                            No copy targets
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditAccount(account)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                          onClick={() => handleDeleteAccount(account.id)}
+                        >
+                          Delete
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="additionalInfo">Additional Information</Label>
-            <Textarea
-              id="additionalInfo"
-              name="additionalInfo"
-              placeholder="Any specific requirements or configurations needed..."
-              rows={4}
-              value={formState.additionalInfo}
-              onChange={handleChange}
-            />
+        )}
+
+        {showAddAccountModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-background rounded-lg shadow-lg w-full max-w-md mx-4">
+              <div className="p-6">
+                <h3 className="text-lg font-medium mb-4">
+                  {editingAccount
+                    ? "Edit Trading Account"
+                    : "Add Trading Account"}
+                </h3>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="brokerName">Broker Name</Label>
+                    <Input
+                      id="brokerName"
+                      name="brokerName"
+                      placeholder="e.g. IC Markets, FXCM"
+                      value={formState.brokerName}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="serverIp">Server Address</Label>
+                    <Input
+                      id="serverIp"
+                      name="serverIp"
+                      placeholder="e.g. demo.icmarkets.com"
+                      value={formState.serverIp}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="accountNumber">Account Number</Label>
+                    <Input
+                      id="accountNumber"
+                      name="accountNumber"
+                      placeholder="Your trading account number"
+                      value={formState.accountNumber}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">
+                      {editingAccount
+                        ? "New Password (leave empty to keep current)"
+                        : "Account Password"}
+                    </Label>
+                    <Input
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder={
+                        editingAccount
+                          ? "New password (optional)"
+                          : "Your trading account password"
+                      }
+                      value={formState.password}
+                      onChange={handleChange}
+                      required={!editingAccount}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="platform">Platform</Label>
+                    <Select
+                      value={formState.platform}
+                      onValueChange={handleSelectChange}
+                    >
+                      <SelectTrigger id="platform">
+                        <SelectValue placeholder="Select platform" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="mt4">MetaTrader 4</SelectItem>
+                        <SelectItem value="mt5">MetaTrader 5</SelectItem>
+                        <SelectItem value="both">Both MT4 & MT5</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="pt-4 flex justify-end gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowAddAccountModal(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting
+                        ? "Saving..."
+                        : editingAccount
+                          ? "Update Account"
+                          : "Add Account"}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Submitting..." : "Submit Information"}
-          </Button>
-        </form>
+        )}
+
+        {showDeleteConfirmModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-background rounded-lg shadow-lg w-full max-w-md mx-4">
+              <div className="p-6">
+                <h3 className="text-lg font-medium mb-4">Confirm Deletion</h3>
+                <p className="mb-6 text-muted-foreground">
+                  Are you sure you want to delete this trading account? This
+                  action cannot be undone.
+                </p>
+                <div className="flex justify-end gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={cancelDeleteAccount}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={confirmDeleteAccount}
+                  >
+                    Delete Account
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </CardContent>
-      <CardFooter className="flex flex-col text-sm text-muted-foreground">
+      <CardFooter className="flex flex-col text-sm text-muted-foreground border-t pt-4">
         <p>
-          Your information is securely encrypted and only accessible to our
-          technical team.
+          Set up multiple trading accounts and configure which accounts copy
+          trades from each other.
         </p>
         <p className="mt-2">
-          Need help? Contact our dedicated support at{" "}
+          Need help? Contact our support at{" "}
           <a
             href="mailto:support@iptrade.com"
             className="text-blue-600 hover:underline"
