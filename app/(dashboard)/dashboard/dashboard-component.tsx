@@ -1,7 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
 import { User } from "@/lib/db/schema";
 import {
   Download,
@@ -50,6 +57,13 @@ import {
   updateAppVersionAction,
   sendBroadcastEmailAction,
 } from "@/lib/db/actions";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function Dashboard({
   user,
@@ -86,10 +100,8 @@ export function Dashboard({
     isImportant: false,
   });
 
-  // Definir isAdmin basado en el rol del usuario
   const isAdmin = user?.role === "admin";
 
-  // Esquema de validación para el formulario de versión
   const versionFormSchema = z.object({
     version: z
       .string()
@@ -117,7 +129,6 @@ export function Dashboard({
     },
   });
 
-  // Manejar el envío del formulario de actualización de versión
   const handleVersionUpdate = async (data: VersionFormValues) => {
     try {
       setIsVersionUpdatePending(true);
@@ -184,15 +195,17 @@ export function Dashboard({
     }
   };
 
-  // Manejar el envío de email de prueba
   const handleSendTestEmail = async () => {
     try {
       setIsTestEmailPending(true);
       const formData = new FormData();
       formData.append("subject", "Test Email");
-      formData.append("message", "This is a test email to verify the email system configuration.");
+      formData.append(
+        "message",
+        "This is a test email to verify the email system configuration."
+      );
       formData.append("important", "false");
-      
+
       const result = await sendBroadcastEmailAction(formData, {});
 
       if (result.success) {
@@ -220,18 +233,14 @@ export function Dashboard({
     }
   };
 
-  // Función para acceder al portal de cliente de Stripe
   const handleCustomerPortal = async () => {
     try {
-      // Intentar acceder al portal de cliente directamente
       const result = await customerPortalAction();
 
       if (result?.error) {
-        // Si hay un error, mostrar el mensaje adecuado
         console.error("Error accessing portal:", result.error);
         let errorMessage = "Could not access the management portal.";
 
-        // Mapear códigos de error a mensajes más descriptivos
         switch (result.error) {
           case "no-customer-id":
             errorMessage =
@@ -267,15 +276,12 @@ export function Dashboard({
       }
 
       if (result?.redirect) {
-        // Redirección inmediata sin toasts ni retrasos
         window.location.href = result.redirect;
       } else {
-        // Solo en caso de fallar la redirección pero no tener error específico
         router.push("/dashboard");
       }
     } catch (error) {
       console.error("Error accessing portal:", error);
-      // Mostrar mensaje de error más descriptivo
       toast({
         title: "Could not access portal",
         description:
@@ -285,12 +291,10 @@ export function Dashboard({
     }
   };
 
-  // Función para ir a la página de precios para cambiar de plan
   const goToPricing = () => {
     router.push("/pricing");
   };
 
-  // Obtener el estado de la suscripción en formato legible
   const getSubscriptionStatusText = () => {
     if (!user.subscriptionStatus) return "Inactive";
 
@@ -310,7 +314,6 @@ export function Dashboard({
     }
   };
 
-  // Obtener color del estado de la suscripción
   const getSubscriptionStatusColor = () => {
     if (!user.subscriptionStatus) return "bg-gray-100 text-gray-800";
 
@@ -330,7 +333,6 @@ export function Dashboard({
     }
   };
 
-  // Obtener el icono del estado de la suscripción
   const getSubscriptionStatusIcon = () => {
     if (!user.subscriptionStatus)
       return <AlertCircle className="h-5 w-5 text-gray-500" />;
@@ -405,7 +407,6 @@ export function Dashboard({
     }
   };
 
-  // Handle mass email form submission
   const handleMassEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -426,7 +427,6 @@ export function Dashboard({
       setMassEmailState(result || {});
 
       if (result.success) {
-        // Reset form
         setMassEmailForm({
           subject: "",
           message: "",
@@ -462,6 +462,10 @@ export function Dashboard({
     } finally {
       setIsMassEmailPending(false);
     }
+  };
+
+  const isManagedServicePlan = () => {
+    return user.planName === "Managed Service";
   };
 
   return (
@@ -567,6 +571,9 @@ export function Dashboard({
           </div>
         </CardContent>
       </Card>
+
+      {isManagedServicePlan() && <ManagedServiceForm user={user} />}
+
       <Card>
         <CardHeader>
           <CardTitle>Software Downloads</CardTitle>
@@ -1015,7 +1022,171 @@ export function Dashboard({
           </Card>
         </div>
       )}
-
     </section>
+  );
+}
+
+function ManagedServiceForm({ user }: { user: User }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formState, setFormState] = useState({
+    brokerName: "",
+    serverIp: "",
+    accountNumber: "",
+    password: "",
+    additionalInfo: "",
+    platform: "mt4",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormState((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (value: string) => {
+    setFormState((prev) => ({ ...prev, platform: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      toast({
+        title: "Information Submitted",
+        description:
+          "We've received your account information and will configure your server shortly. We'll contact you with further details.",
+      });
+
+      setFormState({
+        brokerName: "",
+        serverIp: "",
+        accountNumber: "",
+        password: "",
+        additionalInfo: "",
+        platform: "mt4",
+      });
+    } catch (error) {
+      console.error("Error submitting managed service form:", error);
+      toast({
+        title: "Error",
+        description:
+          "We couldn't process your information. Please try again or contact support.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Managed Service Setup</CardTitle>
+        <CardDescription>
+          As a Managed Service subscriber, we need some information to configure
+          your trading environment. Our team will set up and manage your server
+          infrastructure.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="brokerName">Broker Name</Label>
+              <Input
+                id="brokerName"
+                name="brokerName"
+                placeholder="e.g. IC Markets, FXCM"
+                value={formState.brokerName}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="serverIp">Server IP or Hostname</Label>
+              <Input
+                id="serverIp"
+                name="serverIp"
+                placeholder="e.g. 192.168.1.1 or srv1.broker.com"
+                value={formState.serverIp}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="accountNumber">Account Number</Label>
+              <Input
+                id="accountNumber"
+                name="accountNumber"
+                placeholder="Your trading account number"
+                value={formState.accountNumber}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Account Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Your trading account password"
+                value={formState.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="platform">Platform</Label>
+              <Select
+                value={formState.platform}
+                onValueChange={handleSelectChange}
+              >
+                <SelectTrigger id="platform">
+                  <SelectValue placeholder="Select platform" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mt4">MetaTrader 4</SelectItem>
+                  <SelectItem value="mt5">MetaTrader 5</SelectItem>
+                  <SelectItem value="both">Both MT4 & MT5</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="additionalInfo">Additional Information</Label>
+            <Textarea
+              id="additionalInfo"
+              name="additionalInfo"
+              placeholder="Any specific requirements or configurations needed..."
+              rows={4}
+              value={formState.additionalInfo}
+              onChange={handleChange}
+            />
+          </div>
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting ? "Submitting..." : "Submit Information"}
+          </Button>
+        </form>
+      </CardContent>
+      <CardFooter className="flex flex-col text-sm text-muted-foreground">
+        <p>
+          Your information is securely encrypted and only accessible to our
+          technical team.
+        </p>
+        <p className="mt-2">
+          Need help? Contact our dedicated support at{" "}
+          <a
+            href="mailto:support@iptrade.com"
+            className="text-blue-600 hover:underline"
+          >
+            support@iptrade.com
+          </a>
+        </p>
+      </CardFooter>
+    </Card>
   );
 }

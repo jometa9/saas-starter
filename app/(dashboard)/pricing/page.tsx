@@ -1,13 +1,45 @@
 import { checkoutAction } from '@/lib/payments/actions';
-import { Check, CreditCard, AlertTriangle, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { getStripePrices, getStripeProducts } from '@/lib/payments/stripe';
-import { SubmitButton } from './submit-button';
 import { redirect } from 'next/navigation';
 import { getUser } from '@/lib/db/queries';
 import { Button } from '@/components/ui/button';
+import { PricingToggle } from './pricing-toggle';
+import { PricingCard } from './pricing-card';
+import { NextResponse } from 'next/server';
 
 // Prices are fresh for one hour max
 export const revalidate = 3600;
+
+// API route para checkout
+export async function POST(request: Request) {
+  const formData = await request.formData();
+  const priceId = formData.get('priceId') as string;
+  
+  if (!priceId) {
+    return NextResponse.json({ error: 'Price ID is required' }, { status: 400 });
+  }
+  
+  const user = await getUser();
+  if (!user) {
+    // Redirigir a la página de inicio de sesión si no hay usuario
+    return NextResponse.redirect(new URL('/sign-in?redirect=/pricing', request.url));
+  }
+  
+  try {
+    const checkoutUrl = await checkoutAction(priceId);
+    if (typeof checkoutUrl === 'string') {
+      return NextResponse.redirect(new URL(checkoutUrl));
+    } else if (checkoutUrl.redirect) {
+      return NextResponse.redirect(new URL(checkoutUrl.redirect));
+    } else {
+      return NextResponse.json({ error: checkoutUrl.error || 'Unable to create checkout session' }, { status: 500 });
+    }
+  } catch (error) {
+    console.error('Error starting checkout:', error);
+    return NextResponse.json({ error: 'Checkout failed' }, { status: 500 });
+  }
+}
 
 export default async function PricingPage() {
   const [prices, products, user] = await Promise.all([
@@ -16,67 +48,53 @@ export default async function PricingPage() {
     getUser(),
   ]);
 
-  const traderPlan = products.find((product) => 
-    product.name === 'Trader' || product.name === 'Base');
+  // IDs de los precios de los productos
+  // Como respaldo, en caso de que no se encuentren los precios reales, usamos IDs de ejemplo
+  const fallbackStandardPriceId = 'price_standard_monthly';
+  const fallbackPremiumPriceId = 'price_premium_monthly';
+  const fallbackManagedServicePriceId = 'price_managed_monthly';
   
-  const professionalPlan = products.find((product) => 
-    product.name === 'Professional' || product.name === 'Plus');
-  
-  // Fallbacks para IDs de precios por si no se encuentran
-  const fallbackTraderPriceId = 'price_1OaCSVKKBm5sxvJOmNnqVCja';
-  const fallbackProfessionalPriceId = 'price_1OaCUmKKBm5sxvJOlvMcOjMH';
-  
-  // Obtener precio del plan Trader (Base)
-  let traderPriceId: string | undefined;
-  if (traderPlan) {
-    const traderPrice = prices.find((price) => price.product === traderPlan.id && price.active);
-    traderPriceId = traderPrice?.id;
-  } else {
-    traderPriceId = fallbackTraderPriceId;
-  }
+  const fallbackStandardAnnualPriceId = 'price_standard_annual';
+  const fallbackPremiumAnnualPriceId = 'price_premium_annual';
+  const fallbackManagedServiceAnnualPriceId = 'price_managed_annual';
 
-  // Obtener precio del plan Professional (Plus)
-  let professionalPriceId: string | undefined;
-  if (professionalPlan) {
-    const professionalPrice = prices.find((price) => price.product === professionalPlan.id && price.active);
-    professionalPriceId = professionalPrice?.id;
-  } else {
-    professionalPriceId = fallbackProfessionalPriceId;
-  }
+  // Buscar los productos y precios reales
+  const standardProduct = products.find(p => p.name === 'Standard');
+  const premiumProduct = products.find(p => p.name === 'Premium');
+  const managedServiceProduct = products.find(p => p.name === 'Managed Service');
 
-  const isLoggedIn = !!user;
-  const hasSubscription = !!(user?.stripeSubscriptionId && 
-    (user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trialing'));
+  // Encontrar los precios mensuales y anuales para cada producto
+  const findPriceId = (productId: string | undefined, interval: 'month' | 'year') => {
+    if (!productId) return undefined;
+    return prices.find(p => 
+      p.productId === productId && 
+      p.interval === interval
+    )?.id;
+  };
+
+  // Precios mensuales
+  const standardMonthlyPriceId = findPriceId(standardProduct?.id, 'month');
+  const premiumMonthlyPriceId = findPriceId(premiumProduct?.id, 'month');
+  const managedServiceMonthlyPriceId = findPriceId(managedServiceProduct?.id, 'month');
+
+  // Precios anuales
+  const standardAnnualPriceId = findPriceId(standardProduct?.id, 'year');
+  const premiumAnnualPriceId = findPriceId(premiumProduct?.id, 'year');
+  const managedServiceAnnualPriceId = findPriceId(managedServiceProduct?.id, 'year');
+
+  // Verificar si el usuario ya tiene una suscripción
+  const hasSubscription = !!user?.stripeSubscriptionId &&
+    (user.subscriptionStatus === 'active' || user.subscriptionStatus === 'trialing');
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold mb-4">Choose Your Plan</h1>
-        <p className="text-gray-600 max-w-xl mx-auto">
-          Select the subscription plan that best fits your needs. All plans include a 14-day free trial.
-          {hasSubscription && " You can manage your subscription details, change between monthly/annual billing, or cancel through your dashboard."}
+    <main className="container py-8 px-4 mx-auto">
+      <div className="text-center">
+        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+          Simple, Transparent Pricing
+        </h1>
+        <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
+          Choose the plan that fits your trading needs. All plans include 14-day free trial.
         </p>
-        
-        {/* Alertas condicionales */}
-        {!isLoggedIn && (
-          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-lg mx-auto">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <AlertTriangle className="h-5 w-5 text-blue-500" />
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-800">
-                  Sign Up Required
-                </h3>
-                <div className="mt-2 text-sm text-blue-700">
-                  <p>
-                    You need to create an account or sign in before subscribing.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
         
         {hasSubscription && (
           <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4 max-w-lg mx-auto">
@@ -106,49 +124,61 @@ export default async function PricingPage() {
         )}
       </div>
       
+      {/* Billing Toggle */}
+      <div className="flex justify-center items-center my-8">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-medium">Monthly</span>
+          <PricingToggle />
+          <span className="text-sm font-medium">Annual <span className="ml-1 px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full">Save 20%</span></span>
+        </div>
+      </div>
+      
       {/* Pricing Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <PricingCard
-          name="Basic"
-          price={0}
+          name="Standard"
+          price={20}
           interval="mo"
-          trialDays={0}
+          trialDays={14}
           features={[
             "1 Master Account",
-            "2 Slave Accounts",
+            "3 Slave Accounts",
             "Cross-platform support (MT4/MT5)",
             "Standard execution speed",
-            "Basic symbol mapping",
+            "Symbol mapping",
             "Fixed lot sizing",
             "Community support"
           ]}
+          priceId={standardMonthlyPriceId || fallbackStandardPriceId}
+          annualPriceId={standardAnnualPriceId || fallbackStandardAnnualPriceId}
           isLoggedIn={!!user}
           hasSubscription={hasSubscription}
         />
         <PricingCard
-          name="Trader"
-          price={29}
+          name="Premium"
+          price={50}
           interval="mo"
           trialDays={14}
           features={[
-            "3 Master Accounts",
-            "5 Slave Accounts",
+            "5 Master Accounts",
+            "10 Slave Accounts",
             "Full cross-platform support",
-            "Standard execution speed",
+            "Ultra-low latency execution",
             "Advanced symbol mapping",
             "Percentage-based lot sizing",
-            "Email support",
+            "Priority email support",
             "Trade notifications",
             "Automated retries"
           ]}
-          priceId={traderPriceId || fallbackTraderPriceId}
+          priceId={premiumMonthlyPriceId || fallbackPremiumPriceId}
+          annualPriceId={premiumAnnualPriceId || fallbackPremiumAnnualPriceId}
           isLoggedIn={!!user}
           hasSubscription={hasSubscription}
           isRecommended={true}
         />
         <PricingCard
-          name="Professional"
-          price={79}
+          name="Managed Service"
+          price={999}
           interval="mo"
           trialDays={14}
           features={[
@@ -158,11 +188,13 @@ export default async function PricingPage() {
             "Ultra-low latency execution",
             "Advanced symbol mapping",
             "Custom formula lot sizing",
-            "Priority 24/7 support",
-            "Custom order type filtering",
-            "Trading hours filter"
+            "White-glove setup and config",
+            "24/7 priority support",
+            "Custom implementation",
+            "Custom server architecture"
           ]}
-          priceId={professionalPriceId || fallbackProfessionalPriceId}
+          priceId={managedServiceMonthlyPriceId || fallbackManagedServicePriceId}
+          annualPriceId={managedServiceAnnualPriceId || fallbackManagedServiceAnnualPriceId}
           isLoggedIn={!!user}
           hasSubscription={hasSubscription}
         />
@@ -179,13 +211,13 @@ export default async function PricingPage() {
                   Feature
                 </th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Basic
+                  Standard
                 </th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Trader
+                  Premium
                 </th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-100">
-                  Professional
+                  Managed Service
                 </th>
               </tr>
             </thead>
@@ -193,13 +225,13 @@ export default async function PricingPage() {
               <FeatureRow 
                 feature="Master Accounts" 
                 free="1" 
-                base="3" 
+                base="5" 
                 plus="Unlimited" 
               />
               <FeatureRow 
                 feature="Slave Accounts" 
-                free="2" 
-                base="5" 
+                free="3" 
+                base="10" 
                 plus="Unlimited" 
               />
               <FeatureRow 
@@ -211,7 +243,7 @@ export default async function PricingPage() {
               <FeatureRow 
                 feature="Execution Speed" 
                 free="Standard (<50ms)" 
-                base="Standard (<50ms)" 
+                base="Ultra-low (<10ms)" 
                 plus="Ultra-low (<10ms)" 
               />
               <FeatureRow 
@@ -239,22 +271,22 @@ export default async function PricingPage() {
                 plus={<Check className="mx-auto h-5 w-5 text-green-500" />} 
               />
               <FeatureRow 
-                feature="Order Type Filtering" 
-                free="Basic" 
-                base="Advanced" 
-                plus="Custom Rules" 
+                feature="Technical Support" 
+                free="Community" 
+                base="Priority Email" 
+                plus="24/7 Dedicated" 
               />
               <FeatureRow 
-                feature="Trading Hours Filter" 
+                feature="Custom Implementation" 
                 free={<X className="mx-auto h-5 w-5 text-red-500" />} 
-                base={<Check className="mx-auto h-5 w-5 text-green-500" />} 
+                base={<X className="mx-auto h-5 w-5 text-red-500" />} 
                 plus={<Check className="mx-auto h-5 w-5 text-green-500" />} 
               />
               <FeatureRow 
-                feature="Technical Support" 
-                free="Community" 
-                base="Email" 
-                plus="Priority 24/7" 
+                feature="White-glove Setup" 
+                free={<X className="mx-auto h-5 w-5 text-red-500" />} 
+                base={<X className="mx-auto h-5 w-5 text-red-500" />} 
+                plus={<Check className="mx-auto h-5 w-5 text-green-500" />} 
               />
             </tbody>
           </table>
@@ -264,137 +296,29 @@ export default async function PricingPage() {
   );
 }
 
-// Acción asíncrona para manejar el checkout directamente
-async function handleSubscription(formData: FormData) {
-  'use server';
-  
-  const priceId = formData.get('priceId') as string;
-  if (!priceId) {
-    return { error: 'No price ID provided' };
-  }
-  
-  try {
-    const result = await checkoutAction(priceId);
-    
-    if (result.redirect) {
-      return { redirect: result.redirect };
-    }
-    
-    // Si tenemos un error, devolverlo para manejo en el cliente
-    if (result.error) {
-      return { error: result.error };
-    }
-    
-    return { success: true };
-  } catch (error) {
-    console.error('Error en checkout:', error);
-    return { error: 'error-inesperado' };
-  }
-}
-
-function PricingCard({
-  name,
-  price,
-  interval,
-  trialDays,
-  features,
-  priceId,
-  isLoggedIn,
-  hasSubscription,
-  isRecommended = false,
-}: {
-  name: string;
-  price: number;
-  interval: string;
-  trialDays: number;
-  features: string[];
-  priceId?: string;
-  isLoggedIn: boolean;
-  hasSubscription: boolean;
-  isRecommended?: boolean;
-}) {
-  // Crear un ID único para el formulario basado en el nombre del plan
-  const formId = `subscription-form-${name.toLowerCase().replace(/\s+/g, '-')}`;
-  
-  return (
-    <div className={`p-6 border ${isRecommended ? 'border-black border-2' : 'border-gray-200'} rounded-lg shadow-sm hover:shadow-md transition-shadow relative ${isRecommended ? 'recommended' : ''}`}>
-      {isRecommended && (
-        <div className="absolute top-0 right-0 bg-black text-white text-xs font-bold py-1 px-3 transform translate-x-2 -translate-y-2 rounded">
-          RECOMMENDED
-        </div>
-      )}
-      <h3 className="text-xl font-bold text-gray-900">{name}</h3>
-      <div className="mt-4 flex items-baseline text-gray-900">
-        <span className="text-4xl font-extrabold tracking-tight">${price}</span>
-        <span className="ml-1 text-xl font-semibold">/{interval}</span>
-      </div>
-      {trialDays > 0 && (
-        <p className="mt-2 text-sm text-gray-500">
-          {trialDays}-day free trial of IPTRADE {name}
-        </p>
-      )}
-      <ul className="mt-6 space-y-4">
-        {features.map((feature, index) => (
-          <li key={index} className="flex items-start">
-            <Check className="h-5 w-5 text-black mr-2 mt-0.5 flex-shrink-0" />
-            <span className="text-gray-700">{feature}</span>
-          </li>
-        ))}
-      </ul>
-      
-      {isLoggedIn ? (
-        hasSubscription ? (
-          <div className="mt-8">
-            <button disabled
-              className="w-full flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gray-400 cursor-not-allowed"
-            >
-              Currently Subscribed
-            </button>
-          </div>
-        ) : (
-          <form id={formId} action={handleSubscription} className="mt-8">
-            <input type="hidden" name="priceId" value={priceId} />
-            <SubmitButton 
-              className={`w-full flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${isRecommended ? 'bg-black hover:bg-gray-800' : 'bg-blue-600 hover:bg-blue-700'}`}
-              formAction={handleSubscription}
-            >
-              <CreditCard className="mr-2 h-4 w-4" />
-              Subscribe Now
-            </SubmitButton>
-          </form>
-        )
-      ) : (
-        <a href="/sign-in?redirect=/pricing" className="block w-full mt-8">
-          <button
-            className={`w-full flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${isRecommended ? 'bg-black hover:bg-gray-800' : 'bg-blue-600 hover:bg-blue-700'}`}
-          >
-            <CreditCard className="mr-2 h-4 w-4" />
-            Sign in to Subscribe
-          </button>
-        </a>
-      )}
-    </div>
-  );
-}
-
-function FeatureRow({ feature, free, base, plus }: { 
+function FeatureRow({ 
+  feature, 
+  free, 
+  base, 
+  plus 
+}: { 
   feature: string; 
-  free: string | React.ReactNode; 
-  base: string | React.ReactNode; 
-  plus: string | React.ReactNode; 
+  free: React.ReactNode; 
+  base: React.ReactNode; 
+  plus: React.ReactNode; 
 }) {
   return (
     <tr>
-      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+      <td className="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900">
         {feature}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+      <td className="px-6 py-4 whitespace-normal text-sm text-center text-gray-500">
         {free}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+      <td className="px-6 py-4 whitespace-normal text-sm text-center text-gray-500">
         {base}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center bg-gray-100">
+      <td className="px-6 py-4 whitespace-normal text-sm text-center text-gray-500 bg-gray-50">
         {plus}
       </td>
     </tr>

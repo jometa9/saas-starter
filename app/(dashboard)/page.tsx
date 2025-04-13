@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Check, Download, Zap, ExternalLink } from "lucide-react";
 
 import { Terminal } from "./terminal";
+import { PricingToggle } from "@/components/pricing-toggle";
 
 export default function HomePage() {
   return (
@@ -347,7 +348,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
 
       {/* Comparison Section */}
       <section className="py-10 pt-8">
@@ -781,6 +781,11 @@ export default function HomePage() {
             <p className="mt-3 max-w-2xl text-lg text-gray-600">
               Choose the plan that fits your trading needs
             </p>
+
+            {/* Billing Toggle */}
+            <div className="flex justify-center items-center my-6">
+              <PricingToggle />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -792,13 +797,17 @@ export default function HomePage() {
                   <p className="mt-4 text-gray-600">
                     Perfect for getting started with trade copying
                   </p>
-                  <div className="mt-6">
-                    <span className="text-5xl font-bold text-gray-900">$0</span>
+                  <div className="mt-6  billing-monthly ">
+                    <span className="text-4xl font-bold text-gray-900">$0</span>
                     <span className="text-xl text-gray-500">/month</span>
                   </div>
+                  <div className="mt-6 billing-annual hidden">
+                    <span className="text-4xl font-bold text-gray-900">$0</span>
+                    <span className="text-xl text-gray-500">/year</span>
+                    </div>
                 </div>
 
-                <div className="mt-8 flex-grow">
+                <div className="mt-6 flex-grow">
                   <ul className="space-y-4">
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
@@ -854,15 +863,25 @@ export default function HomePage() {
                   <p className="mt-4 text-gray-600">
                     Advanced features for serious traders
                   </p>
-                  <div className="mt-6">
-                    <span className="text-5xl font-bold text-gray-900">
+                  <p className="mt-2  text-center text-xs font-medium text-green-600 billing-annual">
+                    Save $48
+                  </p>
+                  <div className="billing-monthly mt-6">
+                    <span className="text-4xl font-bold text-gray-900">
                       $20
                     </span>
                     <span className="text-xl text-gray-500">/month</span>
                   </div>
+
+                  <div className="billing-annual hidden">
+                    <span className="text-4xl font-bold text-gray-900">
+                      $192
+                    </span>
+                    <span className="text-xl text-gray-500">/year</span>
+                  </div>
                 </div>
 
-                <div className="mt-8 flex-grow">
+                <div className="mt-6 flex-grow">
                   <ul className="space-y-4">
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
@@ -934,15 +953,26 @@ export default function HomePage() {
                   <p className="mt-4 text-gray-600">
                     No limits on connected accounts
                   </p>
-                  <div className="mt-6">
-                    <span className="text-5xl font-bold text-gray-900">
+                  <p className="mt-2  text-center text-xs font-medium text-blue-600 billing-annual">
+                    Save $120
+                  </p>
+                  <div className="mt-6 billing-monthly">
+                    <span className="text-4xl font-bold text-gray-900">
                       $50
                     </span>
                     <span className="text-xl text-gray-500">/month</span>
                   </div>
+
+                  <div className=" billing-annual hidden">
+                    <span className="text-4xl font-bold text-gray-900">
+                      $480
+                    </span>
+                    <span className="text-xl text-gray-500">/year</span>
+                  </div>
+
                 </div>
 
-                <div className="mt-8 flex-grow">
+                <div className="mt-6 flex-grow">
                   <ul className="space-y-4">
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
@@ -1014,15 +1044,26 @@ export default function HomePage() {
                   <p className="mt-4 text-gray-600">
                     Fully managed trade copying service
                   </p>
-                  <div className="mt-6">
-                    <span className="text-5xl font-bold text-gray-900">
+
+                  <p className="mt-2  text-center text-xs font-medium text-purple-600 billing-annual">
+                    Save $2.398
+                  </p>
+                  <div className="mt-6 billing-monthly">
+                    <span className="text-4xl font-bold text-gray-900">
                       $999
                     </span>
                     <span className="text-xl text-gray-500">/month</span>
                   </div>
+
+                  <div className="billing-annual hidden">
+                    <span className="text-4xl font-bold text-gray-900">
+                      $9.590
+                    </span>
+                    <span className="text-xl text-gray-500">/year</span>
+                  </div>
                 </div>
 
-                <div className="mt-8 flex-grow">
+                <div className="mt-6 flex-grow">
                   <ul className="space-y-4">
                     <li className="flex items-start">
                       <div className="flex-shrink-0">
@@ -1089,7 +1130,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
 
       {/* Steps Section */}
       <section id="steps" className="py-12">

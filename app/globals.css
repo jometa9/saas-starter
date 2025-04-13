@@ -370,3 +370,29 @@ html {
     @apply bg-background text-foreground;
   }
 }
+
+/* Estilos para el toggle de precios */
+body[data-billing-period="annual"] .billing-monthly {
+  display: none !important;
+}
+
+body[data-billing-period="annual"] .billing-annual {
+  display: flex !important;
+}
+
+body[data-billing-period="monthly"] .billing-monthly {
+  display: flex !important;
+}
+
+body[data-billing-period="monthly"] .billing-annual {
+  display: none !important;
+}
+
+/* Si inicialmente no hay atributo, se muestra el precio mensual (por defecto) */
+body:not([data-billing-period]) .billing-monthly {
+  display: flex !important;
+}
+
+body:not([data-billing-period]) .billing-annual {
+  display: none !important;
+}

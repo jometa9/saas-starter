@@ -8,30 +8,21 @@ import {
 } from '@/lib/db/queries';
 import { sendSubscriptionChangeEmail } from '@/lib/email';
 
-// Variable para almacenar la instancia de Stripe
 let stripeInstance: Stripe | null = null;
 
-// Función para obtener la instancia de Stripe de forma segura
 export function getStripe(): Stripe {
   if (stripeInstance) return stripeInstance;
   
   const apiKey = process.env.STRIPE_SECRET_KEY;
   
   if (!apiKey || !apiKey.startsWith('sk_')) {
-    // La clave API no está configurada o no tiene el formato correcto
-    console.warn('⚠️ STRIPE_SECRET_KEY no es válida. Para usar Stripe, debes configurar una clave válida en .env.local');
-    console.warn('⚠️ Las claves de prueba válidas comienzan con "sk_test_" y las de producción con "sk_live_"');
-    
-    // Devolvemos un objeto que actúa como Stripe pero que no hace nada real
     // @ts-ignore - Creamos un proxy que simula la API de Stripe
     return new Proxy({}, {
       get: (target, prop) => {
-        // Devuelve un objeto para cualquier propiedad solicitada
         if (prop === 'checkout' || prop === 'customers' || prop === 'billingPortal' || 
             prop === 'products' || prop === 'prices' || prop === 'subscriptions') {
           return new Proxy({}, {
             get: () => {
-              // Devuelve una función que lanza un error cuando se intenta usar
               return () => {
                 throw new Error('Stripe no está configurado correctamente. Añade una clave válida de Stripe en tu archivo .env.local');
               };
@@ -45,7 +36,6 @@ export function getStripe(): Stripe {
     });
   }
   
-  // Creamos la instancia real de Stripe
   stripeInstance = new Stripe(apiKey, {
     apiVersion: '2025-02-24.acacia'
   });
@@ -53,7 +43,6 @@ export function getStripe(): Stripe {
   return stripeInstance;
 }
 
-// Obtenemos Stripe solo cuando se necesita
 export const stripe = getStripe();
 
 export async function createCheckoutSession({
@@ -71,10 +60,8 @@ export async function createCheckoutSession({
     const stripe = getStripe();
     let customerIdToUse = customerId;
 
-    // Si no hay customerId, crear uno nuevo
     if (!customerIdToUse) {
       try {
-        // Crear un nuevo cliente en Stripe
         const customer = await stripe.customers.create({
           email: email,
           metadata: {
@@ -82,10 +69,8 @@ export async function createCheckoutSession({
           }
         });
         
-        // Guardar el ID del cliente para usarlo en la sesión
         customerIdToUse = customer.id;
         
-        // Actualizar el usuario con el nuevo ID de cliente
         await updateUserById(userId, {
           stripeCustomerId: customer.id
         });
@@ -95,9 +80,7 @@ export async function createCheckoutSession({
       }
     }
 
-    // Verificar que el precio exista en Stripe
     try {
-      // Intentar recuperar el precio para verificar que existe
       await stripe.prices.retrieve(priceId);
     } catch (priceError) {
       console.error(`Error: El precio ${priceId} no existe en Stripe:`, priceError);
@@ -109,7 +92,6 @@ export async function createCheckoutSession({
     const successUrl = `${baseUrl}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${baseUrl}/pricing`;
     
-    // Configuración de la sesión de checkout
     const sessionConfig = {
       payment_method_types: ['card'],
       line_items: [
@@ -128,7 +110,6 @@ export async function createCheckoutSession({
       }
     };
     
-    // Crear la sesión de checkout
     const session = await stripe.checkout.sessions.create(sessionConfig);
     
     if (!session.url) {
@@ -143,11 +124,8 @@ export async function createCheckoutSession({
   }
 }
 
-// Función auxiliar para actualizar un usuario por ID
 async function updateUserById(userId: number, data: Partial<User>) {
-  // Esta función podría estar en lib/db/queries, pero la implementamos aquí para evitar dependencias circulares
   try {
-    // Usar la API de Next.js para actualizar el usuario
     const response = await fetch(`/api/users/${userId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -164,7 +142,6 @@ async function updateUserById(userId: number, data: Partial<User>) {
 }
 
 export async function createCustomerPortalSession(user: User): Promise<{ url: string } | { error: string }> {
-  // Verificar que el usuario tenga la información necesaria
   if (!user.stripeCustomerId) {
     console.error(`❌ Error: Usuario sin stripeCustomerId`);
     return { error: 'no-customer-id' };
@@ -304,7 +281,6 @@ export async function handleSubscriptionChange(
     planName = plan.product.name;
   }
 
-  // Manejar más estados de suscripción
   if (status === 'active' || status === 'trialing') {
     await updateUserSubscription(user.id, {
       stripeSubscriptionId: subscriptionId,
@@ -315,12 +291,10 @@ export async function handleSubscriptionChange(
       subscriptionStatus: status
     });
     
-    // Calcular fecha de expiración de la suscripción
     const expiryDate = subscription.current_period_end 
       ? new Date(subscription.current_period_end * 1000).toISOString().split('T')[0]
       : undefined;
     
-    // Enviar email notificando la suscripción activa o trial
     try {
       await sendSubscriptionChangeEmail({
         email: user.email,
@@ -331,7 +305,7 @@ export async function handleSubscriptionChange(
         dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000'}/dashboard`
       });
     } catch (error) {
-      console.error(`❌ Error sending subscription change email:`, error);
+      console.error(error);
     }
   } else if (status === 'canceled' || status === 'unpaid' || status === 'incomplete_expired' || status === 'incomplete') {
     await updateUserSubscription(user.id, {
@@ -341,7 +315,6 @@ export async function handleSubscriptionChange(
       subscriptionStatus: status
     });
     
-    // Enviar email notificando la cancelación o falta de pago
     try {
       await sendSubscriptionChangeEmail({
         email: user.email,
@@ -351,7 +324,7 @@ export async function handleSubscriptionChange(
         dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000'}/dashboard`
       });
     } catch (error) {
-      console.error(`❌ Error sending subscription cancellation email:`, error);
+      console.error(error);
     }
   } else {
     console.warn(`⚠️ Unhandled subscription status: ${status}`);
@@ -393,7 +366,6 @@ export async function getStripeProducts() {
   }));
 }
 
-// Función para verificar si estamos en modo de prueba de Stripe
 export function isTestMode(): boolean {
   const apiKey = process.env.STRIPE_SECRET_KEY;
   return !!apiKey && apiKey.startsWith('sk_test_');
