@@ -26,18 +26,20 @@ export default function PricingPage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        if (userPromise && typeof userPromise === 'object') {
+        if (userPromise && typeof userPromise === "object") {
           const userData = await userPromise;
           setUser(userData);
-          
+
           // Establecer el plan actual y estado de suscripción
           if (userData?.planName) {
             setCurrentPlan(userData.planName);
           }
-          
+
           // Verificar si tiene suscripción activa
-          if (userData?.subscriptionStatus === 'active' || 
-              userData?.subscriptionStatus === 'trialing') {
+          if (
+            userData?.subscriptionStatus === "active" ||
+            userData?.subscriptionStatus === "trialing"
+          ) {
             setHasActiveSubscription(true);
           }
         }
@@ -57,7 +59,9 @@ export default function PricingPage() {
     if (!isLoading) {
       // Redirect to login if user is not authenticated
       if (!user) {
-        router.push(`/login?callbackUrl=${encodeURIComponent("/dashboard/pricing")}`);
+        router.push(
+          `/login?callbackUrl=${encodeURIComponent("/dashboard/pricing")}`
+        );
         return;
       }
 
@@ -100,12 +104,12 @@ export default function PricingPage() {
     if (planName === "Free") {
       return "Start Now";
     }
-    
+
     // Si ya tiene este plan exacto, mostrar "Current Plan"
     if (currentPlan && currentPlan.includes(planName)) {
       return "Current";
     }
-    
+
     // Para los demás planes de pago
     return "Change Plan";
   };
@@ -116,18 +120,18 @@ export default function PricingPage() {
     if (isCheckoutLoading) {
       return selectedPlan === planName.toLowerCase();
     }
-    
+
     // Para el plan Free
     if (planName === "Free") {
       // Deshabilitar si tiene una suscripción de pago (plan diferente a Free)
       return currentPlan !== null && currentPlan !== "Free";
     }
-    
+
     // Si ya tiene este plan, deshabilitar el botón
     if (currentPlan && currentPlan.includes(planName)) {
       return true;
     }
-    
+
     return false;
   };
 
@@ -135,11 +139,12 @@ export default function PricingPage() {
     try {
       setIsCheckoutLoading(true);
       setSelectedPlan(plan.toLowerCase());
-      
+
       if (!priceId) {
         toast({
           title: "Configuration Error",
-          description: "The selected plan is not available. Please contact support.",
+          description:
+            "The selected plan is not available. Please contact support.",
           variant: "destructive",
         });
         setIsCheckoutLoading(false);
@@ -148,7 +153,7 @@ export default function PricingPage() {
 
       const formData = new FormData();
       formData.append("priceId", priceId);
-      
+
       // Si ya tiene una suscripción activa, indicar que es un cambio de plan
       if (hasActiveSubscription) {
         formData.append("changePlan", "true");
@@ -176,7 +181,10 @@ export default function PricingPage() {
       console.error("Checkout error:", error);
       toast({
         title: "Checkout Error",
-        description: error instanceof Error ? error.message : "An unexpected error occurred. Please try again later.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred. Please try again later.",
         variant: "destructive",
       });
       setIsCheckoutLoading(false);
@@ -184,21 +192,29 @@ export default function PricingPage() {
   };
 
   // Precios y IDs de Stripe
-  const PREMIUM_MONTHLY_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_PREMIUM_MONTHLY_PRICE_ID;
-  const PREMIUM_ANNUAL_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_PREMIUM_ANNUAL_PRICE_ID;
-  const UNLIMITED_MONTHLY_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_UNLIMITED_MONTHLY_PRICE_ID;
-  const UNLIMITED_ANNUAL_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_UNLIMITED_ANNUAL_PRICE_ID;
-  const MANAGED_VPS_MONTHLY_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_MANAGED_VPS_MONTHLY_PRICE_ID;
-  const MANAGED_VPS_ANNUAL_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_MANAGED_VPS_ANNUAL_PRICE_ID;
+  const PREMIUM_MONTHLY_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_PREMIUM_MONTHLY_PRICE_ID;
+  const PREMIUM_ANNUAL_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_PREMIUM_ANNUAL_PRICE_ID;
+  const UNLIMITED_MONTHLY_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_UNLIMITED_MONTHLY_PRICE_ID;
+  const UNLIMITED_ANNUAL_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_UNLIMITED_ANNUAL_PRICE_ID;
+  const MANAGED_VPS_MONTHLY_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_MANAGED_VPS_MONTHLY_PRICE_ID;
+  const MANAGED_VPS_ANNUAL_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_MANAGED_VPS_ANNUAL_PRICE_ID;
 
   return (
     <div className="py-8 px-4">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold" id="prices">Subscription Plans</h1>
+        <h1 className="text-4xl font-bold" id="prices">
+          Subscription Plans
+        </h1>
         <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-600">
           Choose the plan that fits your trading needs
         </p>
-        
+
         {/* Billing Toggle */}
         <div className="flex justify-center items-center my-4">
           <PricingToggle />
@@ -208,14 +224,14 @@ export default function PricingPage() {
       {currentPlan && currentPlan !== "Free" && (
         <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
           <p className="text-blue-800">
-            You currently have the <strong>{currentPlan}</strong> plan. 
-            Changing your plan will cancel your current subscription at the end of the billing period 
-            and create a new subscription.
+            You currently have the <strong>{currentPlan}</strong> plan. Changing
+            your plan will cancel your current subscription at the end of the
+            billing period and create a new subscription.
           </p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8" >
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Free Plan */}
         <div className="lg:col-span-3 border border-gray-200 rounded-2xl shadow-lg bg-white p-8">
           <div className="flex flex-col h-full">
@@ -293,16 +309,12 @@ export default function PricingPage() {
                 Save $48
               </p>
               <div className="billing-monthly mt-6">
-                <span className="text-4xl font-bold text-gray-900">
-                  $20
-                </span>
+                <span className="text-4xl font-bold text-gray-900">$20</span>
                 <span className="text-xl text-gray-500">/month</span>
               </div>
 
               <div className="billing-annual hidden">
-                <span className="text-4xl font-bold text-gray-900">
-                  $192
-                </span>
+                <span className="text-4xl font-bold text-gray-900">$192</span>
                 <span className="text-xl text-gray-500">/year</span>
               </div>
             </div>
@@ -355,11 +367,18 @@ export default function PricingPage() {
             <div className="mt-8">
               <Button
                 className={`w-full py-6 text-lg ${
-                  currentPlan && currentPlan.includes("Premium") 
-                    ? "bg-gray-500 hover:bg-gray-600" 
+                  currentPlan && currentPlan.includes("Premium")
+                    ? "bg-gray-500 hover:bg-gray-600"
                     : "bg-green-700 hover:bg-green-800"
                 } text-white cursor-pointer`}
-                onClick={() => handleCheckout("Premium", isAnnual ? PREMIUM_ANNUAL_PRICE_ID : PREMIUM_MONTHLY_PRICE_ID)}
+                onClick={() =>
+                  handleCheckout(
+                    "Premium",
+                    isAnnual
+                      ? PREMIUM_ANNUAL_PRICE_ID
+                      : PREMIUM_MONTHLY_PRICE_ID
+                  )
+                }
                 disabled={isButtonDisabled("Premium")}
               >
                 {isCheckoutLoading && selectedPlan === "premium" ? (
@@ -385,9 +404,7 @@ export default function PricingPage() {
 
           <div className="flex flex-col h-full">
             <div>
-              <h3 className="text-2xl font-bold text-gray-900">
-                Unlimited
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900">Unlimited</h3>
               <p className="mt-4 text-gray-600">
                 No limits on connected accounts
               </p>
@@ -395,16 +412,12 @@ export default function PricingPage() {
                 Save $120
               </p>
               <div className="mt-6 billing-monthly">
-                <span className="text-4xl font-bold text-gray-900">
-                  $50
-                </span>
+                <span className="text-4xl font-bold text-gray-900">$50</span>
                 <span className="text-xl text-gray-500">/month</span>
               </div>
 
               <div className="billing-annual hidden">
-                <span className="text-4xl font-bold text-gray-900">
-                  $480
-                </span>
+                <span className="text-4xl font-bold text-gray-900">$480</span>
                 <span className="text-xl text-gray-500">/year</span>
               </div>
             </div>
@@ -457,11 +470,18 @@ export default function PricingPage() {
             <div className="mt-8">
               <Button
                 className={`w-full py-6 text-lg ${
-                  currentPlan && currentPlan.includes("Unlimited") 
-                    ? "bg-gray-500 hover:bg-gray-600" 
+                  currentPlan && currentPlan.includes("Unlimited")
+                    ? "bg-gray-500 hover:bg-gray-600"
                     : "bg-blue-600 hover:bg-blue-700"
                 } text-white cursor-pointer`}
-                onClick={() => handleCheckout("Unlimited", isAnnual ? UNLIMITED_ANNUAL_PRICE_ID : UNLIMITED_MONTHLY_PRICE_ID)}
+                onClick={() =>
+                  handleCheckout(
+                    "Unlimited",
+                    isAnnual
+                      ? UNLIMITED_ANNUAL_PRICE_ID
+                      : UNLIMITED_MONTHLY_PRICE_ID
+                  )
+                }
                 disabled={isButtonDisabled("Unlimited")}
               >
                 {isCheckoutLoading && selectedPlan === "unlimited" ? (
@@ -487,9 +507,7 @@ export default function PricingPage() {
 
           <div className="flex flex-col h-full">
             <div>
-              <h3 className="text-2xl font-bold text-gray-900">
-                Managed VPS
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900">Managed VPS</h3>
               <p className="mt-4 text-gray-600">
                 Fully managed trade copying service
               </p>
@@ -498,16 +516,12 @@ export default function PricingPage() {
                 Save $2,398
               </p>
               <div className="mt-6 billing-monthly">
-                <span className="text-4xl font-bold text-gray-900">
-                  $999
-                </span>
+                <span className="text-4xl font-bold text-gray-900">$999</span>
                 <span className="text-xl text-gray-500">/month</span>
               </div>
 
               <div className="billing-annual hidden">
-                <span className="text-4xl font-bold text-gray-900">
-                  $9,590
-                </span>
+                <span className="text-4xl font-bold text-gray-900">$9,590</span>
                 <span className="text-xl text-gray-500">/year</span>
               </div>
             </div>
@@ -568,11 +582,18 @@ export default function PricingPage() {
             <div className="mt-8">
               <Button
                 className={`w-full py-6 text-lg ${
-                  currentPlan && currentPlan.includes("Managed VPS") 
-                    ? "bg-gray-500 hover:bg-gray-600" 
+                  currentPlan && currentPlan.includes("Managed VPS")
+                    ? "bg-gray-500 hover:bg-gray-600"
                     : "bg-purple-600 hover:bg-purple-700"
                 } text-white cursor-pointer`}
-                onClick={() => handleCheckout("Managed VPS", isAnnual ? MANAGED_VPS_ANNUAL_PRICE_ID : MANAGED_VPS_MONTHLY_PRICE_ID)}
+                onClick={() =>
+                  handleCheckout(
+                    "Managed VPS",
+                    isAnnual
+                      ? MANAGED_VPS_ANNUAL_PRICE_ID
+                      : MANAGED_VPS_MONTHLY_PRICE_ID
+                  )
+                }
                 disabled={isButtonDisabled("Managed VPS")}
               >
                 {isCheckoutLoading && selectedPlan === "managed vps" ? (
@@ -598,16 +619,17 @@ export default function PricingPage() {
       {/* Tabla comparativa detallada */}
       <div className="mt-10 pt-8 border-t border-gray-200 mx-4">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Detailed Plan Comparison</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Detailed Plan Comparison
+          </h2>
           <p className="mt-3 max-w-2xl mx-auto text-gray-600">
             Compare all features available in each plan
           </p>
         </div>
-        
       </div>
-        <PlansComparisonTable />
+      <PlansComparisonTable />
 
-        <section className="pt-24 py-12">
+      <section className="pt-24 py-12">
         <div className="px-8">
           <div className="max-w-xl mx-auto text-center">
             <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
@@ -632,4 +654,4 @@ export default function PricingPage() {
       </section>
     </div>
   );
-} 
+}

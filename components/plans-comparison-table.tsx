@@ -198,13 +198,14 @@ export function PlansComparisonTable() {
   // Función para obtener url correcta para usuarios no logueados
   const getPlanUrl = (planName: string): string => {
     // Detectar si estamos en la página de dashboard/pricing
-    const isDashboardPricing = window.location.pathname.includes("/dashboard/pricing");
-    
+    const isDashboardPricing =
+      window.location.pathname.includes("/dashboard/pricing");
+
     if (!user) {
       // No logueado - dirigir a inicio de sesión
       return `/sign-in?redirect=${isDashboardPricing ? "/dashboard/pricing" : "/"}`;
     }
-    
+
     // Usuario logueado - ir a la sección de precios según la página actual
     return isDashboardPricing ? "/dashboard/pricing/#prices" : "/#prices";
   };
@@ -216,7 +217,7 @@ export function PlansComparisonTable() {
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-100 hover:bg-gray-100">
-                <TableHead className="w-1/3 font-semibold text-gray-800 p-4">
+                <TableHead className="w-1/3 font-semibold text-gray-800 p-4  border-b-2 border-gray-300">
                   Feature
                 </TableHead>
                 <TableHead className="text-center font-semibold text-gray-800 p-4 bg-gray-50 border-b-2 border-gray-300">
