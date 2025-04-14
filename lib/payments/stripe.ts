@@ -49,12 +49,14 @@ export async function createCheckoutSession({
   priceId,
   userId,
   email,
-  customerId
+  customerId,
+  metadata
 }: {
   priceId: string;
   userId: number;
   email: string;
   customerId?: string | null;
+  metadata?: Record<string, string>;
 }) {
   try {
     const stripe = getStripe();
@@ -105,6 +107,10 @@ export async function createCheckoutSession({
       cancel_url: cancelUrl,
       customer: customerIdToUse,
       client_reference_id: userId.toString(),
+      metadata: {
+        userId: userId.toString(),
+        ...metadata
+      }
     };
     
     const session = await stripe.checkout.sessions.create(sessionConfig);

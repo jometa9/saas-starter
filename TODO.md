@@ -28,3 +28,22 @@ IPTRADE Unlimited anual price_1RDo2sA3C4QniATDbnZkwM0E
 IPTRADE Unlimited mensual price_1RDo2sA3C4QniATDKk2O4xZb
 IPTRADE Managed VPS anual price_1RDo4gA3C4QniATDR0bB6698
 IPTRADE Managed VPS mensual price_1RDo4HA3C4QniATDCV2KY2JF
+
+
+
+
+
+
+
+
+
+
+
+
+- el usuario si esta logeado, y en el plan de los precios, ahora lo llevo al checkout
+- si no esta logeado, le pido que se logee y lo llevo a la pantalla de precios
+- en la pantalla de precios debo mostrar una tabla a detalle con los planes y como es
+- en la pantalla del home de landing, donde estan los precios, veo donde meter un boton o algo para enviarlo a la pagina de precios para que vean la tabla
+- si esta en el dashboard en el account card va a ver dos botones, uno de change subscription que lo llevo a la pantalla de precios y otro que sea manage subscription que ahi lo llevo directo a stripe
+
+E2E de todos los corner cases relacionado a pagos

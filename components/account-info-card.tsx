@@ -19,6 +19,7 @@ interface AccountInfoCardProps {
   onGoToPricing: () => void;
   className?: string;
   title?: string;
+  subscriptionButtonText?: string;
 }
 
 export function AccountInfoCard({
@@ -27,6 +28,7 @@ export function AccountInfoCard({
   onGoToPricing,
   className = "",
   title = "Account Information",
+  subscriptionButtonText = "Subscribe Now",
 }: AccountInfoCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isPortalLoading, setIsPortalLoading] = useState(false);
@@ -67,32 +69,26 @@ export function AccountInfoCard({
     try {
       setIsLoading(true);
 
-      const result = await directCheckoutAction();
-
-      if (result?.redirect) {
-        window.location.href = result.redirect;
-      } else if (result?.error) {
-        let errorMessage = `Could not create subscription: ${result.error}`;
-
-        if (result.error === "subscription-exists") {
-          errorMessage = "You already have an active subscription.";
-        } else if (result.error === "no-auth") {
-          errorMessage = "You need to be logged in to subscribe.";
-        }
-
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-        });
-
+      // Check if user is authenticated
+      if (!user || !user.id) {
+        // Redirect to login page
         setIsLoading(false);
+        window.location.href = "/login?redirect=/dashboard/pricing";
+        return;
+      }
+
+      // If authenticated, redirect to pricing page in dashboard
+      setIsLoading(false);
+      if (onGoToPricing) {
+        onGoToPricing();
+      } else {
+        window.location.href = "/dashboard/pricing";
       }
     } catch (error) {
-      console.error("Error creating subscription:", error);
+      console.error("Error in subscription flow:", error);
       toast({
         title: "Error",
-        description: "Could not create subscription. Please try again later.",
+        description: "An unexpected error occurred. Please try again later.",
         variant: "destructive",
       });
 
@@ -214,7 +210,7 @@ export function AccountInfoCard({
                   <CreditCard className="mr-2 h-4 w-4" />
                   {user.subscriptionStatus === "admin_assigned" ? 
                     "Switch to Paid Plan" : 
-                    "Subscribe Now"}
+                    subscriptionButtonText}
                 </>
               )}
             </Button>

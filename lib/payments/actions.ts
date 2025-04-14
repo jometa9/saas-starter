@@ -2,6 +2,7 @@
 
 import { getUser } from '@/lib/db/queries';
 import { createCheckoutSession, createCustomerPortalSession, getStripeProducts, getStripePrices } from '@/lib/payments/stripe';
+import { stripe } from '@/lib/payments/stripe';
 
 // Precios de planes
 // Plan Premium
@@ -112,7 +113,13 @@ export async function directCheckoutAction(): Promise<{ error?: string; redirect
   }
 }
 
-export async function checkoutAction(priceId: string): Promise<{ error?: string; redirect?: string }> {
+export async function checkoutAction(
+  priceId: string, 
+  options?: { 
+    changePlan?: boolean; 
+    currentPlan?: string;
+  }
+): Promise<{ error?: string; redirect?: string }> {
 
   try {
     if (!priceId || !priceId.startsWith('price_')) {
@@ -126,8 +133,31 @@ export async function checkoutAction(priceId: string): Promise<{ error?: string;
       return { error: 'no-auth' };
     }
     
-    // Verificar si el usuario ya tiene una suscripción activa
-    if (user.stripeSubscriptionId && (
+    // Verificar si el usuario ya tiene una suscripción activa y está cambiando de plan
+    if (options?.changePlan && user.stripeSubscriptionId && (
+      user.subscriptionStatus === 'active' || 
+      user.subscriptionStatus === 'trialing'
+    )) {
+      try {
+        console.log(`🔄 Usuario ${user.id} está cambiando de plan: ${options.currentPlan} -> nuevo plan (price_id: ${priceId})`);
+        
+        // Cancelar la suscripción actual al final del período
+        await stripe.subscriptions.update(user.stripeSubscriptionId, {
+          cancel_at_period_end: true,
+          metadata: {
+            cancelReason: 'changing_plan',
+            newPriceId: priceId
+          }
+        });
+        
+        console.log(`✅ Suscripción ${user.stripeSubscriptionId} marcada para cancelación al final del período`);
+      } catch (cancelError) {
+        console.error(`❌ Error al cancelar suscripción existente:`, cancelError);
+        // Continuamos con el checkout aunque falle la cancelación
+      }
+    }
+    // Si tiene suscripción activa pero no está cambiando de plan (llegó directamente al checkout)
+    else if (user.stripeSubscriptionId && (
       user.subscriptionStatus === 'active' || 
       user.subscriptionStatus === 'trialing'
     )) {
@@ -140,6 +170,11 @@ export async function checkoutAction(priceId: string): Promise<{ error?: string;
       userId: user.id,
       email: user.email,
       customerId: user.stripeCustomerId,
+      metadata: options?.changePlan ? {
+        changePlan: 'true',
+        previousPlan: options.currentPlan || 'unknown',
+        previousSubscriptionId: user.stripeSubscriptionId || 'none'
+      } : undefined
     });
     
     if (!checkoutSession || !checkoutSession.url) {

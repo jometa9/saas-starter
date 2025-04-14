@@ -1,11 +1,199 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight, Check, Download, Zap, ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useUser } from "@/lib/auth";
+import { User } from "@/lib/db/schema";
+import { toast } from "@/components/ui/use-toast";
 
 import { Terminal } from "./terminal";
 import { PricingToggle } from "@/components/pricing-toggle";
+import DownloadCard from "@/components/downloads-card";
 
 export default function HomePage() {
+  const { userPromise } = useUser();
+  const [user, setUser] = useState<User | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAnnual, setIsAnnual] = useState(true);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        if (userPromise && typeof userPromise === "object") {
+          const userData = await userPromise;
+          setUser(userData);
+
+          if (userData?.planName) {
+            setCurrentPlan(userData.planName);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+
+    // Check if billing period is stored in body data attribute
+    const billingPeriod = document.body.getAttribute("data-billing-period");
+    setIsAnnual(billingPeriod === "annual" || billingPeriod === null);
+
+    // Initialize billing period if not set
+    if (!billingPeriod) {
+      document.body.setAttribute("data-billing-period", "annual");
+    }
+
+    // Crear un observer para detectar cambios en el atributo data-billing-period
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "data-billing-period"
+        ) {
+          const newBillingPeriod = document.body.getAttribute(
+            "data-billing-period"
+          );
+          setIsAnnual(newBillingPeriod === "annual");
+          console.log(`Billing period changed to: ${newBillingPeriod}`);
+        }
+      });
+    });
+
+    // Iniciar observación de cambios en los atributos del body
+    observer.observe(document.body, { attributes: true });
+
+    // Cleanup: detener observación cuando el componente se desmonte
+    return () => {
+      observer.disconnect();
+    };
+  }, [userPromise]);
+
+  // Function to get button text based on plan and login status
+  const getButtonText = (planName: string): string => {
+    if (!user) return "Start Now"; // Not logged in, always show Start Now
+
+    if (planName === "Free") return "Start Now"; // Free plan always shows Start Now
+
+    // For other plans, if it's current plan show "Current", otherwise "Change Plan"
+    if (currentPlan && currentPlan.indexOf(planName) !== -1) {
+      return "Current";
+    }
+
+    return "Change Plan";
+  };
+
+  // Function to check if button should be disabled
+  const isButtonDisabled = (planName: string): boolean => {
+    if (isCheckoutLoading) {
+      return selectedPlan === planName.toLowerCase();
+    }
+
+    if (!user) return false; // Not logged in, no buttons disabled
+
+    // Si es el plan Free, desactivarlo cuando el usuario tiene un plan de pago
+    if (planName === "Free" && currentPlan && currentPlan !== "Free") {
+      return true;
+    }
+
+    // If the current plan matches this plan, disable the button
+    if (currentPlan && currentPlan.indexOf(planName) !== -1) {
+      return true;
+    }
+
+    return false;
+  };
+
+  // Precios y IDs de Stripe
+  const PREMIUM_MONTHLY_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_PREMIUM_MONTHLY_PRICE_ID ||
+    process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID ||
+    "price_1RB3j0A3C4QniATDapoM1A3a";
+  const PREMIUM_ANNUAL_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_PREMIUM_ANNUAL_PRICE_ID ||
+    process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID ||
+    "price_1RB3jfA3C4QniATDbeuwOUrx";
+  const UNLIMITED_MONTHLY_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_UNLIMITED_MONTHLY_PRICE_ID ||
+    process.env.STRIPE_UNLIMITED_MONTHLY_PRICE_ID ||
+    "price_1RDo2sA3C4QniATDKk2O4xZb";
+  const UNLIMITED_ANNUAL_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_UNLIMITED_ANNUAL_PRICE_ID ||
+    process.env.STRIPE_UNLIMITED_ANNUAL_PRICE_ID ||
+    "price_1RDo2sA3C4QniATDbnZkwM0E";
+  const MANAGED_VPS_MONTHLY_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_MANAGED_VPS_MONTHLY_PRICE_ID ||
+    process.env.STRIPE_MANAGED_VPS_MONTHLY_PRICE_ID ||
+    "price_1RDo4HA3C4QniATDCV2KY2JF";
+  const MANAGED_VPS_ANNUAL_PRICE_ID =
+    process.env.NEXT_PUBLIC_STRIPE_MANAGED_VPS_ANNUAL_PRICE_ID ||
+    process.env.STRIPE_MANAGED_VPS_ANNUAL_PRICE_ID ||
+    "price_1RDo4gA3C4QniATDR0bB6698";
+
+  // Function to handle checkout directly
+  const handleCheckout = async (plan: string, priceId: string | undefined) => {
+    try {
+      setIsCheckoutLoading(true);
+      setSelectedPlan(plan.toLowerCase());
+
+      if (!priceId) {
+        console.error(
+          `Error: No price ID available for ${plan} plan (${isAnnual ? "annual" : "monthly"})`
+        );
+        toast({
+          title: "Configuration Error",
+          description: `The selected plan (${plan} - ${isAnnual ? "annual" : "monthly"}) is not available. Please contact support or try another plan.`,
+          variant: "destructive",
+        });
+        setIsCheckoutLoading(false);
+        return;
+      }
+
+      console.log(
+        `Starting checkout for plan: ${plan} (${isAnnual ? "ANNUAL" : "MONTHLY"}), price ID: ${priceId}`
+      );
+
+      // Crear la URL para el checkout directamente
+      const baseUrl = window.location.origin;
+      let checkoutUrl = `${baseUrl}/api/checkout-redirect?priceId=${encodeURIComponent(priceId)}`;
+
+      if (currentPlan) {
+        checkoutUrl += `&changePlan=true&currentPlan=${encodeURIComponent(currentPlan)}`;
+      }
+
+      console.log(`Redirecting to: ${checkoutUrl}`);
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast({
+        title: "Checkout Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred. Please try again later.",
+        variant: "destructive",
+      });
+      setIsCheckoutLoading(false);
+    }
+  };
+
+  // Function to get the URL for each plan button (non-checkout)
+  const getPlanUrl = (planName: string): string => {
+    if (!user) {
+      // Not logged in - direct to sign-in
+      return `/sign-in?redirect=/dashboard/pricing`;
+    }
+
+    // User is logged in - go directly to pricing page
+    return "/dashboard/pricing";
+  };
+
   return (
     <main>
       <section className="py-20">
@@ -797,14 +985,14 @@ export default function HomePage() {
                   <p className="mt-4 text-gray-600">
                     Perfect for getting started with trade copying
                   </p>
-                  <div className="mt-6  billing-monthly ">
+                  <div className="mt-6 billing-monthly hidden">
                     <span className="text-4xl font-bold text-gray-900">$0</span>
                     <span className="text-xl text-gray-500">/month</span>
                   </div>
-                  <div className="mt-6 billing-annual hidden">
+                  <div className="mt-6 billing-annual">
                     <span className="text-4xl font-bold text-gray-900">$0</span>
                     <span className="text-xl text-gray-500">/year</span>
-                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-6 flex-grow">
@@ -837,14 +1025,25 @@ export default function HomePage() {
                 </div>
 
                 <div className="mt-8">
-                  <a href="/sign-up">
+                  {user ? (
                     <Button
                       variant="outline"
                       className="w-full py-6 text-lg border-black text-black hover:bg-black/5 cursor-pointer"
+                      disabled={isButtonDisabled("Free")}
                     >
-                      Get Started
+                      {getButtonText("Free")}
                     </Button>
-                  </a>
+                  ) : (
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full py-6 text-lg border-black text-black hover:bg-black/5 cursor-pointer"
+                    >
+                      <Link href={getPlanUrl("Free")}>
+                        {getButtonText("Free")}
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -863,17 +1062,17 @@ export default function HomePage() {
                   <p className="mt-4 text-gray-600">
                     Advanced features for serious traders
                   </p>
-                  <p className="mt-2  text-center text-xs font-medium text-green-600 billing-annual">
+                  <p className="mt-2 text-center text-xs font-medium text-green-600 billing-annual">
                     Save $48
                   </p>
-                  <div className="billing-monthly mt-6">
+                  <div className="billing-monthly hidden mt-6">
                     <span className="text-4xl font-bold text-gray-900">
                       $20
                     </span>
                     <span className="text-xl text-gray-500">/month</span>
                   </div>
 
-                  <div className="billing-annual hidden">
+                  <div className="billing-annual">
                     <span className="text-4xl font-bold text-gray-900">
                       $192
                     </span>
@@ -927,12 +1126,42 @@ export default function HomePage() {
                 </div>
 
                 <div className="mt-8">
-                  <Button
-                    asChild
-                    className="w-full py-6 text-lg bg-green-700 hover:bg-green-800 text-white cursor-pointer"
-                  >
-                    <Link href="/sign-up">Go Premium</Link>
-                  </Button>
+                  {user ? (
+                    <Button
+                      className={`w-full py-6 text-lg ${
+                        currentPlan && currentPlan.indexOf("Premium") !== -1
+                          ? "bg-gray-500 hover:bg-gray-600"
+                          : "bg-green-600 hover:bg-green-700"
+                      } text-white cursor-pointer`}
+                      onClick={() =>
+                        handleCheckout(
+                          "Premium",
+                          isAnnual
+                            ? PREMIUM_ANNUAL_PRICE_ID
+                            : PREMIUM_MONTHLY_PRICE_ID
+                        )
+                      }
+                      disabled={isButtonDisabled("Premium")}
+                    >
+                      {isCheckoutLoading && selectedPlan === "premium" ? (
+                        <>
+                          <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                          Processing...
+                        </>
+                      ) : (
+                        <>{getButtonText("Premium")}</>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      asChild
+                      className="w-full py-6 text-lg bg-green-600 hover:bg-green-700 text-white cursor-pointer"
+                    >
+                      <Link href={getPlanUrl("Premium")}>
+                        {getButtonText("Premium")}
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -953,23 +1182,22 @@ export default function HomePage() {
                   <p className="mt-4 text-gray-600">
                     No limits on connected accounts
                   </p>
-                  <p className="mt-2  text-center text-xs font-medium text-blue-600 billing-annual">
+                  <p className="mt-2 text-center text-xs font-medium text-blue-600 billing-annual">
                     Save $120
                   </p>
-                  <div className="mt-6 billing-monthly">
+                  <div className="mt-6 billing-monthly hidden">
                     <span className="text-4xl font-bold text-gray-900">
                       $50
                     </span>
                     <span className="text-xl text-gray-500">/month</span>
                   </div>
 
-                  <div className=" billing-annual hidden">
+                  <div className="billing-annual">
                     <span className="text-4xl font-bold text-gray-900">
                       $480
                     </span>
                     <span className="text-xl text-gray-500">/year</span>
                   </div>
-
                 </div>
 
                 <div className="mt-6 flex-grow">
@@ -1018,12 +1246,42 @@ export default function HomePage() {
                 </div>
 
                 <div className="mt-8">
-                  <Button
-                    asChild
-                    className="w-full py-6 text-lg bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
-                  >
-                    <Link href="/sign-up">Go Unlimited</Link>
-                  </Button>
+                  {user ? (
+                    <Button
+                      className={`w-full py-6 text-lg ${
+                        currentPlan && currentPlan.indexOf("Unlimited") !== -1
+                          ? "bg-gray-500 hover:bg-gray-600"
+                          : "bg-blue-600 hover:bg-blue-700"
+                      } text-white cursor-pointer`}
+                      onClick={() =>
+                        handleCheckout(
+                          "Unlimited",
+                          isAnnual
+                            ? UNLIMITED_ANNUAL_PRICE_ID
+                            : UNLIMITED_MONTHLY_PRICE_ID
+                        )
+                      }
+                      disabled={isButtonDisabled("Unlimited")}
+                    >
+                      {isCheckoutLoading && selectedPlan === "unlimited" ? (
+                        <>
+                          <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                          Processing...
+                        </>
+                      ) : (
+                        <>{getButtonText("Unlimited")}</>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      asChild
+                      className="w-full py-6 text-lg bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                    >
+                      <Link href={getPlanUrl("Unlimited")}>
+                        {getButtonText("Unlimited")}
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -1045,17 +1303,17 @@ export default function HomePage() {
                     Fully managed trade copying service
                   </p>
 
-                  <p className="mt-2  text-center text-xs font-medium text-purple-600 billing-annual">
+                  <p className="mt-2 text-center text-xs font-medium text-purple-600 billing-annual">
                     Save $2.398
                   </p>
-                  <div className="mt-6 billing-monthly">
+                  <div className="mt-6 billing-monthly hidden">
                     <span className="text-4xl font-bold text-gray-900">
                       $999
                     </span>
                     <span className="text-xl text-gray-500">/month</span>
                   </div>
 
-                  <div className="billing-annual hidden">
+                  <div className="billing-annual">
                     <span className="text-4xl font-bold text-gray-900">
                       $9.590
                     </span>
@@ -1117,13 +1375,42 @@ export default function HomePage() {
                 </div>
 
                 <div className="mt-8">
-                  <Button
-                    asChild
-                    className="w-full py-6 text-lg bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
-                    disabled
-                  >
-                    <Link href="/contact">Contact Sales</Link>
-                  </Button>
+                  {user ? (
+                    <Button
+                      className={`w-full py-6 text-lg ${
+                        currentPlan && currentPlan.indexOf("Managed VPS") !== -1
+                          ? "bg-gray-500 hover:bg-gray-600"
+                          : "bg-purple-600 hover:bg-purple-700"
+                      } text-white cursor-pointer`}
+                      onClick={() =>
+                        handleCheckout(
+                          "Managed VPS",
+                          isAnnual
+                            ? MANAGED_VPS_ANNUAL_PRICE_ID
+                            : MANAGED_VPS_MONTHLY_PRICE_ID
+                        )
+                      }
+                      disabled={isButtonDisabled("Managed VPS")}
+                    >
+                      {isCheckoutLoading && selectedPlan === "managed vps" ? (
+                        <>
+                          <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                          Processing...
+                        </>
+                      ) : (
+                        <>{getButtonText("Managed VPS")}</>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      asChild
+                      className="w-full py-6 text-lg bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
+                    >
+                      <Link href={getPlanUrl("Managed VPS")}>
+                        {getButtonText("Managed VPS")}
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -1255,169 +1542,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Software Download Section */}
-      <section id="download" className="py-12 w-full">
-        <div className="px-4">
-          <div className="r mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Download IPTRADE
-            </h2>
-            <p className="mt-3 max-w-2xl text-lg text-gray-600">
-              Get everything you need to start copying trades between MetaTrader
-              platforms
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* IPTRADE Desktop App */}
-            <div className="mb-6 w-full">
-              <div className="flex items-center mb-4 gap-4">
-                <div className="w-16 h-16 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
-                  <img
-                    src="/assets/iconShadow025.png"
-                    alt="IPTRADE Icon"
-                    className="w-12 h-12 object-contain"
-                  />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">IPTRADE App</h3>
-              </div>
-
-              <div>
-                <div className="border border-black border-2 rounded-lg p-6 shadow-sm hover:shadow-lg transition-shadow mb-4 cursor-pointer bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-lg">Windows Version</h4>
-                      <p className="text-sm text-muted-foreground">v1.0.0</p>
-                    </div>
-                    <Download className="h-8 w-8 p-1" />
-                  </div>
-                </div>
-
-                <div className="border border-black border-2 rounded-lg p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-lg">macOS Version</h4>
-                      <p className="text-sm text-muted-foreground">v1.0.0</p>
-                    </div>
-                    <Download className="h-8 w-8 p-1" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* EA Source Code */}
-            <div className="mb-6 w-full">
-              <div className="flex items-center  mb-4 gap-4">
-                <div className="w-16 h-16 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
-                  <img
-                    src="/assets/metatrader5_expert_advisors_logo.png"
-                    alt="Expert Advisor"
-                    className="w-10 h-10 object-contain bg-gray-50"
-                  />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">EA File</h3>
-              </div>
-              <div>
-                <div className="border border-blue-800 border-2 rounded-lg p-6 bg-blue-50 shadow-sm hover:shadow-lg transition-shadow mb-4 cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-lg">
-                        MT4 Expert Advisor
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        MQL4 Source Code
-                      </p>
-                    </div>
-                    <Download className="h-8 w-8 p-1" />
-                  </div>
-                </div>
-
-                <div className="border border-blue-800 border-2 rounded-lg p-6 bg-blue-50 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-lg">
-                        MT5 Expert Advisor
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        MQL5 Source Code
-                      </p>
-                    </div>
-                    <Download className="h-8 w-8 p-1" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* MetaTrader Platforms */}
-            <div className="w-full">
-              <div className="flex items-center mb-4 gap-4">
-                <div className="w-16 h-16 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
-                  <img
-                    src="/assets/mql5_logo__2.jpg"
-                    alt="MQL5 Logo"
-                    className="w-10 h-10 object-contain"
-                  />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">
-                  MQL5 Download
-                </h3>
-              </div>
-              <div>
-                <div className="border border-yellow-600 border-2 rounded-lg p-6 bg-yellow-50 shadow-sm hover:shadow-lg transition-shadow mb-4 cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-lg">MetaTrader 4</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Official Platform
-                      </p>
-                    </div>
-                    <a
-                      href="https://www.mql5.com/en/download/mt4"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="cursor-pointer"
-                    >
-                      <ExternalLink className="h-8 w-8 p-1" />
-                    </a>
-                  </div>
-                </div>
-
-                <div className="border border-yellow-600 border-2 rounded-lg p-6 bg-yellow-50 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-lg">MetaTrader 5</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Official Platform
-                      </p>
-                    </div>
-                    <a
-                      href="https://www.mql5.com/en/download/mt5"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="cursor-pointer"
-                    >
-                      <ExternalLink className="h-8 w-8 p-1" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center mt-8">
-            <p className="text-sm text-gray-500">
-              Need help with setup? Check our{" "}
-              <Link
-                href="/dashboard/guide"
-                className="text-black font-medium cursor-pointer"
-              >
-                guide
-              </Link>{" "}
-              for detailed installation instructions.
-            </p>
-          </div>
-        </div>
-      </section>
+      <DownloadCard />
 
       {/* Final CTA Section */}
       <section className="py-12">

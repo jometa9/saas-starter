@@ -66,6 +66,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { LicenseCard } from "@/components/licence-card";
+import DownloadCard from "@/components/downloads-card";
 
 export function Dashboard({
   user,
@@ -404,7 +405,7 @@ export function Dashboard({
   };
 
   const goToPricing = () => {
-    router.push("/pricing");
+    router.push("/dashboard/pricing");
   };
 
   const getSubscriptionStatusText = () => {
@@ -638,67 +639,7 @@ export function Dashboard({
       />
       {hasTradingAccountsAccess() && <ManagedServiceForm user={user} />}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Software Downloads</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Download IPTRADE v{currentVersion} for your operating system
-          </p>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4 p-4 pt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-0">
-            <Card className="border border-gray-200 hover:shadow-md transition-shadow w-full">
-              <CardContent className="p-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full">
-                      <Monitor className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Windows Version</h3>
-                      <p className="text-sm text-muted-foreground">
-                        v{currentVersion} - 64-bit installer
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto cursor-pointer"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-gray-200 hover:shadow-md transition-shadow w-full">
-              <CardContent className="p-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full">
-                      <Apple className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">macOS Version</h3>
-                      <p className="text-sm text-muted-foreground">
-                        v{currentVersion} - Universal Binary
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto cursor-pointer"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
+      <DownloadCard compactMode={true} />
 
       <Card>
         <CardHeader className="pb-0">

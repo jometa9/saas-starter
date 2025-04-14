@@ -56,9 +56,6 @@ importers:
       '@types/bcryptjs':
         specifier: ^2.4.6
         version: 2.4.6
-      '@types/node':
-        specifier: ^22.14.1
-        version: 22.14.1
       '@types/react':
         specifier: 19.0.10
         version: 19.0.10
@@ -144,6 +141,9 @@ importers:
         specifier: ^3.24.2
         version: 3.24.2
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.1
+        version: 22.14.1
       prettier:
         specifier: ^3.5.3
         version: 3.5.3

@@ -72,6 +72,12 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
     }
   }
 
+  // Si hay un redirectTo específico, redirigir allí
+  if (redirectTo && redirectTo.startsWith('/')) {
+    redirect(redirectTo);
+  }
+
+  // De lo contrario, ir al dashboard
   redirect('/dashboard');
 });
 
@@ -161,6 +167,12 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     }
   }
 
+  // Si hay un redirectTo específico, redirigir allí
+  if (redirectTo && redirectTo.startsWith('/')) {
+    redirect(redirectTo);
+  }
+
+  // De lo contrario, ir al dashboard
   redirect('/dashboard');
 });
 
