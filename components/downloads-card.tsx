@@ -7,7 +7,7 @@ const DownloadCard = ({ compactMode = false }: { compactMode?: boolean }) => {
   return (
     <section
       id="download"
-      className={` w-full${compactMode ? "pt-4" : "py-12 "}`}
+      className={` w-full${compactMode ? "pt-4 mb-0" : "py-12 "}`}
     >
       <div className={`${compactMode ? "" : "px-4"}`}>
         {!compactMode && (
@@ -38,8 +38,16 @@ const DownloadCard = ({ compactMode = false }: { compactMode?: boolean }) => {
               </div>
             )}
             <div>
-              <DownloadContainer title="IPTRADE Windows App" version="v1.0.0" />
-              <DownloadContainer title="IPTRADE macOS App" version="v1.0.0" />
+              <DownloadContainer
+                title="IPTRADE Windows App"
+                version="v1.0.0"
+                compactMode={compactMode}
+              />
+              <DownloadContainer
+                title="IPTRADE macOS App"
+                version="v1.0.0"
+                compactMode={compactMode}
+              />
             </div>
           </div>
 
@@ -64,11 +72,13 @@ const DownloadCard = ({ compactMode = false }: { compactMode?: boolean }) => {
                 title="MT4 EA File"
                 version="Direct File Download"
                 color="blue"
+                compactMode={compactMode}
               />
               <DownloadContainer
                 title="MT5 EA File"
                 version="Direct File Download"
                 color="blue"
+                compactMode={compactMode}
               />
             </div>
           </div>
@@ -94,11 +104,13 @@ const DownloadCard = ({ compactMode = false }: { compactMode?: boolean }) => {
                 title="MQL5 Market MT4 EA"
                 version="Official Platform Download"
                 href="https://www.mql5.com/en/download/mt4"
+                compactMode={compactMode}
               />
               <ExternalLinkCard
                 title="MQL5 Market MT5 EA"
                 version="Official Platform Download"
                 href="https://www.mql5.com/en/download/mt5"
+                compactMode={compactMode}
               />
             </div>
           </div>
@@ -127,19 +139,30 @@ const DownloadContainer = ({
   title,
   version,
   color = "black",
+  compactMode = false,
 }: {
   title: string;
   version: string;
   color?: "black" | "blue";
+  compactMode?: boolean;
 }) => {
   const base = {
-    black: "border-black bg-gray-50",
-    blue: "border-blue-800 bg-blue-50",
+    black: "bg-gray-50",
+    blue: "bg-blue-50",
+  };
+
+  const borderColor = {
+    black: "border-black",
+    blue: "border-blue-800",
   };
 
   return (
     <div
-      className={`border-2 rounded-lg p-6 shadow-sm hover:shadow-lg transition-shadow mb-4 cursor-pointer ${base[color]}`}
+      className={`p-6 shadow hover:shadow-md transition-shadow mb-4 cursor-pointer ${
+        compactMode
+          ? `${color === "blue" ? "border-blue-200" : "border-gray-200"} border border-opacity-50 rounded-xl`
+          : `${color === "blue" ? "border-blue-800" : "border-black"} border-2 rounded-lg`
+      } ${base[color]}`}
     >
       <div className="flex items-center justify-between">
         <div>
@@ -156,13 +179,21 @@ const ExternalLinkCard = ({
   title,
   version,
   href,
+  compactMode = false,
 }: {
   title: string;
   version: string;
   href: string;
+  compactMode?: boolean;
 }) => {
   return (
-    <div className="border border-yellow-600 border-2 rounded-lg p-6 bg-yellow-50 shadow-sm hover:shadow-lg transition-shadow mb-4 cursor-pointer">
+    <div
+      className={`p-6 bg-yellow-50 shadow hover:shadow-md transition-shadow mb-4 cursor-pointer ${
+        compactMode
+          ? "border-yellow-200 border border-opacity-50 rounded-xl"
+          : "border-yellow-600 border-2 rounded-lg"
+      }`}
+    >
       <div className="flex items-center justify-between">
         <div>
           <h4 className="font-medium text-lg">{title}</h4>

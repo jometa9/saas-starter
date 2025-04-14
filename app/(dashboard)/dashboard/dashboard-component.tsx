@@ -67,6 +67,7 @@ import { Label } from "@/components/ui/label";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { LicenseCard } from "@/components/licence-card";
 import DownloadCard from "@/components/downloads-card";
+import SupportCards from "@/components/support-cards";
 
 export function Dashboard({
   user,
@@ -586,9 +587,9 @@ export function Dashboard({
   const isManagedServicePlan = (): boolean => {
     // Verificar si el usuario tiene un plan que le da acceso a la API key
     return !!(
-      (user.planName === "IPTRADE Premium" || 
-       user.planName === "IPTRADE Unlimited" || 
-       user.planName === "IPTRADE Managed VPS") &&
+      (user.planName === "IPTRADE Premium" ||
+        user.planName === "IPTRADE Unlimited" ||
+        user.planName === "IPTRADE Managed VPS") &&
       (user.subscriptionStatus === "active" ||
         user.subscriptionStatus === "trialing" ||
         user.subscriptionStatus === "admin_assigned")
@@ -598,8 +599,8 @@ export function Dashboard({
   const hasTradingAccountsAccess = (): boolean => {
     // Solo usuarios con planes avanzados pueden acceder a la configuración de cuentas de trading
     return !!(
-      (user.planName === "IPTRADE Unlimited" || 
-       user.planName === "IPTRADE Managed VPS") &&
+      (user.planName === "IPTRADE Unlimited" ||
+        user.planName === "IPTRADE Managed VPS") &&
       (user.subscriptionStatus === "active" ||
         user.subscriptionStatus === "trialing" ||
         user.subscriptionStatus === "admin_assigned")
@@ -623,7 +624,11 @@ export function Dashboard({
         onGoToPricing={goToPricing}
         className="mb-4"
         title="User Profile"
-        subscriptionButtonText={user.subscriptionStatus === "admin_assigned" ? "Switch to Paid Plan" : "Subscribe Now"}
+        subscriptionButtonText={
+          user.subscriptionStatus === "admin_assigned"
+            ? "Switch to Paid Plan"
+            : "Subscribe Now"
+        }
       />
       <LicenseCard
         user={user}
@@ -638,63 +643,9 @@ export function Dashboard({
         isManagedServicePlan={isManagedServicePlan}
       />
       {hasTradingAccountsAccess() && <ManagedServiceForm user={user} />}
-
       <DownloadCard compactMode={true} />
 
-      <Card>
-        <CardHeader className="pb-0">
-          <CardTitle>Need Help?</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Find answers to your questions or contact support
-          </p>
-        </CardHeader>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border border-gray-200 hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-50 p-2 rounded-full">
-                      <BookOpen className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Guide</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Setup guides and tutorials
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto"
-                    onClick={() => router.push("/dashboard/guide")}
-                  >
-                    View Guide
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-gray-200 hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-green-50 p-2 rounded-full">
-                      <LifeBuoy className="h-5 w-5 text-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Technical Support</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Get help by emailing support@iptrade.com
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
+      <SupportCards />
 
       <Button
         variant="outline"
@@ -1167,9 +1118,15 @@ export function Dashboard({
                       <SelectValue placeholder="Select a plan" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="IPTRADE Premium">IPTRADE Premium</SelectItem>
-                      <SelectItem value="IPTRADE Unlimited">IPTRADE Unlimited</SelectItem>
-                      <SelectItem value="IPTRADE Managed VPS">IPTRADE Managed VPS</SelectItem>
+                      <SelectItem value="IPTRADE Premium">
+                        IPTRADE Premium
+                      </SelectItem>
+                      <SelectItem value="IPTRADE Unlimited">
+                        IPTRADE Unlimited
+                      </SelectItem>
+                      <SelectItem value="IPTRADE Managed VPS">
+                        IPTRADE Managed VPS
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

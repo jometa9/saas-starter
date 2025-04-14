@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/auth";
 import { User } from "@/lib/db/schema";
 import { PlansComparisonTable } from "@/components/plans-comparison-table";
+import SupportCards from "@/components/support-cards";
 
 export default function PricingPage() {
   const router = useRouter();
@@ -617,17 +618,30 @@ export default function PricingPage() {
       </div>
 
       {/* Tabla comparativa detallada */}
-      <div className="mt-10 pt-8 border-t border-gray-200 mx-4">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">
+      <div className="mt-10 pt-8 border-t border-gray-200">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold tracking-tight">
             Detailed Plan Comparison
           </h2>
-          <p className="mt-3 max-w-2xl mx-auto text-gray-600">
+          <p className="text-muted-foreground">
             Compare all features available in each plan
           </p>
         </div>
+
+        <PlansComparisonTable />
       </div>
-      <PlansComparisonTable />
+
+      {/* Support Cards Section */}
+      <div className="mt-10 pt-8 border-t border-gray-200">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold tracking-tight">Need Help?</h2>
+          <p className="text-muted-foreground">
+            Get the assistance you need to make the most of IPTRADE
+          </p>
+        </div>
+
+        <SupportCards />
+      </div>
 
       <section className="pt-24 py-12">
         <div className="px-8">
