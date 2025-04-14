@@ -68,6 +68,7 @@ function UserMenu() {
 export function Header() {
   const navigationLinks = [
     { href: "/", label: "Home" },
+    { href: "/dashboard/pricing", label: "Prices" },
     { href: "/guide", label: "Guide" },
     { href: "/faqs", label: "FAQS" },
     { href: "/about", label: "About" },

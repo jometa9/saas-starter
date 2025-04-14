@@ -965,14 +965,14 @@ export default function HomePage() {
       <section className="py-12">
         <div className="px-4">
           <div className="r mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Simple Pricing</h2>
+            <h2 className="text-4xl font-bold text-gray-900">Simple Pricing</h2>
             <p className="mt-3 max-w-2xl text-lg text-gray-600">
               Choose the plan that fits your trading needs
             </p>
 
             {/* Billing Toggle */}
-            <div className="flex justify-center items-center my-6">
-              <PricingToggle />
+            <div className=" my-4">
+              <PricingToggle left={true}/>
             </div>
           </div>
 

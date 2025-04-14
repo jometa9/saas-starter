@@ -3,7 +3,11 @@
 import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 
-export function PricingToggle() {
+interface PricingToggleProps {
+  left?: boolean;
+}
+
+export function PricingToggle({ left = false }: PricingToggleProps) {
   const [isAnnual, setIsAnnual] = useState(false);
 
   useEffect(() => {
@@ -23,7 +27,11 @@ export function PricingToggle() {
   };
 
   return (
-    <div className="flex items-center space-x-2">
+    <div
+      className={`flex items-center space-x-2 ${
+        left ? "justify-start" : "justify-center"
+      }`}
+    >
       <span className="text-sm font-medium text-gray-600">Monthly</span>
       <Switch
         checked={isAnnual}

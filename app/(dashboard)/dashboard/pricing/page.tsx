@@ -95,9 +95,9 @@ export default function PricingPage() {
 
   // Función para obtener el texto del botón según el plan
   const getButtonText = (planName: string) => {
-    // Para el plan Free, mostrar "Current" si no tiene suscripción activa
+    // Para el plan Free, siempre mostrar "Start Now"
     if (planName === "Free") {
-      return hasActiveSubscription ? "Cancel Subscription" : "Current";
+      return "Start Now";
     }
     
     // Si ya tiene este plan exacto, mostrar "Current Plan"
@@ -118,8 +118,8 @@ export default function PricingPage() {
     
     // Para el plan Free
     if (planName === "Free") {
-      // Si NO tiene suscripción activa, deshabilitarlo (porque es el plan actual)
-      return !hasActiveSubscription;
+      // Deshabilitar si tiene una suscripción de pago (plan diferente a Free)
+      return currentPlan !== null && currentPlan !== "Free";
     }
     
     // Si ya tiene este plan, deshabilitar el botón
@@ -204,7 +204,7 @@ export default function PricingPage() {
         </div>
       </div>
 
-      {hasActiveSubscription && (
+      {currentPlan && currentPlan !== "Free" && (
         <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
           <p className="text-blue-800">
             You currently have the <strong>{currentPlan}</strong> plan. 
@@ -590,7 +590,6 @@ export default function PricingPage() {
 
       <div className="text-center mt-12">
         <p className="text-sm text-gray-500">
-          All plans include a 14-day free trial. No credit card required for trial. <br />
           Questions? Contact our support team at support@iptrade.com
         </p>
       </div>
