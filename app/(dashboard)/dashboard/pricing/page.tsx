@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check } from "lucide-react";
+import { ArrowRight, Check, Zap } from "lucide-react";
 import { PricingToggle } from "@/components/pricing-toggle";
 import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
@@ -194,7 +194,7 @@ export default function PricingPage() {
   return (
     <div className="py-8 px-4">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold">Subscription Plans</h1>
+        <h1 className="text-4xl font-bold" id="prices">Subscription Plans</h1>
         <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-600">
           Choose the plan that fits your trading needs
         </p>
@@ -215,7 +215,7 @@ export default function PricingPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8" >
         {/* Free Plan */}
         <div className="lg:col-span-3 border border-gray-200 rounded-2xl shadow-lg bg-white p-8">
           <div className="flex flex-col h-full">
@@ -606,6 +606,30 @@ export default function PricingPage() {
         
       </div>
         <PlansComparisonTable />
+
+        <section className="pt-24 py-12">
+        <div className="px-8">
+          <div className="max-w-xl mx-auto text-center">
+            <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              Ready to <span className="text-black">revolutionize</span> your
+              trading?
+            </h2>
+            <p className="mt-6 text-xl text-gray-600 ">
+              Join thousands of traders who trust IPTRADE for lightning-fast
+              trade copying between platforms. Perfect for prop firm traders who
+              need to maintain compliance while maximizing efficiency.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center">
+              <a href="/sign-in">
+                <Button className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white border border-blue-600 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-xl transition-all duration-300 hover:shadow-xl cursor-pointer border-2">
+                  Start now
+                  <Zap className="ml-3 h-5 w-5" />
+                </Button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 } 

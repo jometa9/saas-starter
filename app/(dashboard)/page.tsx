@@ -964,7 +964,7 @@ export default function HomePage() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-12">
+      <section id="prices" className="py-12">
         <div className="px-4">
           <div className="r mb-8">
             <h2 className="text-4xl font-bold text-gray-900">Simple Pricing</h2>
