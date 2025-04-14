@@ -11,7 +11,7 @@ const DownloadCard = ({ compactMode = false }: { compactMode?: boolean }) => {
     >
       <div className={`${compactMode ? "" : "px-4"}`}>
         {!compactMode && (
-          <div className="mb-8">
+          <div className="mb-4">
             <h2 className="text-3xl font-bold text-gray-900">
               Download IPTRADE
             </h2>
@@ -24,7 +24,7 @@ const DownloadCard = ({ compactMode = false }: { compactMode?: boolean }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* IPTRADE Desktop App */}
-          <div className={` w-full  ${compactMode ? "" : "mb-6"}`}>
+          <div className={"w-full"}>
             {!compactMode && (
               <div className="flex items-center mb-4 gap-4">
                 <div className="w-16 h-16 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
@@ -44,7 +44,7 @@ const DownloadCard = ({ compactMode = false }: { compactMode?: boolean }) => {
           </div>
 
           {/* EA Source Code */}
-          <div className="mb-6 w-full">
+          <div className="w-full">
             {!compactMode && (
               <div className="flex items-center mb-4 gap-4">
                 <div className="w-16 h-16 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow">
@@ -105,7 +105,7 @@ const DownloadCard = ({ compactMode = false }: { compactMode?: boolean }) => {
         </div>
 
         {!compactMode && (
-          <div className="text-center mt-8">
+          <div className="text-center mt-2">
             <p className="text-sm text-gray-500">
               Need help with setup? Check our{" "}
               <Link

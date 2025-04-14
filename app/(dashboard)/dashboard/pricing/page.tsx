@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/auth";
 import { User } from "@/lib/db/schema";
+import { PlansComparisonTable } from "@/components/plans-comparison-table";
 
 export default function PricingPage() {
   const router = useRouter();
@@ -191,15 +192,15 @@ export default function PricingPage() {
   const MANAGED_VPS_ANNUAL_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_MANAGED_VPS_ANNUAL_PRICE_ID;
 
   return (
-    <div className="container py-8">
+    <div className="py-8 px-4">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold">Subscription Plans</h1>
+        <h1 className="text-4xl font-bold">Subscription Plans</h1>
         <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-600">
           Choose the plan that fits your trading needs
         </p>
         
         {/* Billing Toggle */}
-        <div className="flex justify-center items-center my-6">
+        <div className="flex justify-center items-center my-4">
           <PricingToggle />
         </div>
       </div>
@@ -593,6 +594,18 @@ export default function PricingPage() {
           Questions? Contact our support team at support@iptrade.com
         </p>
       </div>
+
+      {/* Tabla comparativa detallada */}
+      <div className="mt-10 pt-8 border-t border-gray-200 mx-4">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">Detailed Plan Comparison</h2>
+          <p className="mt-3 max-w-2xl mx-auto text-gray-600">
+            Compare all features available in each plan
+          </p>
+        </div>
+        
+      </div>
+        <PlansComparisonTable />
     </div>
   );
 } 

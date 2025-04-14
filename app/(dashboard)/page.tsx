@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useUser } from "@/lib/auth";
 import { User } from "@/lib/db/schema";
 import { toast } from "@/components/ui/use-toast";
+import { PlansComparisonTable } from "@/components/plans-comparison-table";
 
 import { Terminal } from "./terminal";
 import { PricingToggle } from "@/components/pricing-toggle";
@@ -20,6 +21,7 @@ export default function HomePage() {
   const [isAnnual, setIsAnnual] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [isTableExpanded, setIsTableExpanded] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -1418,6 +1420,34 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Tabla comparativa detallada (desplegable) */}
+      <section className="py-12 pt-8 border-t border-gray-200 mx-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900">Detailed Plan Comparison</h2>
+            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-600">
+              Compare all features available in each plan
+            </p>
+            
+            {/* Botón para desplegar/colapsar */}
+            <Button
+              onClick={() => setIsTableExpanded(!isTableExpanded)}
+              variant="outline"
+              className="mt-4 border-blue-300 bg-blue-500 text-white hover:bg-blue-600 hover:text-white cursor-pointer"
+            >
+              {isTableExpanded ? (
+                <>Hide detailed comparison <ArrowRight className="ml-2 h-4 w-4 -rotate-90" /></>
+              ) : (
+                <>Show detailed comparison <ArrowRight className="ml-2 h-4 w-4 rotate-90" /></>
+              )}
+            </Button>
+          </div>
+          
+          {/* Tabla comparativa (solo visible cuando isTableExpanded es true) */}
+          {isTableExpanded && <PlansComparisonTable />}
+        </div>
+      </section>
+
       {/* Steps Section */}
       <section id="steps" className="py-12">
         <div className="px-4">
@@ -1430,7 +1460,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8  mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8  mx-auto pb-18">
             {/* Step 1 */}
             <div className="relative bg-white p-8 rounded-2xl border border-gray-200 border-2 shadow-lg flex flex-col">
               <div className="flex-grow">
@@ -1545,7 +1575,7 @@ export default function HomePage() {
       <DownloadCard />
 
       {/* Final CTA Section */}
-      <section className="py-12">
+      <section className="pt-26 py-12">
         <div className="px-8">
           <div className="max-w-xl mx-auto text-center">
             <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
@@ -1578,9 +1608,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <p className="text-3xl font-bold text-gray-200 text-center py-12 px-6">
+      <p className="text-3xl font-bold text-gray-200 text-center py-12 mb-6 px-6">
         <i>See you copying trades!</i>
       </p>
     </main>
   );
 }
+
