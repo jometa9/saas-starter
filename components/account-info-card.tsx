@@ -174,29 +174,52 @@ export function AccountInfoCard({
               )}
             </Button>
           )}
-          {user.subscriptionStatus === "active" ||
-          user.subscriptionStatus === "trialing" ? (
-            <Button
-              variant="outline"
-              className="border-black text-black hover:bg-gray-100 w-full md:w-auto cursor-pointer"
-              onClick={handleStripePortalRedirect}
-              disabled={isPortalLoading}
-            >
-              {isPortalLoading ? (
-                <>
-                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></span>
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Manage Subscription
-                </>
+          {(user.subscriptionStatus === "active" || 
+           user.subscriptionStatus === "trialing" || 
+           user.subscriptionStatus === "admin_assigned") ? (
+            <>
+              <Button
+                variant="outline"
+                className="border-black text-black hover:bg-gray-100 w-full md:w-auto cursor-pointer"
+                onClick={handleDirectSubscription}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></span>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Change Subscription
+                  </>
+                )}
+              </Button>
+              {(user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing") && (
+                <Button
+                  variant="outline"
+                  className="border-green-600 text-green-600 hover:bg-green-50 w-full md:w-auto cursor-pointer"
+                  onClick={handleStripePortalRedirect}
+                  disabled={isPortalLoading}
+                >
+                  {isPortalLoading ? (
+                    <>
+                      <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-green-600 border-t-transparent"></span>
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Manage Subscription
+                    </>
+                  )}
+                </Button>
               )}
-            </Button>
+            </>
           ) : (
             <Button
-              className={`${user.subscriptionStatus === "admin_assigned" ? "bg-green-600 hover:bg-green-700" : "bg-black hover:bg-gray-800"} text-white w-full md:w-auto cursor-pointer`}
+              className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
               onClick={handleDirectSubscription}
               disabled={isLoading}
             >
@@ -208,9 +231,7 @@ export function AccountInfoCard({
               ) : (
                 <>
                   <CreditCard className="mr-2 h-4 w-4" />
-                  {user.subscriptionStatus === "admin_assigned" ? 
-                    "Switch to Paid Plan" : 
-                    subscriptionButtonText}
+                  {subscriptionButtonText}
                 </>
               )}
             </Button>
