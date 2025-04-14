@@ -1,7 +1,7 @@
 - que ande bien lo de dar de alta subscripciones gratis
 - cron que se corra todos los dias para checkear las subscripciones y actualizar, esto es contra stripe y contra las dadas de alta de admin avisando con email
 - boton al lado de delete accont que sea para reset password
-
+- panel de usuario que tiene el self managed
 
 
 
@@ -20,3 +20,11 @@ unificar los readme del proyecto y hacerlo en ingles
 - cerrar con dashboard para largar un mbp
 
 acomodar el start del docker
+
+
+IPTRADE Premium anual price_1RB3jfA3C4QniATDbeuwOUrx
+IPTRADE Premium mensual price_1RB3j0A3C4QniATDapoM1A3a
+IPTRADE Unlimited anual price_1RDo2sA3C4QniATDbnZkwM0E
+IPTRADE Unlimited mensual price_1RDo2sA3C4QniATDKk2O4xZb
+IPTRADE Managed VPS anual price_1RDo4gA3C4QniATDR0bB6698
+IPTRADE Managed VPS mensual price_1RDo4HA3C4QniATDCV2KY2JF

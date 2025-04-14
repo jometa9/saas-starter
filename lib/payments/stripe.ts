@@ -90,7 +90,7 @@ export async function createCheckoutSession({
     // Construir URLs absolutas para success y cancel
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000';
     const successUrl = `${baseUrl}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${baseUrl}/pricing`;
+    const cancelUrl = `${baseUrl}/dashboard`;
     
     const sessionConfig = {
       payment_method_types: ['card'],
@@ -105,9 +105,6 @@ export async function createCheckoutSession({
       cancel_url: cancelUrl,
       customer: customerIdToUse,
       client_reference_id: userId.toString(),
-      subscription_data: {
-        trial_period_days: 14
-      }
     };
     
     const session = await stripe.checkout.sessions.create(sessionConfig);

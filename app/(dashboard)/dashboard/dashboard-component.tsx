@@ -65,6 +65,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { LicenseCard } from "@/components/licence-card";
 
 export function Dashboard({
   user,
@@ -581,9 +582,36 @@ export function Dashboard({
     }
   };
 
-  const isManagedServicePlan = () => {
-    return (
-      user.planName === "Managed Service" || user.planName === "Self Hosted"
+  const isManagedServicePlan = (): boolean => {
+    // Verificar si el usuario tiene un plan que le da acceso a la API key
+    return !!(
+      (user.planName === "IPTRADE Premium" || 
+       user.planName === "IPTRADE Unlimited" || 
+       user.planName === "IPTRADE Managed VPS") &&
+      (user.subscriptionStatus === "active" ||
+        user.subscriptionStatus === "trialing" ||
+        user.subscriptionStatus === "admin_assigned")
+    );
+  };
+
+  const hasTradingAccountsAccess = (): boolean => {
+    // Solo usuarios con planes avanzados pueden acceder a la configuración de cuentas de trading
+    return !!(
+      (user.planName === "IPTRADE Unlimited" || 
+       user.planName === "IPTRADE Managed VPS") &&
+      (user.subscriptionStatus === "active" ||
+        user.subscriptionStatus === "trialing" ||
+        user.subscriptionStatus === "admin_assigned")
+    );
+  };
+
+  const canAccessApiKey = (): boolean => {
+    return !!(
+      isManagedServicePlan() &&
+      user.apiKey &&
+      (user.subscriptionStatus === "active" ||
+        user.subscriptionStatus === "trialing" ||
+        user.subscriptionStatus === "admin_assigned")
     );
   };
 
@@ -594,121 +622,21 @@ export function Dashboard({
         onGoToPricing={goToPricing}
         className="mb-4"
         title="User Profile"
+        subscriptionButtonText={user.subscriptionStatus === "admin_assigned" ? "Switch to Paid Plan" : "Subscribe Now"}
       />
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div className="space-y-1">
-            <CardTitle>IPTRADE License</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Copy trades between MetaTrader platforms with the same IP address
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div
-              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getSubscriptionStatusColor()}`}
-            >
-              {getSubscriptionStatusText()}
-            </div>
-            {getSubscriptionStatusIcon()}
-          </div>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4 p-4 pt-0">
-          <div className="flex flex-col w-full gap-2">
-            <Label>Your License Key</Label>
-            <div className="flex h-10">
-              <Input
-                className="rounded-r-none text-xs h-10 bg-muted"
-                value={user.apiKey || ""}
-                readOnly
-                type={showLicense ? "text" : "password"}
-                disabled={
-                  !user?.stripeSubscriptionId ||
-                  (user.subscriptionStatus !== "active" &&
-                    user.subscriptionStatus !== "trialing")
-                }
-              />
-              <Button
-                variant="outline"
-                className="rounded-l-none rounded-r-none border-l-0 h-10 flex items-center cursor-pointer"
-                onClick={toggleShowLicense}
-                disabled={
-                  !user?.stripeSubscriptionId ||
-                  (user.subscriptionStatus !== "active" &&
-                    user.subscriptionStatus !== "trialing")
-                }
-              >
-                {showLicense ? "Hide" : "Show"}
-              </Button>
-              <Button
-                variant="outline"
-                className="rounded-l-none border-l-0 h-10 flex items-center cursor-pointer"
-                onClick={copyMainLicenseToClipboard}
-                disabled={
-                  !user?.stripeSubscriptionId ||
-                  !user.apiKey ||
-                  (user.subscriptionStatus !== "active" &&
-                    user.subscriptionStatus !== "trialing")
-                }
-                title="Copy to clipboard"
-              >
-                {isMainLicenseCopied ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-            <div className="text-xs text-gray-500 mt-1">
-              {user.subscriptionStatus === "active" ||
-              user.subscriptionStatus === "trialing" ? (
-                <div>
-                  <p>
-                    This license key allows you to activate the IPTRADE software
-                    on your computer.
-                  </p>
-                  <p className="mt-1">
-                    Current Plan:{" "}
-                    <span className="font-semibold">
-                      {user.planName || "Basic"}
-                    </span>
-                    {user.subscriptionStatus === "trialing" && (
-                      <span className="ml-1 text-blue-500 font-medium">
-                        (Trial Period)
-                      </span>
-                    )}
-                    {user.subscriptionExpiryDate && (
-                      <span className="ml-1 text-gray-600">
-                        (Valid until:{" "}
-                        {new Date(
-                          user.subscriptionExpiryDate
-                        ).toLocaleDateString()}
-                        )
-                      </span>
-                    )}
-                  </p>
-                </div>
-              ) : (
-                <p>
-                  <span
-                    className={
-                      user.subscriptionStatus === "expired"
-                        ? "text-purple-500 font-medium"
-                        : "text-red-500 font-medium"
-                    }
-                  >
-                    {user.subscriptionStatus === "expired"
-                      ? "Your subscription has expired."
-                      : "No active license available."}
-                  </span>{" "}
-                  Subscribe to get your license key and access premium features.
-                </p>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {isManagedServicePlan() && <ManagedServiceForm user={user} />}
+      <LicenseCard
+        user={user}
+        showLicense={showLicense}
+        isMainLicenseCopied={isMainLicenseCopied}
+        getSubscriptionStatusColor={getSubscriptionStatusColor}
+        getSubscriptionStatusText={getSubscriptionStatusText}
+        getSubscriptionStatusIcon={getSubscriptionStatusIcon}
+        toggleShowLicense={toggleShowLicense}
+        copyMainLicenseToClipboard={copyMainLicenseToClipboard}
+        canAccessApiKey={canAccessApiKey}
+        isManagedServicePlan={isManagedServicePlan}
+      />
+      {hasTradingAccountsAccess() && <ManagedServiceForm user={user} />}
 
       <Card>
         <CardHeader>
@@ -1298,11 +1226,9 @@ export function Dashboard({
                       <SelectValue placeholder="Select a plan" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Standard">Standard</SelectItem>
-                      <SelectItem value="Premium">Premium</SelectItem>
-                      <SelectItem value="Managed Service">
-                        Managed Service
-                      </SelectItem>
+                      <SelectItem value="IPTRADE Premium">IPTRADE Premium</SelectItem>
+                      <SelectItem value="IPTRADE Unlimited">IPTRADE Unlimited</SelectItem>
+                      <SelectItem value="IPTRADE Managed VPS">IPTRADE Managed VPS</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1350,38 +1276,47 @@ export function Dashboard({
 
 function ManagedServiceForm({ user }: { user: User }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showAddAccountModal, setShowAddAccountModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [accountToDelete, setAccountToDelete] = useState<string | null>(null);
   const [editingAccount, setEditingAccount] = useState<any>(null);
+  const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [accounts, setAccounts] = useState([
     {
       id: "1",
-      brokerName: "IC Markets",
       accountNumber: "12345678",
       platform: "mt4",
       server: "ICMarkets-Live1",
       password: "••••••••",
       copyingTo: ["MT5 Demo Account", "FXCM Live"],
+      accountType: "master",
+      status: "synchronized",
     },
     {
       id: "2",
-      brokerName: "FXCM",
       accountNumber: "87654321",
       platform: "mt5",
       server: "FXCM-Real",
       password: "••••••••",
       copyingTo: [],
+      accountType: "slave",
+      lotCoefficient: 1.5,
+      forceLot: 0,
+      reverseTrade: false,
+      status: "pending",
     },
   ]);
 
   const [formState, setFormState] = useState({
-    brokerName: "",
     serverIp: "",
     accountNumber: "",
     password: "",
     additionalInfo: "",
     platform: "mt4",
+    accountType: "master",
+    lotCoefficient: 1.0,
+    forceLot: 0,
+    reverseTrade: false,
+    status: "pending",
   });
 
   const handleChange = (
@@ -1391,34 +1326,42 @@ function ManagedServiceForm({ user }: { user: User }) {
     setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (value: string) => {
-    setFormState((prev) => ({ ...prev, platform: value }));
+  const handleSelectChange = (name: string, value: string) => {
+    setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAddAccount = () => {
     setEditingAccount(null);
     setFormState({
-      brokerName: "",
       serverIp: "",
       accountNumber: "",
       password: "",
       additionalInfo: "",
       platform: "mt4",
+      accountType: "master",
+      lotCoefficient: 1.0,
+      forceLot: 0,
+      reverseTrade: false,
+      status: "pending",
     });
-    setShowAddAccountModal(true);
+    setIsAddingAccount(true);
   };
 
   const handleEditAccount = (account: any) => {
     setEditingAccount(account);
     setFormState({
-      brokerName: account.brokerName,
       serverIp: account.server,
       accountNumber: account.accountNumber,
       password: "",
       additionalInfo: "",
       platform: account.platform,
+      accountType: account.accountType || "master",
+      lotCoefficient: account.lotCoefficient || 1.0,
+      forceLot: account.forceLot || 0,
+      reverseTrade: account.reverseTrade || false,
+      status: account.status || "pending",
     });
-    setShowAddAccountModal(true);
+    setIsAddingAccount(true);
   };
 
   const handleDeleteAccount = (id: string) => {
@@ -1462,11 +1405,24 @@ function ManagedServiceForm({ user }: { user: User }) {
             acc.id === editingAccount.id
               ? {
                   ...acc,
-                  brokerName: formState.brokerName,
                   server: formState.serverIp,
                   accountNumber: formState.accountNumber,
                   platform: formState.platform,
                   password: formState.password ? "••••••••" : acc.password,
+                  accountType: formState.accountType,
+                  status: formState.status,
+                  lotCoefficient:
+                    formState.accountType === "slave"
+                      ? formState.lotCoefficient
+                      : undefined,
+                  forceLot:
+                    formState.accountType === "slave"
+                      ? formState.forceLot
+                      : undefined,
+                  reverseTrade:
+                    formState.accountType === "slave"
+                      ? formState.reverseTrade
+                      : undefined,
                 }
               : acc
           )
@@ -1482,12 +1438,18 @@ function ManagedServiceForm({ user }: { user: User }) {
           ...accounts,
           {
             id: Date.now().toString(),
-            brokerName: formState.brokerName,
             accountNumber: formState.accountNumber,
             platform: formState.platform,
             server: formState.serverIp,
             password: "••••••••",
             copyingTo: [],
+            accountType: formState.accountType,
+            status: formState.status,
+            ...(formState.accountType === "slave" && {
+              lotCoefficient: formState.lotCoefficient,
+              forceLot: formState.forceLot,
+              reverseTrade: formState.reverseTrade,
+            }),
           },
         ]);
 
@@ -1498,14 +1460,19 @@ function ManagedServiceForm({ user }: { user: User }) {
         });
       }
 
-      setShowAddAccountModal(false);
+      setIsAddingAccount(false);
+      setEditingAccount(null);
       setFormState({
-        brokerName: "",
         serverIp: "",
         accountNumber: "",
         password: "",
         additionalInfo: "",
         platform: "mt4",
+        accountType: "master",
+        lotCoefficient: 1.0,
+        forceLot: 0,
+        reverseTrade: false,
+        status: "pending",
       });
     } catch (error) {
       console.error("Error submitting trading account:", error);
@@ -1518,6 +1485,11 @@ function ManagedServiceForm({ user }: { user: User }) {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCancel = () => {
+    setIsAddingAccount(false);
+    setEditingAccount(null);
   };
 
   const getPlatformIcon = (platform: string) => {
@@ -1534,15 +1506,54 @@ function ManagedServiceForm({ user }: { user: User }) {
             MT5
           </div>
         );
-      case "both":
+      default:
+        return null;
+    }
+  };
+
+  const getAccountTypeIcon = (accountType: string) => {
+    switch (accountType) {
+      case "master":
         return (
-          <div className="bg-purple-100 p-1 rounded-md text-purple-800 text-xs font-medium">
-            MT4/5
+          <div className="bg-indigo-100 p-1 rounded-md text-indigo-800 text-xs font-medium">
+            Master
+          </div>
+        );
+      case "slave":
+        return (
+          <div className="bg-orange-100 p-1 rounded-md text-orange-800 text-xs font-medium">
+            Slave
           </div>
         );
       default:
         return null;
     }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "synchronized":
+        return (
+          <div className="bg-green-100 p-1 rounded-md text-green-800 text-xs font-medium">
+            Synchronized
+          </div>
+        );
+      case "pending":
+        return (
+          <div className="bg-yellow-100 p-1 rounded-md text-yellow-800 text-xs font-medium">
+            Pending
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const getServerStatus = () => {
+    const allSynchronized = accounts.every(
+      (account) => account.status === "synchronized"
+    );
+    return allSynchronized ? "synchronized" : "pending";
   };
 
   return (
@@ -1552,15 +1563,215 @@ function ManagedServiceForm({ user }: { user: User }) {
           <div>
             <CardTitle>Trading Accounts Configuration</CardTitle>
             <CardDescription>
-              Manage your trading accounts and copy trading configuration
+              Manage your trading accounts and copy trading configuration (up to
+              50 accounts)
             </CardDescription>
           </div>
-          <Button onClick={handleAddAccount} className="ml-auto">
-            Add Trading Account
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-muted-foreground">Server Status:</div>
+            {getStatusIcon(getServerStatus())}
+          </div>
+          {!isAddingAccount && (
+            <Button
+              onClick={handleAddAccount}
+              className="ml-auto"
+              disabled={accounts.length >= 50}
+            >
+              Add Trading Account
+            </Button>
+          )}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
+        {isAddingAccount && (
+          <div className="bg-muted/10 rounded-lg border p-4 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium">
+                {editingAccount
+                  ? "Edit Trading Account"
+                  : "Add Trading Account"}
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancel}
+                className="text-muted-foreground"
+              >
+                Cancel
+              </Button>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="serverIp">Server Address</Label>
+                  <Input
+                    id="serverIp"
+                    name="serverIp"
+                    placeholder="e.g. demo.icmarkets.com"
+                    value={formState.serverIp}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="accountNumber">Account Number</Label>
+                  <Input
+                    id="accountNumber"
+                    name="accountNumber"
+                    placeholder="Your trading account number"
+                    value={formState.accountNumber}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">
+                    {editingAccount
+                      ? "New Password (leave empty to keep current)"
+                      : "Account Password"}
+                  </Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder={
+                      editingAccount
+                        ? "New password (optional)"
+                        : "Your trading account password"
+                    }
+                    value={formState.password}
+                    onChange={handleChange}
+                    required={!editingAccount}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="platform">Platform</Label>
+                  <Select
+                    value={formState.platform}
+                    onValueChange={(value: string) =>
+                      handleSelectChange("platform", value)
+                    }
+                  >
+                    <SelectTrigger id="platform">
+                      <SelectValue placeholder="Select platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mt4">MetaTrader 4</SelectItem>
+                      <SelectItem value="mt5">MetaTrader 5</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="accountType">Account Type</Label>
+                  <Select
+                    value={formState.accountType}
+                    onValueChange={(value: string) =>
+                      handleSelectChange("accountType", value)
+                    }
+                  >
+                    <SelectTrigger id="accountType">
+                      <SelectValue placeholder="Select account type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="master">Master (Source)</SelectItem>
+                      <SelectItem value="slave">Slave (Copy)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {formState.accountType === "slave" && (
+                <div className="mt-4 bg-muted/20 p-4 rounded-md border">
+                  <h4 className="text-sm font-medium mb-3">
+                    Slave Account Settings
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="lotCoefficient">Lot Coefficient</Label>
+                      <Input
+                        id="lotCoefficient"
+                        name="lotCoefficient"
+                        type="number"
+                        step="0.1"
+                        min="0.1"
+                        placeholder="1.0"
+                        value={formState.lotCoefficient}
+                        onChange={(e) =>
+                          setFormState((prev) => ({
+                            ...prev,
+                            lotCoefficient: parseFloat(e.target.value),
+                          }))
+                        }
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Multiplier for the lot size
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="forceLot">
+                        Force Lot Size (optional)
+                      </Label>
+                      <Input
+                        id="forceLot"
+                        name="forceLot"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0"
+                        value={formState.forceLot}
+                        onChange={(e) =>
+                          setFormState((prev) => ({
+                            ...prev,
+                            forceLot: parseFloat(e.target.value),
+                          }))
+                        }
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        0 = disabled
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2 mt-4">
+                    <Checkbox
+                      id="reverseTrade"
+                      checked={formState.reverseTrade}
+                      onCheckedChange={(checked: boolean) =>
+                        setFormState((prev) => ({
+                          ...prev,
+                          reverseTrade: checked,
+                        }))
+                      }
+                    />
+                    <Label
+                      htmlFor="reverseTrade"
+                      className="text-sm font-medium leading-none cursor-pointer"
+                    >
+                      Reverse Trades (buy becomes sell, sell becomes buy)
+                    </Label>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 mt-6">
+                <Button type="button" variant="outline" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting
+                    ? "Saving..."
+                    : editingAccount
+                      ? "Update Account"
+                      : "Add Account"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        )}
+
         {accounts.length === 0 ? (
           <div className="text-center py-8">
             <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -1581,10 +1792,13 @@ function ManagedServiceForm({ user }: { user: User }) {
                 <thead>
                   <tr className="bg-muted">
                     <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Broker
+                      Status
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Account
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Type
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Platform
@@ -1593,7 +1807,7 @@ function ManagedServiceForm({ user }: { user: User }) {
                       Server
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Copying to
+                      Settings
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Actions
@@ -1604,10 +1818,34 @@ function ManagedServiceForm({ user }: { user: User }) {
                   {accounts.map((account) => (
                     <tr key={account.id} className="hover:bg-muted/50">
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="font-medium">{account.brokerName}</div>
+                        <div className="flex items-center">
+                          <div
+                            className={`h-3 w-3 rounded-full animate-pulse mr-2 ${
+                              account.status === "synchronized"
+                                ? "bg-green-500"
+                                : account.status === "pending"
+                                  ? "bg-yellow-500"
+                                  : account.status === "error"
+                                    ? "bg-red-500"
+                                    : "bg-gray-500"
+                            }`}
+                          />
+                          <span className="text-xs text-muted-foreground">
+                            {account.status === "synchronized"
+                              ? "Synced"
+                              : account.status === "pending"
+                                ? "Pending"
+                                : account.status === "error"
+                                  ? "Error"
+                                  : account.status}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         {account.accountNumber}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        {getAccountTypeIcon(account.accountType)}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         {getPlatformIcon(account.platform)}
@@ -1616,23 +1854,43 @@ function ManagedServiceForm({ user }: { user: User }) {
                         {account.server}
                       </td>
                       <td className="px-4 py-4">
-                        {account.copyingTo.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {account.copyingTo.map(
-                              (target: string, idx: number) => (
-                                <span
-                                  key={idx}
-                                  className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700"
-                                >
-                                  {target}
-                                </span>
-                              )
-                            )}
+                        {account.accountType === "slave" ? (
+                          <div className="flex flex-col gap-1 text-xs">
+                            <span className="text-gray-700">
+                              <span className="font-medium">Lot Coef:</span>{" "}
+                              {account.lotCoefficient}
+                            </span>
+                            <span className="text-gray-700">
+                              <span className="font-medium">Force Lot:</span>{" "}
+                              {account.forceLot && account.forceLot > 0
+                                ? account.forceLot
+                                : "Disabled"}
+                            </span>
+                            <span className="text-gray-700">
+                              <span className="font-medium">Reverse:</span>{" "}
+                              {account.reverseTrade ? "Yes" : "No"}
+                            </span>
                           </div>
                         ) : (
-                          <span className="text-sm text-muted-foreground">
-                            No copy targets
-                          </span>
+                          <div className="flex flex-wrap gap-1">
+                            {account.copyingTo &&
+                            account.copyingTo.length > 0 ? (
+                              account.copyingTo.map(
+                                (target: string, idx: number) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700"
+                                  >
+                                    {target}
+                                  </span>
+                                )
+                              )
+                            ) : (
+                              <span className="text-sm text-muted-foreground">
+                                No copy targets
+                              </span>
+                            )}
+                          </div>
                         )}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
@@ -1656,107 +1914,6 @@ function ManagedServiceForm({ user }: { user: User }) {
                   ))}
                 </tbody>
               </table>
-            </div>
-          </div>
-        )}
-
-        {showAddAccountModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-background rounded-lg shadow-lg w-full max-w-md mx-4">
-              <div className="p-6">
-                <h3 className="text-lg font-medium mb-4">
-                  {editingAccount
-                    ? "Edit Trading Account"
-                    : "Add Trading Account"}
-                </h3>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="brokerName">Broker Name</Label>
-                    <Input
-                      id="brokerName"
-                      name="brokerName"
-                      placeholder="e.g. IC Markets, FXCM"
-                      value={formState.brokerName}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="serverIp">Server Address</Label>
-                    <Input
-                      id="serverIp"
-                      name="serverIp"
-                      placeholder="e.g. demo.icmarkets.com"
-                      value={formState.serverIp}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="accountNumber">Account Number</Label>
-                    <Input
-                      id="accountNumber"
-                      name="accountNumber"
-                      placeholder="Your trading account number"
-                      value={formState.accountNumber}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">
-                      {editingAccount
-                        ? "New Password (leave empty to keep current)"
-                        : "Account Password"}
-                    </Label>
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder={
-                        editingAccount
-                          ? "New password (optional)"
-                          : "Your trading account password"
-                      }
-                      value={formState.password}
-                      onChange={handleChange}
-                      required={!editingAccount}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="platform">Platform</Label>
-                    <Select
-                      value={formState.platform}
-                      onValueChange={handleSelectChange}
-                    >
-                      <SelectTrigger id="platform">
-                        <SelectValue placeholder="Select platform" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="mt4">MetaTrader 4</SelectItem>
-                        <SelectItem value="mt5">MetaTrader 5</SelectItem>
-                        <SelectItem value="both">Both MT4 & MT5</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="pt-4 flex justify-end gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowAddAccountModal(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={isSubmitting}>
-                      {isSubmitting
-                        ? "Saving..."
-                        : editingAccount
-                          ? "Update Account"
-                          : "Add Account"}
-                    </Button>
-                  </div>
-                </form>
-              </div>
             </div>
           </div>
         )}
@@ -1791,21 +1948,23 @@ function ManagedServiceForm({ user }: { user: User }) {
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex flex-col text-sm text-muted-foreground border-t pt-4">
-        <p>
-          Set up multiple trading accounts and configure which accounts copy
-          trades from each other.
-        </p>
-        <p className="mt-2">
-          Need help? Contact our support at{" "}
-          <a
-            href="mailto:support@iptrade.com"
-            className="text-blue-600 hover:underline"
-          >
-            support@iptrade.com
-          </a>
-        </p>
-      </CardFooter>
+      {!isAddingAccount && (
+        <CardFooter className="flex flex-col text-sm text-muted-foreground border-t pt-4">
+          <p>
+            Set up multiple trading accounts and configure which accounts copy
+            trades from each other. You can add up to 50 accounts.
+          </p>
+          <p className="mt-2">
+            Need help? Contact our support at{" "}
+            <a
+              href="mailto:support@iptrade.com"
+              className="text-blue-600 hover:underline"
+            >
+              support@iptrade.com
+            </a>
+          </p>
+        </CardFooter>
+      )}
     </Card>
   );
 }

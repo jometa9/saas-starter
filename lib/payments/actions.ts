@@ -3,9 +3,19 @@
 import { getUser } from '@/lib/db/queries';
 import { createCheckoutSession, createCustomerPortalSession, getStripeProducts, getStripePrices } from '@/lib/payments/stripe';
 
-const MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID || 'price_1RB3j0A3C4QniATDapoM1A3a';
-const ANNUAL_PRICE_ID = process.env.STRIPE_ANNUAL_PRICE_ID || 'price_1RB3jfA3C4QniATDbeuwOUrx';
-const DEFAULT_PRICE_ID = process.env.STRIPE_DEFAULT_PRICE_ID || MONTHLY_PRICE_ID;
+// Precios de planes
+// Plan Premium
+const PREMIUM_MONTHLY_PRICE_ID = process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID || 'price_1RB3j0A3C4QniATDapoM1A3a';
+const PREMIUM_ANNUAL_PRICE_ID = process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID || 'price_1RB3jfA3C4QniATDbeuwOUrx';
+// Plan Unlimited
+const UNLIMITED_MONTHLY_PRICE_ID = process.env.STRIPE_UNLIMITED_MONTHLY_PRICE_ID || 'price_1RDo2sA3C4QniATDKk2O4xZb';
+const UNLIMITED_ANNUAL_PRICE_ID = process.env.STRIPE_UNLIMITED_ANNUAL_PRICE_ID || 'price_1RDo2sA3C4QniATDbnZkwM0E';
+// Plan Managed VPS
+const MANAGED_VPS_MONTHLY_PRICE_ID = process.env.STRIPE_MANAGED_VPS_MONTHLY_PRICE_ID || 'price_1RDo4HA3C4QniATDCV2KY2JF';
+const MANAGED_VPS_ANNUAL_PRICE_ID = process.env.STRIPE_MANAGED_VPS_ANNUAL_PRICE_ID || 'price_1RDo4gA3C4QniATDR0bB6698';
+
+// Precio por defecto para checkout directo (usado en el botón "Subscribe Now")
+const DEFAULT_PRICE_ID = process.env.STRIPE_DEFAULT_PRICE_ID || PREMIUM_MONTHLY_PRICE_ID;
 
 // Función para obtener un precio válido para checkout
 async function getValidStripePrice(): Promise<string | null> {
@@ -15,13 +25,17 @@ async function getValidStripePrice(): Promise<string | null> {
       return DEFAULT_PRICE_ID;
     }
     
-    // Si no hay variable de entorno, intentamos el precio mensual
-    if (MONTHLY_PRICE_ID) {
-      return MONTHLY_PRICE_ID;
+    // Si no hay variable de entorno, intentamos con los otros precios disponibles
+    if (PREMIUM_MONTHLY_PRICE_ID) {
+      return PREMIUM_MONTHLY_PRICE_ID;
     }
     
-    if (ANNUAL_PRICE_ID) {
-      return ANNUAL_PRICE_ID;
+    if (UNLIMITED_MONTHLY_PRICE_ID) {
+      return UNLIMITED_MONTHLY_PRICE_ID;
+    }
+    
+    if (MANAGED_VPS_MONTHLY_PRICE_ID) {
+      return MANAGED_VPS_MONTHLY_PRICE_ID;
     }
     
     const stripePrices = await getStripePrices();

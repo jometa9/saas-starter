@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, ArrowUpRight, ExternalLink, Mail } from "lucide-react";
 import { getAvatarBgColor, getAvatarTextColor } from "@/lib/utils";
-import { Tooltip } from "@/components/ui/tooltip";
 import {
   customerPortalAction,
   directCheckoutAction,
@@ -201,7 +200,7 @@ export function AccountInfoCard({
             </Button>
           ) : (
             <Button
-              className="bg-black hover:bg-gray-800 text-white w-full md:w-auto cursor-pointer"
+              className={`${user.subscriptionStatus === "admin_assigned" ? "bg-green-600 hover:bg-green-700" : "bg-black hover:bg-gray-800"} text-white w-full md:w-auto cursor-pointer`}
               onClick={handleDirectSubscription}
               disabled={isLoading}
             >
@@ -213,7 +212,9 @@ export function AccountInfoCard({
               ) : (
                 <>
                   <CreditCard className="mr-2 h-4 w-4" />
-                  Subscribe Now
+                  {user.subscriptionStatus === "admin_assigned" ? 
+                    "Switch to Paid Plan" : 
+                    "Subscribe Now"}
                 </>
               )}
             </Button>

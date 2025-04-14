@@ -155,7 +155,7 @@ export async function POST(request: Request) {
 
     await updateUserById(userId, {
       planName: plan,
-      subscriptionStatus: "active",
+      subscriptionStatus: "admin_assigned",
       subscriptionExpiryDate: expiryDate,
       stripeSubscriptionId: null,
       stripeProductId: null,
@@ -170,16 +170,16 @@ export async function POST(request: Request) {
         
         let customMessage = "";
         if (hadActivePaidSubscription) {
-          customMessage = "Note: Your previous paid subscription has been replaced with this free subscription.";
+          customMessage = "Note: Your previous paid subscription has been replaced with this admin-assigned subscription.";
         } else if (previousSubscriptionInfo?.subscriptionStatus === "active" && previousSubscriptionInfo?.subscriptionExpiryDate) {
-          customMessage = "Your previous free subscription has been replaced with this new subscription.";
+          customMessage = "Your previous subscription has been replaced with this admin-assigned subscription.";
         }
         
         await sendSubscriptionChangeEmail({
           email,
           name: targetUserName,
           planName: plan,
-          status: "active",
+          status: "admin_assigned",
           expiryDate: expiryDate.toISOString(),
         });
         

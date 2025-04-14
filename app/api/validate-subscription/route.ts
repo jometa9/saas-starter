@@ -120,7 +120,8 @@ export async function GET(request: NextRequest) {
 
     const isSubscriptionActive =
       user.subscriptionStatus === "active" ||
-      user.subscriptionStatus === "trialing";
+      user.subscriptionStatus === "trialing" ||
+      user.subscriptionStatus === "admin_assigned";
 
     const timeRemaining = user.subscriptionExpiryDate
       ? Math.max(
@@ -147,9 +148,11 @@ export async function GET(request: NextRequest) {
       statusReason: statusChanged ? statusReason : undefined,
       subscriptionType: user.stripeSubscriptionId
         ? "paid"
-        : user.subscriptionStatus === "active"
-          ? "free"
-          : "none",
+        : user.subscriptionStatus === "admin_assigned"
+          ? "admin_assigned"
+          : user.subscriptionStatus === "active"
+            ? "free"
+            : "none",
     });
   } catch (error) {
     console.error("Error validating subscription:", error);
