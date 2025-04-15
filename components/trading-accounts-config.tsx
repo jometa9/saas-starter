@@ -21,7 +21,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
-import { Zap, Monitor, CircleCheckIcon } from "lucide-react";
+import { Zap, Monitor, CircleCheckIcon, Pencil, Trash } from "lucide-react";
 
 export function TradingAccountsConfig({ user }: { user: User }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -871,18 +871,21 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleEditAccount(masterAccount)}
+                                className="h-8 w-8 p-0 cursor-pointer"
                               >
-                                Edit
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Edit</span>
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
                                 onClick={() =>
                                   handleDeleteAccount(masterAccount.id)
                                 }
+                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50 cursor-pointer"
                               >
-                                Delete
+                                <Trash className="h-4 w-4" />
+                                <span className="sr-only">Delete</span>
                               </Button>
                             </div>
                           )}
@@ -980,18 +983,21 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                     onClick={() =>
                                       handleEditAccount(slaveAccount)
                                     }
+                                    className="h-8 w-8 p-0"
                                   >
-                                    Edit
+                                    <Pencil className="h-4 w-4" />
+                                    <span className="sr-only">Edit</span>
                                   </Button>
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
                                     onClick={() =>
                                       handleDeleteAccount(slaveAccount.id)
                                     }
+                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
                                   >
-                                    Delete
+                                    <Trash className="h-4 w-4" />
+                                    <span className="sr-only">Delete</span>
                                   </Button>
                                 </div>
                               )}
@@ -1091,18 +1097,21 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                               size="sm"
                               variant="outline"
                               onClick={() => handleEditAccount(orphanSlave)}
+                              className="h-8 w-8 p-0"
                             >
-                              Edit
+                              <Pencil className="h-4 w-4" />
+                              <span className="sr-only">Edit</span>
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
-                              className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
                               onClick={() =>
                                 handleDeleteAccount(orphanSlave.id)
                               }
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
                             >
-                              Delete
+                              <Trash className="h-4 w-4" />
+                              <span className="sr-only">Delete</span>
                             </Button>
                           </div>
                         )}
