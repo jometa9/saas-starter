@@ -213,11 +213,13 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     reverseTrade: false,
   });
 
+  // Comprobar si el usuario es administrador
+  const isAdmin = user.role === "admin" || user.role === "superadmin";
+
   // Platform options
   const platformOptions = [
     { value: "mt4", label: "MetaTrader 4" },
     { value: "mt5", label: "MetaTrader 5" },
-    { value: "ctrader", label: "cTrader" },
   ];
 
   // Account types
@@ -292,6 +294,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     });
   };
 
+  // Referencia para el formulario
+  const formRef = React.useRef<HTMLDivElement>(null);
+
   const handleEditAccount = (account: any) => {
     setIsAddingAccount(true);
     setEditingAccount(account);
@@ -306,6 +311,11 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       forceLot: account.forceLot || 0,
       reverseTrade: account.reverseTrade || false,
     });
+
+    // Scroll hacia el formulario después de un pequeño retraso para permitir que el DOM se actualice
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   };
 
   const handleDeleteAccount = (id: string) => {
@@ -456,13 +466,17 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "synchronized":
+      case "optimal":
         return (
           <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
         );
-      case "pending":
+      case "warning":
         return (
           <div className="h-3 w-3 rounded-full bg-yellow-500 animate-pulse"></div>
+        );
+      case "pending":
+        return (
+          <div className="h-3 w-3 rounded-full bg-blue-500 animate-pulse"></div>
         );
       case "error":
         return <div className="h-3 w-3 rounded-full bg-red-500"></div>;
@@ -472,7 +486,38 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   };
 
   const getServerStatus = () => {
-    return "operational";
+    // Calcular el número de cuentas en cada estado
+    const synchronizedCount = accounts.filter(
+      (acc) => acc.status === "synchronized"
+    ).length;
+    const pendingCount = accounts.filter(
+      (acc) => acc.status === "pending"
+    ).length;
+    const errorCount = accounts.filter(
+      (acc) => acc.status === "error" || acc.status === "offline"
+    ).length;
+    const totalAccounts = accounts.length;
+
+    // Determinar el estado del servidor según las reglas
+    if (totalAccounts === 0) {
+      return "none"; // Sin cuentas
+    } else if (synchronizedCount === totalAccounts) {
+      return "optimal"; // Todas sincronizadas - VERDE
+    } else if (
+      pendingCount >= errorCount &&
+      pendingCount >= synchronizedCount
+    ) {
+      return "pending"; // Mayoría pendientes - AZUL
+    } else if (errorCount >= pendingCount && errorCount >= synchronizedCount) {
+      return "error"; // Mayoría con error - ROJO
+    } else if (
+      synchronizedCount > pendingCount &&
+      synchronizedCount > errorCount
+    ) {
+      return "warning"; // Mayoría sincronizadas pero hay pendientes o errores - AMARILLO
+    } else {
+      return "operational"; // Estado por defecto
+    }
   };
 
   const getServerIP = () => {
@@ -512,256 +557,390 @@ export function TradingAccountsConfig({ user }: { user: User }) {
               50 accounts)
             </CardDescription>
           </div>
-          {!isAddingAccount && (
-            <Button
-              onClick={handleAddAccount}
-              className="ml-auto"
-              disabled={accounts.length >= 50}
-            >
-              Add Trading Account
-            </Button>
-          )}
+          <Button
+            onClick={handleAddAccount}
+            className="ml-auto"
+            disabled={accounts.length >= 50}
+          >
+            Add Trading Account
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-row items-center gap-6 mb-4 p-4 px-6 bg-gray-50 border border-gray-200 rounded-xl">
-          <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground">Server Status:</div>
-            {getStatusIcon(getServerStatus())}
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground">Server IP:</div>
-            <div className="text-sm">{getServerIP()}</div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground">Total Accounts:</div>
-            <div className="font-medium">{accounts.length}</div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground">
-              Master Accounts:
+        <div
+          className={`mb-4 border border-gray-200 rounded-xl overflow-hidden
+          ${
+            getServerStatus() === "optimal"
+              ? "bg-green-50 border-green-200"
+              : getServerStatus() === "warning"
+                ? "bg-yellow-50 border-yellow-200"
+                : getServerStatus() === "pending"
+                  ? "bg-blue-50 border-blue-200"
+                  : getServerStatus() === "error"
+                    ? "bg-red-50 border-red-200"
+                    : "bg-gray-50 border-gray-200"
+          }`}
+        >
+          <div className="flex items-center justify-between p-4 px-6">
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">
+                Server Status:
+              </div>
+              {getStatusIcon(getServerStatus())}
+              <div className="text-sm font-medium">
+                {getServerStatus() === "optimal"
+                  ? "All Synchronized"
+                  : getServerStatus() === "warning"
+                    ? "Mostly Synchronized"
+                    : getServerStatus() === "pending"
+                      ? "Mostly Pending"
+                      : getServerStatus() === "error"
+                        ? "Mostly Error"
+                        : "No Accounts"}
+              </div>
             </div>
-            <div className="font-medium">
-              {accounts.filter((acc) => acc.accountType === "master").length}
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">Server IP:</div>
+              <div className="text-sm">{getServerIP()}</div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground">Slave Accounts:</div>
-            <div className="font-medium">
-              {accounts.filter((acc) => acc.accountType === "slave").length}
+          <div className="border-b border-gray-200 mx-4"></div>
+          <div className="flex flex-row items-center justify-between flex-wrap gap-4 p-4 px-6">
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">
+                Total Accounts:
+              </div>
+              <div className="font-medium">{accounts.length}</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">
+                Master Accounts:
+              </div>
+              <div className="font-medium">
+                {accounts.filter((acc) => acc.accountType === "master").length}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">
+                Slave Accounts:
+              </div>
+              <div className="font-medium">
+                {accounts.filter((acc) => acc.accountType === "slave").length}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">Synchronized:</div>
+              <div className="font-medium text-green-600">
+                {accounts.filter((acc) => acc.status === "synchronized").length}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">Pending:</div>
+              <div className="font-medium text-blue-600">
+                {accounts.filter((acc) => acc.status === "pending").length}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">
+                Invalid/Error:
+              </div>
+              <div className="font-medium text-red-600">
+                {
+                  accounts.filter(
+                    (acc) => acc.status === "error" || acc.status === "offline"
+                  ).length
+                }
+              </div>
             </div>
           </div>
         </div>
-        {isAddingAccount ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-              <div>
-                <Label htmlFor="accountNumber">Account Number</Label>
-                <Input
-                  id="accountNumber"
-                  name="accountNumber"
-                  value={formState.accountNumber}
-                  onChange={handleChange}
-                  placeholder="12345678"
-                  required
-                />
-              </div>
 
-              <div>
-                <Label htmlFor="platform">Platform</Label>
-                <Select
-                  name="platform"
-                  value={formState.platform}
-                  onValueChange={(value) => handlePlatformChange(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Platform" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {platformOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="serverIp">Server IP/Name</Label>
-                <Select
-                  name="serverIp"
-                  value={formState.serverIp}
-                  onValueChange={(value) =>
-                    handleSelectChange("serverIp", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Server" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {serverOptions[formState.platform]?.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="password">
-                  Password {editingAccount && "(leave blank to keep unchanged)"}
-                </Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formState.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  required={!editingAccount}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="accountType">Account Type</Label>
-                <Select
-                  name="accountType"
-                  value={formState.accountType}
-                  onValueChange={(value) =>
-                    handleSelectChange("accountType", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {accountTypeOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  name="status"
-                  value={formState.status}
-                  onValueChange={(value) => handleSelectChange("status", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="synchronized">Synchronized</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="error">Error</SelectItem>
-                    <SelectItem value="offline">Offline</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {formState.accountType === "slave" && (
-                <>
-                  <div>
-                    <Label htmlFor="lotCoefficient">
-                      Lot Size Coefficient (0.1 - 10)
-                    </Label>
-                    <Input
-                      id="lotCoefficient"
-                      name="lotCoefficient"
-                      type="number"
-                      min="0.1"
-                      max="10"
-                      step="0.1"
-                      value={formState.lotCoefficient}
-                      onChange={(e) =>
-                        setFormState({
-                          ...formState,
-                          lotCoefficient: parseFloat(e.target.value),
-                        })
-                      }
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Multiplies the lot size from the master account
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="forceLot">
-                      Force Fixed Lot Size (0 to disable)
-                    </Label>
-                    <Input
-                      id="forceLot"
-                      name="forceLot"
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.01"
-                      value={formState.forceLot}
-                      onChange={(e) =>
-                        setFormState({
-                          ...formState,
-                          forceLot: parseFloat(e.target.value),
-                        })
-                      }
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      If set above 0, uses this fixed lot size instead of
-                      copying
-                    </p>
-                  </div>
-
-                  <div className="flex items-center space-x-2 h-full mt-8">
-                    <Checkbox
-                      id="reverseTrade"
-                      checked={formState.reverseTrade}
-                      onCheckedChange={(checked) =>
-                        setFormState({
-                          ...formState,
-                          reverseTrade: checked as boolean,
-                        })
-                      }
-                    />
-                    <Label
-                      htmlFor="reverseTrade"
-                      className="font-medium cursor-pointer"
-                    >
-                      Reverse Trades (Buy → Sell, Sell → Buy)
-                    </Label>
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="flex justify-end space-x-2 pt-2">
-              <Button
-                type="button"
-                onClick={handleCancel}
-                variant="outline"
-                disabled={isSubmitting}
+        {isAddingAccount && (
+          <div
+            ref={formRef}
+            className={`mb-4 p-4 border rounded-xl ${
+              formState.accountType === "master"
+                ? "border-blue-200 bg-blue-50"
+                : "border-green-200 bg-green-50"
+            }`}
+          >
+            <div className="flex justify-between items-center mb-3">
+              <h3
+                className={`text-lg font-medium ${
+                  formState.accountType === "master"
+                    ? "text-blue-700"
+                    : "text-green-700"
+                }`}
               >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                    Saving...
-                  </>
-                ) : editingAccount ? (
-                  "Update Account"
-                ) : (
-                  "Add Account"
-                )}
+                {editingAccount
+                  ? "Edit Trading Account"
+                  : "Add New Trading Account"}
+              </h3>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleCancel}
+                className="h-8 w-8 p-0"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={
+                    formState.accountType === "master"
+                      ? "text-blue-700"
+                      : "text-green-700"
+                  }
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <span className="sr-only">Close</span>
               </Button>
             </div>
-          </form>
-        ) : accounts.length === 0 ? (
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="accountNumber">Account Number</Label>
+                  <Input
+                    id="accountNumber"
+                    name="accountNumber"
+                    value={formState.accountNumber}
+                    onChange={handleChange}
+                    placeholder="12345678"
+                    required
+                    className="bg-white"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="platform">Platform</Label>
+                  <Select
+                    name="platform"
+                    value={formState.platform}
+                    onValueChange={(value) => handlePlatformChange(value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {platformOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="serverIp">Server IP/Name</Label>
+                  <Input
+                    id="serverIp"
+                    name="serverIp"
+                    value={formState.serverIp}
+                    onChange={handleChange}
+                    placeholder="Enter server IP or hostname"
+                    required
+                    className="bg-white"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="password">
+                    Password{" "}
+                    {editingAccount && "(leave blank to keep unchanged)"}
+                  </Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={formState.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required={!editingAccount}
+                    className="bg-white"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="accountType">Account Type</Label>
+                  <Select
+                    name="accountType"
+                    value={formState.accountType}
+                    onValueChange={(value) =>
+                      handleSelectChange("accountType", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {accountTypeOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  {isAdmin ? (
+                    <Select
+                      name="status"
+                      value={formState.status}
+                      onValueChange={(value) =>
+                        handleSelectChange("status", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="synchronized">
+                          Synchronized
+                        </SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="error">Error</SelectItem>
+                        <SelectItem value="offline">Offline</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className="flex items-center gap-2 h-10 px-3 border rounded-md bg-gray-100">
+                      <span className="text-sm text-gray-600">
+                        {formState.status === "synchronized"
+                          ? "Synchronized"
+                          : formState.status === "pending"
+                            ? "Pending"
+                            : formState.status === "error"
+                              ? "Error"
+                              : "Offline"}
+                      </span>
+                      {!editingAccount && (
+                        <p className="text-xs text-muted-foreground">
+                          (Only administrators can change this status)
+                        </p>
+                      )}
+                      {editingAccount && (
+                        <p className="text-xs text-muted-foreground">
+                          (Contact an administrator to change this status)
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {formState.accountType === "slave" && (
+                  <>
+                    <div>
+                      <Label htmlFor="lotCoefficient">
+                        Lot Size Coefficient (0.01 - 100)
+                      </Label>
+                      <Input
+                        id="lotCoefficient"
+                        name="lotCoefficient"
+                        type="number"
+                        min="0.01"
+                        max="100"
+                        step="0.01"
+                        value={formState.lotCoefficient}
+                        onChange={(e) =>
+                          setFormState({
+                            ...formState,
+                            lotCoefficient: parseFloat(e.target.value),
+                          })
+                        }
+                        className="bg-white"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Multiplies the lot size from the master account
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="forceLot">
+                        Force Fixed Lot Size (0 to disable)
+                      </Label>
+                      <Input
+                        id="forceLot"
+                        name="forceLot"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        value={formState.forceLot}
+                        onChange={(e) =>
+                          setFormState({
+                            ...formState,
+                            forceLot: parseFloat(e.target.value),
+                          })
+                        }
+                        className="bg-white"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        If set above 0, uses this fixed lot size instead of
+                        copying
+                      </p>
+                    </div>
+
+                    <div className="flex items-center space-x-2 h-full mt-4">
+                      <Checkbox
+                        id="reverseTrade"
+                        checked={formState.reverseTrade}
+                        onCheckedChange={(checked) =>
+                          setFormState({
+                            ...formState,
+                            reverseTrade: checked as boolean,
+                          })
+                        }
+                      />
+                      <Label
+                        htmlFor="reverseTrade"
+                        className="font-medium cursor-pointer"
+                      >
+                        Reverse Trades (Buy → Sell, Sell → Buy)
+                      </Label>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-2">
+                <Button
+                  type="button"
+                  onClick={handleCancel}
+                  variant="outline"
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                      Saving...
+                    </>
+                  ) : editingAccount ? (
+                    "Update Account"
+                  ) : (
+                    "Add Account"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {accounts.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-muted-foreground">
               No trading accounts configured yet.
@@ -805,12 +984,25 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                   .map((masterAccount) => (
                     <React.Fragment key={`master-group-${masterAccount.id}`}>
                       {/* Master account row with highlight */}
-                      <tr className="bg-blue-50 hover:bg-blue-100">
+                      <tr
+                        className="bg-blue-50 hover:bg-blue-100 cursor-pointer"
+                        onClick={(e) => {
+                          // Evitar activación si se hace clic en los botones de acción
+                          if (
+                            !(e.target as HTMLElement).closest(
+                              ".actions-column"
+                            )
+                          ) {
+                            toggleMasterCollapse(masterAccount.id);
+                          }
+                        }}
+                      >
                         <td className="px-4 py-2 whitespace-nowrap align-middle">
                           <button
-                            onClick={() =>
-                              toggleMasterCollapse(masterAccount.id)
-                            }
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevenir propagación para evitar doble activación
+                              toggleMasterCollapse(masterAccount.id);
+                            }}
                             className="focus:outline-none flex items-center justify-center w-6 h-6 rounded-full hover:bg-blue-200 transition-colors"
                           >
                             {collapsedMasters[masterAccount.id] ? (
@@ -838,9 +1030,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                             ? "MetaTrader 4"
                             : masterAccount.platform === "mt5"
                               ? "MetaTrader 5"
-                              : masterAccount.platform === "ctrader"
-                                ? "cTrader"
-                                : masterAccount.platform}
+                              : masterAccount.platform}
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
                           {masterAccount.server}
@@ -875,20 +1065,26 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                             </div>
                           )}
                         </td>
-                        <td className="px-4 py-2 whitespace-nowrap align-middle">
+                        <td className="px-4 py-2 whitespace-nowrap align-middle actions-column">
                           {deleteConfirmId === masterAccount.id ? (
                             <div className="flex space-x-2">
                               <Button
                                 size="sm"
                                 variant="destructive"
-                                onClick={confirmDeleteAccount}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  confirmDeleteAccount();
+                                }}
                               >
                                 Confirm
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={cancelDeleteAccount}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  cancelDeleteAccount();
+                                }}
                               >
                                 Cancel
                               </Button>
@@ -898,7 +1094,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleEditAccount(masterAccount)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEditAccount(masterAccount);
+                                }}
                                 className="h-8 w-8 p-0 cursor-pointer"
                               >
                                 <Pencil className="h-4 w-4" />
@@ -907,9 +1106,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() =>
-                                  handleDeleteAccount(masterAccount.id)
-                                }
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteAccount(masterAccount.id);
+                                }}
                                 className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50 cursor-pointer"
                               >
                                 <Trash className="h-4 w-4" />
@@ -964,9 +1164,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                   ? "MetaTrader 4"
                                   : slaveAccount.platform === "mt5"
                                     ? "MetaTrader 5"
-                                    : slaveAccount.platform === "ctrader"
-                                      ? "cTrader"
-                                      : slaveAccount.platform}
+                                    : slaveAccount.platform}
                               </td>
                               <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
                                 {slaveAccount.server}
@@ -976,34 +1174,51 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                   {(() => {
                                     // Crear array de etiquetas
                                     const configLabels = [];
-                                    
-                                    if (slaveAccount.forceLot && slaveAccount.forceLot > 0) {
+
+                                    if (
+                                      slaveAccount.forceLot &&
+                                      slaveAccount.forceLot > 0
+                                    ) {
                                       configLabels.push(
-                                        <div key="force" className="rounded-full px-2 py-0.5 text-xs bg-blue-100 text-blue-800 inline-block">
+                                        <div
+                                          key="force"
+                                          className="rounded-full px-2 py-0.5 text-xs bg-blue-100 text-blue-800 inline-block"
+                                        >
                                           Force lot {slaveAccount.forceLot}
                                         </div>
                                       );
                                     } else if (slaveAccount.lotCoefficient) {
                                       configLabels.push(
-                                        <div key="lot" className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block">
-                                          Lot multiplier {slaveAccount.lotCoefficient}
+                                        <div
+                                          key="lot"
+                                          className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block"
+                                        >
+                                          Lot multiplier{" "}
+                                          {slaveAccount.lotCoefficient}
                                         </div>
                                       );
                                     }
-                                    
+
                                     if (slaveAccount.reverseTrade) {
                                       configLabels.push(
-                                        <div key="reverse" className="rounded-full px-2 py-0.5 text-xs bg-purple-100 text-purple-800 inline-block">
+                                        <div
+                                          key="reverse"
+                                          className="rounded-full px-2 py-0.5 text-xs bg-purple-100 text-purple-800 inline-block"
+                                        >
                                           Reverse trades
                                         </div>
                                       );
                                     }
-                                    
+
                                     // Limitar número de etiquetas visibles
                                     const maxLabels = 2;
-                                    const visibleLabels = configLabels.slice(0, maxLabels);
-                                    const hiddenCount = configLabels.length - maxLabels;
-                                    
+                                    const visibleLabels = configLabels.slice(
+                                      0,
+                                      maxLabels
+                                    );
+                                    const hiddenCount =
+                                      configLabels.length - maxLabels;
+
                                     return (
                                       <>
                                         {visibleLabels}
@@ -1040,9 +1255,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                     <Button
                                       size="sm"
                                       variant="outline"
-                                      onClick={() =>
-                                        handleEditAccount(slaveAccount)
-                                      }
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditAccount(slaveAccount);
+                                      }}
                                       className="h-8 w-8 p-0"
                                     >
                                       <Pencil className="h-4 w-4" />
@@ -1051,9 +1267,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                     <Button
                                       size="sm"
                                       variant="outline"
-                                      onClick={() =>
-                                        handleDeleteAccount(slaveAccount.id)
-                                      }
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteAccount(slaveAccount.id);
+                                      }}
                                       className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
                                     >
                                       <Trash className="h-4 w-4" />
@@ -1112,9 +1329,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                           ? "MetaTrader 4"
                           : orphanSlave.platform === "mt5"
                             ? "MetaTrader 5"
-                            : orphanSlave.platform === "ctrader"
-                              ? "cTrader"
-                              : orphanSlave.platform}
+                            : orphanSlave.platform}
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
                         {orphanSlave.server}
@@ -1124,40 +1339,58 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                           {(() => {
                             // Crear array de etiquetas
                             const configLabels = [];
-                            
+
                             configLabels.push(
-                              <div key="unconnected" className="rounded-full px-2 py-0.5 text-xs bg-orange-100 text-orange-800 inline-block">
+                              <div
+                                key="unconnected"
+                                className="rounded-full px-2 py-0.5 text-xs bg-orange-100 text-orange-800 inline-block"
+                              >
                                 Not connected
                               </div>
                             );
-                            
-                            if (orphanSlave.forceLot && orphanSlave.forceLot > 0) {
+
+                            if (
+                              orphanSlave.forceLot &&
+                              orphanSlave.forceLot > 0
+                            ) {
                               configLabels.push(
-                                <div key="force" className="rounded-full px-2 py-0.5 text-xs bg-blue-100 text-blue-800 inline-block">
+                                <div
+                                  key="force"
+                                  className="rounded-full px-2 py-0.5 text-xs bg-blue-100 text-blue-800 inline-block"
+                                >
                                   Force lot {orphanSlave.forceLot}
                                 </div>
                               );
                             } else if (orphanSlave.lotCoefficient) {
                               configLabels.push(
-                                <div key="lot" className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block">
+                                <div
+                                  key="lot"
+                                  className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block"
+                                >
                                   Lot multiplier {orphanSlave.lotCoefficient}
                                 </div>
                               );
                             }
-                            
+
                             if (orphanSlave.reverseTrade) {
                               configLabels.push(
-                                <div key="reverse" className="rounded-full px-2 py-0.5 text-xs bg-purple-100 text-purple-800 inline-block">
+                                <div
+                                  key="reverse"
+                                  className="rounded-full px-2 py-0.5 text-xs bg-purple-100 text-purple-800 inline-block"
+                                >
                                   Reverse trades
                                 </div>
                               );
                             }
-                            
+
                             // Limitar número de etiquetas visibles
                             const maxLabels = 2;
-                            const visibleLabels = configLabels.slice(0, maxLabels);
+                            const visibleLabels = configLabels.slice(
+                              0,
+                              maxLabels
+                            );
                             const hiddenCount = configLabels.length - maxLabels;
-                            
+
                             return (
                               <>
                                 {visibleLabels}
@@ -1194,7 +1427,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleEditAccount(orphanSlave)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditAccount(orphanSlave);
+                              }}
                               className="h-8 w-8 p-0"
                             >
                               <Pencil className="h-4 w-4" />
@@ -1203,9 +1439,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() =>
-                                handleDeleteAccount(orphanSlave.id)
-                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteAccount(orphanSlave.id);
+                              }}
                               className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
                             >
                               <Trash className="h-4 w-4" />
