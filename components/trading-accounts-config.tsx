@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { User } from "@/lib/db/schema";
 import {
   Card,
@@ -21,11 +21,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
-import {
-  Zap,
-  Monitor,
-  CircleCheckIcon,
-} from "lucide-react";
+import { Zap, Monitor, CircleCheckIcon } from "lucide-react";
 
 export function TradingAccountsConfig({ user }: { user: User }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -246,8 +242,8 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   // Function to get available accounts for copying to
   const getAvailableAccountsForCopying = (currentAccountId: string) => {
     return accounts
-      .filter(acc => acc.id !== currentAccountId)
-      .map(acc => ({
+      .filter((acc) => acc.id !== currentAccountId)
+      .map((acc) => ({
         value: acc.accountNumber,
         label: `${acc.platform.toUpperCase()} - ${acc.accountNumber} (${acc.server})`,
       }));
@@ -265,10 +261,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
   // Nueva función para manejar cambios de plataforma
   const handlePlatformChange = (value: string) => {
-    setFormState({ 
-      ...formState, 
+    setFormState({
+      ...formState,
       platform: value,
-      serverIp: "" // Reset server cuando cambia la plataforma 
+      serverIp: "", // Reset server cuando cambia la plataforma
     });
   };
 
@@ -450,17 +446,6 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     }
   };
 
-  const getAccountTypeIcon = (accountType: string) => {
-    switch (accountType) {
-      case "master":
-        return <Zap className="h-5 w-5 text-yellow-500" />;
-      case "slave":
-        return <CircleCheckIcon className="h-5 w-5 text-green-500" />;
-      default:
-        return <Monitor className="h-5 w-5 text-blue-500" />;
-    }
-  };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "synchronized":
@@ -479,15 +464,11 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   };
 
   const getServerStatus = () => {
-    // En un caso real, podríamos hacer una llamada a una API
-    // para obtener el estado real del servidor
-    return "operational"; // o "down", "maintenance"
+    return "operational";
   };
 
-  // Default platform when adding new account
   const [selectedPlatform, setSelectedPlatform] = useState<string>("mt4");
-  
-  // Update selected platform when form changes
+
   useEffect(() => {
     if (formState.platform) {
       setSelectedPlatform(formState.platform);
@@ -527,12 +508,18 @@ export function TradingAccountsConfig({ user }: { user: User }) {
             <div className="font-medium">{accounts.length}</div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground">Master Accounts:</div>
-            <div className="font-medium">{accounts.filter(acc => acc.accountType === "master").length}</div>
+            <div className="text-sm text-muted-foreground">
+              Master Accounts:
+            </div>
+            <div className="font-medium">
+              {accounts.filter((acc) => acc.accountType === "master").length}
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <div className="text-sm text-muted-foreground">Slave Accounts:</div>
-            <div className="font-medium">{accounts.filter(acc => acc.accountType === "slave").length}</div>
+            <div className="font-medium">
+              {accounts.filter((acc) => acc.accountType === "slave").length}
+            </div>
           </div>
         </div>
         {isAddingAccount ? (
@@ -555,9 +542,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 <Select
                   name="platform"
                   value={formState.platform}
-                  onValueChange={(value) =>
-                    handlePlatformChange(value)
-                  }
+                  onValueChange={(value) => handlePlatformChange(value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Platform" />
@@ -636,9 +621,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 <Select
                   name="status"
                   value={formState.status}
-                  onValueChange={(value) =>
-                    handleSelectChange("status", value)
-                  }
+                  onValueChange={(value) => handleSelectChange("status", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Status" />
@@ -762,133 +745,370 @@ export function TradingAccountsConfig({ user }: { user: User }) {
             <table className="w-full border-collapse">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
                     Status
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
                     Account Number
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
                     Type
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
                     Platform
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
                     Server
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
                     Configuration
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-card divide-y divide-gray-200">
-                {accounts.map((account) => (
-                  <tr key={account.id} className="hover:bg-muted/50">
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <span
-                        className={
-                          account.status === "synchronized"
-                            ? "text-green-600 font-medium"
-                            : account.status === "pending"
-                            ? "text-blue-600 font-medium"
-                            : "text-red-600 font-medium"
-                        }
-                      >
-                        {account.status === "synchronized"
-                          ? "Synced"
-                          : account.status === "pending"
-                          ? "Pending"
-                          : "Invalid"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      {account.accountNumber}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      {account.accountType === "master" ? "Master" : "Slave"}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      {account.platform === "mt4"
-                        ? "MetaTrader 4"
-                        : account.platform === "mt5"
-                        ? "MetaTrader 5"
-                        : account.platform === "ctrader"
-                        ? "cTrader"
-                        : account.platform}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm">
-                      {account.server}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-xs">
-                      {account.accountType === "slave" ? (
-                        <div className="space-y-1">
-                          <div className="font-medium text-blue-600">
-                            Master: {account.connectedToMaster ? 
-                              accounts.find(acc => acc.accountNumber === account.connectedToMaster)?.accountNumber || "Unknown" 
-                              : "Not connected"}
+                {/* First display master accounts */}
+                {accounts
+                  .filter((account) => account.accountType === "master")
+                  .map((masterAccount) => (
+                    <React.Fragment key={`master-group-${masterAccount.id}`}>
+                      {/* Master account row with highlight */}
+                      <tr className="bg-blue-50 hover:bg-blue-100">
+                        <td className="px-4 py-2 whitespace-nowrap align-middle">
+                          <span
+                            className={
+                              masterAccount.status === "synchronized"
+                                ? "text-green-600 text-sm"
+                                : masterAccount.status === "pending"
+                                  ? "text-blue-600 text-sm"
+                                  : masterAccount.status === "offline"
+                                    ? "text-gray-600 text-sm"
+                                    : "text-red-600 text-sm"
+                            }
+                          >
+                            {masterAccount.status === "synchronized"
+                              ? "Synced"
+                              : masterAccount.status === "pending"
+                                ? "Pending"
+                                : masterAccount.status === "offline"
+                                  ? "Offline"
+                                  : "Invalid"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                          <div className="flex items-center">
+                            {masterAccount.accountNumber}
                           </div>
-                          {account.lotCoefficient && (
-                            <div>Lot Coef: {account.lotCoefficient}x</div>
-                          )}
-                          {account.forceLot > 0 && (
-                            <div>Force Lot: {account.forceLot}</div>
-                          )}
-                          {account.reverseTrade && <div>Reverse: Yes</div>}
-                        </div>
-                      ) : (
-                        <div>
-                          {accounts.filter(acc => acc.connectedToMaster === account.accountNumber).length > 0 ? (
-                            <div className="font-medium">
-                              Connected by {accounts.filter(acc => acc.connectedToMaster === account.accountNumber).length} slaves
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-yellow-700 align-middle">
+                          Master
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                          {masterAccount.platform === "mt4"
+                            ? "MetaTrader 4"
+                            : masterAccount.platform === "mt5"
+                              ? "MetaTrader 5"
+                              : masterAccount.platform === "ctrader"
+                                ? "cTrader"
+                                : masterAccount.platform}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                          {masterAccount.server}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap align-middle">
+                          {accounts.filter(
+                            (acc) =>
+                              acc.connectedToMaster ===
+                              masterAccount.accountNumber
+                          ).length > 0 ? (
+                            <div className="rounded-full px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 inline-block">
+                              {
+                                accounts.filter(
+                                  (acc) =>
+                                    acc.connectedToMaster ===
+                                    masterAccount.accountNumber
+                                ).length
+                              }{" "}
+                              slave
+                              {accounts.filter(
+                                (acc) =>
+                                  acc.connectedToMaster ===
+                                  masterAccount.accountNumber
+                              ).length > 1
+                                ? "s"
+                                : ""}{" "}
+                              connected
                             </div>
-                          ) : "—"}
+                          ) : (
+                            <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-600 inline-block">
+                              No slaves connected
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap align-middle">
+                          {deleteConfirmId === masterAccount.id ? (
+                            <div className="flex space-x-2">
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={confirmDeleteAccount}
+                              >
+                                Confirm
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={cancelDeleteAccount}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex space-x-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleEditAccount(masterAccount)}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
+                                onClick={() =>
+                                  handleDeleteAccount(masterAccount.id)
+                                }
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+
+                      {/* Slave accounts connected to this master */}
+                      {accounts
+                        .filter(
+                          (account) =>
+                            account.accountType === "slave" &&
+                            account.connectedToMaster ===
+                              masterAccount.accountNumber
+                        )
+                        .map((slaveAccount) => (
+                          <tr
+                            key={slaveAccount.id}
+                            className="hover:bg-muted/50 border-t border-dashed border-gray-200"
+                          >
+                            <td className="px-4 py-1.5 whitespace-nowrap align-middle">
+                              <span
+                                className={
+                                  slaveAccount.status === "synchronized"
+                                    ? "text-green-600 text-sm"
+                                    : slaveAccount.status === "pending"
+                                      ? "text-blue-600 text-sm"
+                                      : "text-red-600 text-sm"
+                                }
+                              >
+                                {slaveAccount.status === "synchronized"
+                                  ? "Synced"
+                                  : slaveAccount.status === "pending"
+                                    ? "Pending"
+                                    : "Invalid"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
+                              <div className="flex items-center">
+                                {slaveAccount.accountNumber}
+                              </div>
+                            </td>
+                            <td className="px-4 py-1.5 whitespace-nowrap text-sm text-green-700 align-middle">
+                              Slave
+                            </td>
+                            <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
+                              {slaveAccount.platform === "mt4"
+                                ? "MetaTrader 4"
+                                : slaveAccount.platform === "mt5"
+                                  ? "MetaTrader 5"
+                                  : slaveAccount.platform === "ctrader"
+                                    ? "cTrader"
+                                    : slaveAccount.platform}
+                            </td>
+                            <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
+                              {slaveAccount.server}
+                            </td>
+                            <td className="px-4 py-1.5 whitespace-nowrap text-xs align-middle">
+                              <div className="space-y-1">
+                                {slaveAccount.lotCoefficient && (
+                                  <div>
+                                    Lot Coef: {slaveAccount.lotCoefficient}x
+                                  </div>
+                                )}
+                                {slaveAccount.forceLot > 0 && (
+                                  <div>Force Lot: {slaveAccount.forceLot}</div>
+                                )}
+                                {slaveAccount.reverseTrade && (
+                                  <div>Reverse: Yes</div>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-4 py-1.5 whitespace-nowrap align-middle">
+                              {deleteConfirmId === slaveAccount.id ? (
+                                <div className="flex space-x-2">
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={confirmDeleteAccount}
+                                  >
+                                    Confirm
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={cancelDeleteAccount}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="flex space-x-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() =>
+                                      handleEditAccount(slaveAccount)
+                                    }
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
+                                    onClick={() =>
+                                      handleDeleteAccount(slaveAccount.id)
+                                    }
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                    </React.Fragment>
+                  ))}
+
+                {/* Show slave accounts not connected to any master at the end */}
+                {accounts
+                  .filter(
+                    (account) =>
+                      account.accountType === "slave" &&
+                      !accounts.some(
+                        (master) =>
+                          master.accountNumber === account.connectedToMaster
+                      )
+                  )
+                  .map((orphanSlave) => (
+                    <tr
+                      key={orphanSlave.id}
+                      className="hover:bg-muted/50 bg-gray-50"
+                    >
+                      <td className="px-4 py-2 whitespace-nowrap align-middle">
+                        <span
+                          className={
+                            orphanSlave.status === "synchronized"
+                              ? "text-green-600 text-sm"
+                              : orphanSlave.status === "pending"
+                                ? "text-blue-600 text-sm"
+                                : "text-red-600 text-sm"
+                          }
+                        >
+                          {orphanSlave.status === "synchronized"
+                            ? "Synced"
+                            : orphanSlave.status === "pending"
+                              ? "Pending"
+                              : "Invalid"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                        {orphanSlave.accountNumber}
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                        <span className="text-orange-600">
+                          Slave (Unconnected)
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                        {orphanSlave.platform === "mt4"
+                          ? "MetaTrader 4"
+                          : orphanSlave.platform === "mt5"
+                            ? "MetaTrader 5"
+                            : orphanSlave.platform === "ctrader"
+                              ? "cTrader"
+                              : orphanSlave.platform}
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                        {orphanSlave.server}
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-xs align-middle">
+                        <div className="space-y-1">
+                          <div className="text-orange-600">
+                            Not connected to any master
+                          </div>
+                          {orphanSlave.lotCoefficient && (
+                            <div>Lot Coef: {orphanSlave.lotCoefficient}x</div>
+                          )}
+                          {orphanSlave.forceLot > 0 && (
+                            <div>Force Lot: {orphanSlave.forceLot}</div>
+                          )}
+                          {orphanSlave.reverseTrade && <div>Reverse: Yes</div>}
                         </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      {deleteConfirmId === account.id ? (
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={confirmDeleteAccount}
-                          >
-                            Confirm
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={cancelDeleteAccount}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEditAccount(account)}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
-                            onClick={() => handleDeleteAccount(account.id)}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap align-middle">
+                        {deleteConfirmId === orphanSlave.id ? (
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={confirmDeleteAccount}
+                            >
+                              Confirm
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={cancelDeleteAccount}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEditAccount(orphanSlave)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
+                              onClick={() =>
+                                handleDeleteAccount(orphanSlave.id)
+                              }
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -896,4 +1116,4 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       </CardContent>
     </Card>
   );
-} 
+}
