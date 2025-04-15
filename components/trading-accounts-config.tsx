@@ -498,7 +498,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-row items-center gap-6 mb-6 p-3 bg-muted/30 rounded-md">
+        <div className="flex flex-row items-center gap-6 mb-4 p-3 bg-gray-50 border border-gray-200 rounded-xl">
           <div className="flex items-center gap-2">
             <div className="text-sm text-muted-foreground">Server Status:</div>
             {getStatusIcon(getServerStatus())}
@@ -524,7 +524,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         </div>
         {isAddingAccount ? (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
               <div>
                 <Label htmlFor="accountNumber">Account Number</Label>
                 <Input
@@ -741,29 +741,29 @@ export function TradingAccountsConfig({ user }: { user: User }) {
             </Button>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead className="bg-muted/50">
+          <div className="overflow-x-auto rounded-xl border border-gray-200">
+            <table className="w-full border-collapse ">
+              <thead className="bg-muted/50 ronded-t-xl">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Status
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Account Number
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Type
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Platform
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Server
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Configuration
                   </th>
-                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider align-middle">
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Actions
                   </th>
                 </tr>
