@@ -48,156 +48,49 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       reverseTrade?: boolean;
       connectedToMaster?: string;
     }>
-  >([
-    {
-      id: "1",
-      accountNumber: "12345678",
-      platform: "mt4",
-      server: "ICMarkets-Live1",
-      password: "••••••••",
-      copyingTo: ["MT5 Demo Account", "FXCM Live"],
-      accountType: "master",
-      status: "synchronized",
-    },
-    {
-      id: "2",
-      accountNumber: "87654321",
-      platform: "mt5",
-      server: "FXCM-Real",
-      password: "••••••••",
-      copyingTo: [],
-      accountType: "slave",
-      lotCoefficient: 1.5,
-      forceLot: 0,
-      reverseTrade: false,
-      status: "pending",
-      connectedToMaster: "12345678",
-    },
-    {
-      id: "3",
-      accountNumber: "23456789",
-      platform: "mt4",
-      server: "Pepperstone-Live",
-      password: "••••••••",
-      copyingTo: ["MT4 FTMO", "MT5 MFF"],
-      accountType: "master",
-      status: "synchronized",
-    },
-    {
-      id: "4",
-      accountNumber: "34567890",
-      platform: "mt5",
-      server: "ICMarkets-MT5-Live",
-      password: "••••••••",
-      copyingTo: [],
-      accountType: "slave",
-      lotCoefficient: 0.8,
-      forceLot: 0,
-      reverseTrade: false,
-      status: "synchronized",
-      connectedToMaster: "12345678",
-    },
-    {
-      id: "5",
-      accountNumber: "45678901",
-      platform: "ctrader",
-      server: "Pepperstone-cTrader",
-      password: "••••••••",
-      copyingTo: [],
-      accountType: "master",
-      status: "error",
-    },
-    {
-      id: "6",
-      accountNumber: "56789012",
-      platform: "mt4",
-      server: "ICMarkets-Demo",
-      password: "••••••••",
-      copyingTo: [],
-      accountType: "slave",
-      lotCoefficient: 1.0,
-      forceLot: 1.0,
-      reverseTrade: true,
-      status: "synchronized",
-      connectedToMaster: "23456789",
-    },
-    {
-      id: "7",
-      accountNumber: "67890123",
-      platform: "mt5",
-      server: "FXCM-Demo",
-      password: "••••••••",
-      copyingTo: [],
-      accountType: "slave",
-      lotCoefficient: 2.0,
-      forceLot: 0,
-      reverseTrade: false,
-      status: "synchronized",
-      connectedToMaster: "78901234",
-    },
-    {
-      id: "8",
-      accountNumber: "78901234",
-      platform: "mt4",
-      server: "ICMarkets-Live2",
-      password: "••••••••",
-      copyingTo: ["FTMO Challenge"],
-      accountType: "master",
-      status: "synchronized",
-    },
-    {
-      id: "9",
-      accountNumber: "89012345",
-      platform: "mt5",
-      server: "ICMarkets-MT5-Demo",
-      password: "••••••••",
-      copyingTo: [],
-      accountType: "slave",
-      lotCoefficient: 0.5,
-      forceLot: 0,
-      reverseTrade: true,
-      status: "pending",
-      connectedToMaster: "78901234",
-    },
-    {
-      id: "10",
-      accountNumber: "90123456",
-      platform: "ctrader",
-      server: "ICMarkets-cTrader",
-      password: "••••••••",
-      copyingTo: [],
-      accountType: "slave",
-      lotCoefficient: 1.2,
-      forceLot: 0,
-      reverseTrade: false,
-      status: "error",
-      connectedToMaster: "45678901",
-    },
-    {
-      id: "11",
-      accountNumber: "01234567",
-      platform: "mt4",
-      server: "Pepperstone-Demo",
-      password: "••••••••",
-      copyingTo: [],
-      accountType: "master",
-      status: "offline",
-    },
-    {
-      id: "12",
-      accountNumber: "10293847",
-      platform: "mt5",
-      server: "FXCM-Real",
-      password: "••••••••",
-      copyingTo: [],
-      accountType: "slave",
-      lotCoefficient: 0.75,
-      forceLot: 0.5,
-      reverseTrade: false,
-      status: "synchronized",
-      connectedToMaster: "01234567",
-    },
-  ]);
+  >([]);
+  
+  // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Add useEffect to fetch accounts from API
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/trading-accounts");
+        
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to fetch trading accounts");
+        }
+        
+        const data = await response.json();
+        if (data.accounts && data.accounts.length > 0) {
+          // Convert numeric IDs to strings and ensure copyingTo exists
+          const formattedAccounts = data.accounts.map((account: any) => ({
+            ...account,
+            id: account.id.toString(),
+            password: "••••••••",
+            copyingTo: account.copyingTo || [],
+          }));
+          setAccounts(formattedAccounts);
+        }
+      } catch (error) {
+        console.error("Error fetching trading accounts:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load trading accounts. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchAccounts();
+  }, []);
+
   const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [editingAccount, setEditingAccount] = useState<any>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -211,6 +104,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     lotCoefficient: 1,
     forceLot: 0,
     reverseTrade: false,
+    connectedToMaster: "none",
   });
 
   // Comprobar si el usuario es administrador
@@ -266,7 +160,12 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormState({ ...formState, [name]: value });
+    if (name === "accountType" && value === "master") {
+      // When changing to master account type, automatically set status to synchronized
+      setFormState({ ...formState, [name]: value, status: "synchronized" });
+    } else {
+      setFormState({ ...formState, [name]: value });
+    }
   };
 
   // Nueva función para manejar cambios de plataforma
@@ -291,6 +190,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       lotCoefficient: 1,
       forceLot: 0,
       reverseTrade: false,
+      connectedToMaster: "none",
     });
   };
 
@@ -310,6 +210,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       lotCoefficient: account.lotCoefficient || 1,
       forceLot: account.forceLot || 0,
       reverseTrade: account.reverseTrade || false,
+      connectedToMaster: account.connectedToMaster ? account.connectedToMaster : "none",
     });
 
     // Scroll hacia el formulario después de un pequeño retraso para permitir que el DOM se actualice
@@ -322,14 +223,79 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     setDeleteConfirmId(id);
   };
 
-  const confirmDeleteAccount = () => {
+  const confirmDeleteAccount = async () => {
     if (deleteConfirmId) {
-      setAccounts(accounts.filter((account) => account.id !== deleteConfirmId));
-      toast({
-        title: "Account Deleted",
-        description: "The account has been removed successfully.",
-      });
-      setDeleteConfirmId(null);
+      try {
+        setIsSubmitting(true);
+        
+        // Check if the account being deleted is a master
+        const accountToDelete = accounts.find(acc => acc.id === deleteConfirmId);
+        const isMaster = accountToDelete && accountToDelete.accountType === "master";
+        const masterAccountNumber = accountToDelete?.accountNumber;
+        
+        const response = await fetch(`/api/trading-accounts/${deleteConfirmId}`, {
+          method: "DELETE",
+        });
+        
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to delete trading account");
+        }
+        
+        // If this was a master account, update any connected slave accounts
+        if (isMaster && masterAccountNumber) {
+          // Update local state - unlink slaves from the deleted master
+          setAccounts(accounts.map(account => 
+            account.accountType === "slave" && account.connectedToMaster === masterAccountNumber
+              ? { ...account, connectedToMaster: "" }
+              : account
+          ).filter(account => account.id !== deleteConfirmId));
+          
+          // Update slave accounts in the backend
+          const slavesToUpdate = accounts.filter(
+            acc => acc.accountType === "slave" && acc.connectedToMaster === masterAccountNumber
+          );
+          
+          // Update each connected slave in the backend
+          for (const slave of slavesToUpdate) {
+            try {
+              await fetch(`/api/trading-accounts/${slave.id}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  ...slave,
+                  connectedToMaster: "",
+                }),
+              });
+            } catch (slaveUpdateError) {
+              console.error(`Error updating slave account ${slave.id}:`, slaveUpdateError);
+              // Continue with other updates even if one fails
+            }
+          }
+        } else {
+          // Not a master account, just remove it from the list
+          setAccounts(accounts.filter((account) => account.id !== deleteConfirmId));
+        }
+        
+        toast({
+          title: "Account Deleted",
+          description: isMaster && masterAccountNumber 
+            ? `The master account has been removed and ${accounts.filter(acc => acc.connectedToMaster === masterAccountNumber).length} slave accounts have been unlinked.`
+            : "The account has been removed successfully.",
+        });
+      } catch (error) {
+        console.error("Error deleting trading account:", error);
+        toast({
+          title: "Error",
+          description: "Failed to delete trading account. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+        setDeleteConfirmId(null);
+      }
     }
   };
 
@@ -341,7 +307,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validación básica
+    // Validation
     if (!formState.accountNumber || !formState.serverIp) {
       toast({
         title: "Error",
@@ -353,11 +319,41 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     }
 
     try {
-      // Simular una operación asíncrona
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Prepare payload for API
+      const payload = {
+        accountNumber: formState.accountNumber,
+        platform: formState.platform,
+        server: formState.serverIp, // Map serverIp to server for API
+        password: formState.password,
+        accountType: formState.accountType,
+        status: formState.status,
+        ...(formState.accountType === "slave" && {
+          lotCoefficient: formState.lotCoefficient,
+          forceLot: formState.forceLot,
+          reverseTrade: formState.reverseTrade,
+          connectedToMaster: formState.connectedToMaster === "none" ? "" : formState.connectedToMaster,
+        }),
+      };
 
+      let response, data;
+      
       if (editingAccount) {
-        // Actualizar cuenta existente
+        // Update existing account
+        response = await fetch(`/api/trading-accounts/${editingAccount.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        
+        data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to update trading account");
+        }
+        
+        // Update state with the response
         setAccounts(
           accounts.map((acc) =>
             acc.id === editingAccount.id
@@ -369,6 +365,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                   password: formState.password ? "••••••••" : acc.password,
                   accountType: formState.accountType,
                   status: formState.status,
+                  connectedToMaster: formState.accountType === "slave" 
+                    ? (formState.connectedToMaster === "none" ? "" : formState.connectedToMaster)
+                    : undefined,
                   lotCoefficient:
                     formState.accountType === "slave"
                       ? formState.lotCoefficient
@@ -391,14 +390,27 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           description: "Your trading account has been updated successfully.",
         });
       } else {
-        // Agregar nueva cuenta
+        // Create new account
+        response = await fetch("/api/trading-accounts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        
+        data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to create trading account");
+        }
+        
+        // Add the new account to state
         setAccounts([
           ...accounts,
           {
-            id: Date.now().toString(),
-            accountNumber: formState.accountNumber,
-            platform: formState.platform,
-            server: formState.serverIp,
+            ...data.account,
+            id: data.account.id.toString(), // Convert numeric ID to string
             password: "••••••••",
             copyingTo: [],
             accountType: formState.accountType,
@@ -407,6 +419,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
               lotCoefficient: formState.lotCoefficient,
               forceLot: formState.forceLot,
               reverseTrade: formState.reverseTrade,
+              connectedToMaster: formState.connectedToMaster === "none" ? "" : formState.connectedToMaster,
             }),
           },
         ]);
@@ -417,10 +430,11 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         });
       }
 
-      // Resetear el estado del formulario
+      // Reset form and state
       setIsAddingAccount(false);
       setEditingAccount(null);
     } catch (error) {
+      console.error("Error saving trading account:", error);
       toast({
         title: "Error",
         description:
@@ -841,6 +855,34 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
                 {formState.accountType === "slave" && (
                   <>
+                    <div>
+                      <Label htmlFor="connectedToMaster">Connect to Master Account</Label>
+                      <Select
+                        name="connectedToMaster"
+                        value={formState.connectedToMaster}
+                        onValueChange={(value) =>
+                          handleSelectChange("connectedToMaster", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Master Account (Optional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Not Connected (Independent)</SelectItem>
+                          {accounts
+                            .filter((acc) => acc.accountType === "master")
+                            .map((masterAcc) => (
+                              <SelectItem key={masterAcc.id} value={masterAcc.accountNumber}>
+                                {masterAcc.accountNumber} ({masterAcc.platform.toUpperCase()} - {masterAcc.server})
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Leave empty to keep the account unconnected
+                      </p>
+                    </div>
+
                     <div>
                       <Label htmlFor="lotCoefficient">
                         Lot Size Coefficient (0.01 - 100)
@@ -1289,10 +1331,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                   .filter(
                     (account) =>
                       account.accountType === "slave" &&
-                      !accounts.some(
-                        (master) =>
-                          master.accountNumber === account.connectedToMaster
-                      )
+                      (!account.connectedToMaster || account.connectedToMaster === "" || account.connectedToMaster === "none")
                   )
                   .map((orphanSlave) => (
                     <tr

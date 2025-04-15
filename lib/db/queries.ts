@@ -1,6 +1,6 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { users, appSettings } from './schema';
+import { users, appSettings, tradingAccounts } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 import { generateResetToken, getResetTokenExpiry } from '@/lib/utils';
@@ -246,4 +246,35 @@ export async function updateUserById(
   } catch (error) {
     throw error;
   }
+}
+
+// Trading Accounts Management
+export async function getUserTradingAccounts(userId: number) {
+  const result = await db
+    .select()
+    .from(tradingAccounts)
+    .where(
+      and(
+        eq(tradingAccounts.userId, userId),
+        isNull(tradingAccounts.deletedAt)
+      )
+    )
+    .orderBy(tradingAccounts.createdAt);
+
+  return result;
+}
+
+export async function getTradingAccountById(id: number) {
+  const result = await db
+    .select()
+    .from(tradingAccounts)
+    .where(
+      and(
+        eq(tradingAccounts.id, id),
+        isNull(tradingAccounts.deletedAt)
+      )
+    )
+    .limit(1);
+
+  return result.length > 0 ? result[0] : null;
 }

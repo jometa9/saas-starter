@@ -6,6 +6,8 @@ import { sendVersionUpdateEmail, sendBroadcastEmail } from '@/lib/email';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
 import { ne, isNull } from 'drizzle-orm';
+import { NewTradingAccount, tradingAccounts } from './schema';
+import { eq } from 'drizzle-orm';
 
 export async function updateAppVersionAction(
   data: FormData | { version: string } | string | null | undefined,
@@ -257,5 +259,64 @@ export async function sendBroadcastEmailAction(
     return {
       error: 'Ocurrió un error al enviar los emails'
     };
+  }
+}
+
+// Trading Accounts Actions
+export async function createTradingAccount(data: NewTradingAccount) {
+  try {
+    const result = await db
+      .insert(tradingAccounts)
+      .values({
+        ...data,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+
+    return { success: true, account: result[0] };
+  } catch (error) {
+    console.error('Error creating trading account:', error);
+    return { success: false, error: 'Failed to create trading account' };
+  }
+}
+
+export async function updateTradingAccount(
+  id: number,
+  data: Partial<NewTradingAccount>
+) {
+  try {
+    const result = await db
+      .update(tradingAccounts)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(tradingAccounts.id, id))
+      .returning();
+
+    return { success: true, account: result[0] };
+  } catch (error) {
+    console.error('Error updating trading account:', error);
+    return { success: false, error: 'Failed to update trading account' };
+  }
+}
+
+export async function deleteTradingAccount(id: number) {
+  try {
+    // Soft delete by setting deletedAt
+    const result = await db
+      .update(tradingAccounts)
+      .set({
+        deletedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(tradingAccounts.id, id))
+      .returning();
+
+    return { success: true, account: result[0] };
+  } catch (error) {
+    console.error('Error deleting trading account:', error);
+    return { success: false, error: 'Failed to delete trading account' };
   }
 }
