@@ -21,7 +21,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
-import { Zap, Monitor, CircleCheckIcon, Pencil, Trash } from "lucide-react";
+import { Zap, Monitor, CircleCheckIcon, Pencil, Trash, ChevronDown, ChevronRight } from "lucide-react";
 
 export function TradingAccountsConfig({ user }: { user: User }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -475,6 +475,17 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     }
   }, [formState.platform]);
 
+  // Nuevo estado para rastrear qué cuentas master están colapsadas
+  const [collapsedMasters, setCollapsedMasters] = useState<Record<string, boolean>>({});
+  
+  // Función para alternar el estado colapsado de una cuenta master
+  const toggleMasterCollapse = (masterId: string) => {
+    setCollapsedMasters(prev => ({
+      ...prev,
+      [masterId]: !prev[masterId]
+    }));
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -777,25 +788,19 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                       {/* Master account row with highlight */}
                       <tr className="bg-blue-50 hover:bg-blue-100">
                         <td className="px-4 py-2 whitespace-nowrap align-middle">
-                          <span
-                            className={
-                              masterAccount.status === "synchronized"
-                                ? "text-green-600 text-sm"
-                                : masterAccount.status === "pending"
-                                  ? "text-blue-600 text-sm"
-                                  : masterAccount.status === "offline"
-                                    ? "text-gray-600 text-sm"
-                                    : "text-red-600 text-sm"
-                            }
+                          <button 
+                            onClick={() => toggleMasterCollapse(masterAccount.id)}
+                            className="focus:outline-none flex items-center justify-center w-6 h-6 rounded-full hover:bg-blue-200 transition-colors"
                           >
-                            {masterAccount.status === "synchronized"
-                              ? "Synced"
-                              : masterAccount.status === "pending"
-                                ? "Pending"
-                                : masterAccount.status === "offline"
-                                  ? "Offline"
-                                  : "Invalid"}
-                          </span>
+                            {collapsedMasters[masterAccount.id] ? (
+                              <ChevronRight className="h-4 w-4 text-blue-700" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4 text-blue-700" />
+                            )}
+                            <span className="sr-only">
+                              {collapsedMasters[masterAccount.id] ? "Expand" : "Collapse"}
+                            </span>
+                          </button>
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
                           <div className="flex items-center">
@@ -871,7 +876,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleEditAccount(masterAccount)}
-                                className="h-8 w-8 p-0 cursor-pointer"
+                                className="h-8 w-8 p-0 cursor-pointer"
                               >
                                 <Pencil className="h-4 w-4" />
                                 <span className="sr-only">Edit</span>
@@ -882,7 +887,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                 onClick={() =>
                                   handleDeleteAccount(masterAccount.id)
                                 }
-                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50 cursor-pointer"
+                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50 cursor-pointer"
                               >
                                 <Trash className="h-4 w-4" />
                                 <span className="sr-only">Delete</span>
@@ -893,7 +898,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                       </tr>
 
                       {/* Slave accounts connected to this master */}
-                      {accounts
+                      {!collapsedMasters[masterAccount.id] && accounts
                         .filter(
                           (account) =>
                             account.accountType === "slave" &&
