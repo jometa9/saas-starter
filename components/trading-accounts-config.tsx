@@ -42,6 +42,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       lotCoefficient?: number;
       forceLot?: number;
       reverseTrade?: boolean;
+      connectedToMaster?: string;
     }>
   >([
     {
@@ -66,6 +67,131 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       forceLot: 0,
       reverseTrade: false,
       status: "pending",
+      connectedToMaster: "12345678",
+    },
+    {
+      id: "3",
+      accountNumber: "23456789",
+      platform: "mt4",
+      server: "Pepperstone-Live",
+      password: "••••••••",
+      copyingTo: ["MT4 FTMO", "MT5 MFF"],
+      accountType: "master",
+      status: "synchronized",
+    },
+    {
+      id: "4",
+      accountNumber: "34567890",
+      platform: "mt5",
+      server: "ICMarkets-MT5-Live",
+      password: "••••••••",
+      copyingTo: [],
+      accountType: "slave",
+      lotCoefficient: 0.8,
+      forceLot: 0,
+      reverseTrade: false,
+      status: "synchronized",
+      connectedToMaster: "12345678",
+    },
+    {
+      id: "5",
+      accountNumber: "45678901",
+      platform: "ctrader",
+      server: "Pepperstone-cTrader",
+      password: "••••••••",
+      copyingTo: [],
+      accountType: "master",
+      status: "error",
+    },
+    {
+      id: "6",
+      accountNumber: "56789012",
+      platform: "mt4",
+      server: "ICMarkets-Demo",
+      password: "••••••••",
+      copyingTo: [],
+      accountType: "slave",
+      lotCoefficient: 1.0,
+      forceLot: 1.0,
+      reverseTrade: true,
+      status: "synchronized",
+      connectedToMaster: "23456789",
+    },
+    {
+      id: "7",
+      accountNumber: "67890123",
+      platform: "mt5",
+      server: "FXCM-Demo",
+      password: "••••••••",
+      copyingTo: [],
+      accountType: "slave",
+      lotCoefficient: 2.0,
+      forceLot: 0,
+      reverseTrade: false,
+      status: "synchronized",
+      connectedToMaster: "78901234",
+    },
+    {
+      id: "8",
+      accountNumber: "78901234",
+      platform: "mt4",
+      server: "ICMarkets-Live2",
+      password: "••••••••",
+      copyingTo: ["FTMO Challenge"],
+      accountType: "master",
+      status: "synchronized",
+    },
+    {
+      id: "9",
+      accountNumber: "89012345",
+      platform: "mt5",
+      server: "ICMarkets-MT5-Demo",
+      password: "••••••••",
+      copyingTo: [],
+      accountType: "slave",
+      lotCoefficient: 0.5,
+      forceLot: 0,
+      reverseTrade: true,
+      status: "pending",
+      connectedToMaster: "78901234",
+    },
+    {
+      id: "10",
+      accountNumber: "90123456",
+      platform: "ctrader",
+      server: "ICMarkets-cTrader",
+      password: "••••••••",
+      copyingTo: [],
+      accountType: "slave",
+      lotCoefficient: 1.2,
+      forceLot: 0,
+      reverseTrade: false,
+      status: "error",
+      connectedToMaster: "45678901",
+    },
+    {
+      id: "11",
+      accountNumber: "01234567",
+      platform: "mt4",
+      server: "Pepperstone-Demo",
+      password: "••••••••",
+      copyingTo: [],
+      accountType: "master",
+      status: "offline",
+    },
+    {
+      id: "12",
+      accountNumber: "10293847",
+      platform: "mt5",
+      server: "FXCM-Real",
+      password: "••••••••",
+      copyingTo: [],
+      accountType: "slave",
+      lotCoefficient: 0.75,
+      forceLot: 0.5,
+      reverseTrade: false,
+      status: "synchronized",
+      connectedToMaster: "01234567",
     },
   ]);
   const [isAddingAccount, setIsAddingAccount] = useState(false);
@@ -135,6 +261,15 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
   const handleSelectChange = (name: string, value: string) => {
     setFormState({ ...formState, [name]: value });
+  };
+
+  // Nueva función para manejar cambios de plataforma
+  const handlePlatformChange = (value: string) => {
+    setFormState({ 
+      ...formState, 
+      platform: value,
+      serverIp: "" // Reset server cuando cambia la plataforma 
+    });
   };
 
   const handleAddAccount = () => {
@@ -370,10 +505,6 @@ export function TradingAccountsConfig({ user }: { user: User }) {
               50 accounts)
             </CardDescription>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground">Server Status:</div>
-            {getStatusIcon(getServerStatus())}
-          </div>
           {!isAddingAccount && (
             <Button
               onClick={handleAddAccount}
@@ -386,6 +517,24 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         </div>
       </CardHeader>
       <CardContent>
+        <div className="flex flex-row items-center gap-6 mb-6 p-3 bg-muted/30 rounded-md">
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-muted-foreground">Server Status:</div>
+            {getStatusIcon(getServerStatus())}
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-muted-foreground">Total Accounts:</div>
+            <div className="font-medium">{accounts.length}</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-muted-foreground">Master Accounts:</div>
+            <div className="font-medium">{accounts.filter(acc => acc.accountType === "master").length}</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-muted-foreground">Slave Accounts:</div>
+            <div className="font-medium">{accounts.filter(acc => acc.accountType === "slave").length}</div>
+          </div>
+        </div>
         {isAddingAccount ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -407,7 +556,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                   name="platform"
                   value={formState.platform}
                   onValueChange={(value) =>
-                    handleSelectChange("platform", value)
+                    handlePlatformChange(value)
                   }
                 >
                   <SelectTrigger>
@@ -629,6 +778,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                     Server
                   </th>
                   <th className="px-4 py-2 text-left text-xs uppercase tracking-wider">
+                    Configuration
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -637,40 +789,65 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 {accounts.map((account) => (
                   <tr key={account.id} className="hover:bg-muted/50">
                     <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div
-                          className={`h-3 w-3 rounded-full animate-pulse mr-2 ${
-                            account.status === "synchronized"
-                              ? "bg-green-500"
-                              : account.status === "pending"
-                              ? "bg-yellow-500"
-                              : account.status === "error"
-                              ? "bg-red-500"
-                              : "bg-gray-500"
-                          }`}
-                        />
-                        <span className="text-xs text-muted-foreground">
-                          {account.status === "synchronized"
-                            ? "Synced"
+                      <span
+                        className={
+                          account.status === "synchronized"
+                            ? "text-green-600 font-medium"
                             : account.status === "pending"
-                            ? "Pending"
-                            : account.status === "error"
-                            ? "Error"
-                            : account.status}
-                        </span>
-                      </div>
+                            ? "text-blue-600 font-medium"
+                            : "text-red-600 font-medium"
+                        }
+                      >
+                        {account.status === "synchronized"
+                          ? "Synced"
+                          : account.status === "pending"
+                          ? "Pending"
+                          : "Invalid"}
+                      </span>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
                       {account.accountNumber}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
-                      {getAccountTypeIcon(account.accountType)}
+                      {account.accountType === "master" ? "Master" : "Slave"}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
-                      {getPlatformIcon(account.platform)}
+                      {account.platform === "mt4"
+                        ? "MetaTrader 4"
+                        : account.platform === "mt5"
+                        ? "MetaTrader 5"
+                        : account.platform === "ctrader"
+                        ? "cTrader"
+                        : account.platform}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm">
                       {account.server}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-xs">
+                      {account.accountType === "slave" ? (
+                        <div className="space-y-1">
+                          <div className="font-medium text-blue-600">
+                            Master: {account.connectedToMaster ? 
+                              accounts.find(acc => acc.accountNumber === account.connectedToMaster)?.accountNumber || "Unknown" 
+                              : "Not connected"}
+                          </div>
+                          {account.lotCoefficient && (
+                            <div>Lot Coef: {account.lotCoefficient}x</div>
+                          )}
+                          {account.forceLot > 0 && (
+                            <div>Force Lot: {account.forceLot}</div>
+                          )}
+                          {account.reverseTrade && <div>Reverse: Yes</div>}
+                        </div>
+                      ) : (
+                        <div>
+                          {accounts.filter(acc => acc.connectedToMaster === account.accountNumber).length > 0 ? (
+                            <div className="font-medium">
+                              Connected by {accounts.filter(acc => acc.connectedToMaster === account.accountNumber).length} slaves
+                            </div>
+                          ) : "—"}
+                        </div>
+                      )}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
                       {deleteConfirmId === account.id ? (

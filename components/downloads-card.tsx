@@ -1,5 +1,3 @@
-// components/DownloadSection.tsx
-
 import { Download, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
