@@ -648,8 +648,8 @@ export function Dashboard({
       <SupportCards />
 
       <Button
-        variant="outline"
-        className="text-red-500 hover:bg-red-50 hover:text-red-600 mb-0"
+        variant="ghost"
+        className="text-gray-400 hover:bg-red-50 hover:text-red-600 mb-0 cursor-pointer"
       >
         Delete Account
       </Button>
