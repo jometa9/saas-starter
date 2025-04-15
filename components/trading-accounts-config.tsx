@@ -21,7 +21,15 @@ import {
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
-import { Zap, Monitor, CircleCheckIcon, Pencil, Trash, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Zap,
+  Monitor,
+  CircleCheckIcon,
+  Pencil,
+  Trash,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 
 export function TradingAccountsConfig({ user }: { user: User }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -467,6 +475,11 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     return "operational";
   };
 
+  const getServerIP = () => {
+    // En un caso real, esto podría obtener la IP del servidor desde una API
+    return "192.168.1.100";
+  };
+
   const [selectedPlatform, setSelectedPlatform] = useState<string>("mt4");
 
   useEffect(() => {
@@ -476,13 +489,15 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   }, [formState.platform]);
 
   // Nuevo estado para rastrear qué cuentas master están colapsadas
-  const [collapsedMasters, setCollapsedMasters] = useState<Record<string, boolean>>({});
-  
+  const [collapsedMasters, setCollapsedMasters] = useState<
+    Record<string, boolean>
+  >({});
+
   // Función para alternar el estado colapsado de una cuenta master
   const toggleMasterCollapse = (masterId: string) => {
-    setCollapsedMasters(prev => ({
+    setCollapsedMasters((prev) => ({
       ...prev,
-      [masterId]: !prev[masterId]
+      [masterId]: !prev[masterId],
     }));
   };
 
@@ -509,10 +524,14 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-row items-center gap-6 mb-4 p-3 bg-gray-50 border border-gray-200 rounded-xl">
+        <div className="flex flex-row items-center gap-6 mb-4 p-4 px-6 bg-gray-50 border border-gray-200 rounded-xl">
           <div className="flex items-center gap-2">
             <div className="text-sm text-muted-foreground">Server Status:</div>
             {getStatusIcon(getServerStatus())}
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-muted-foreground">Server IP:</div>
+            <div className="text-sm">{getServerIP()}</div>
           </div>
           <div className="flex items-center gap-2">
             <div className="text-sm text-muted-foreground">Total Accounts:</div>
@@ -788,8 +807,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                       {/* Master account row with highlight */}
                       <tr className="bg-blue-50 hover:bg-blue-100">
                         <td className="px-4 py-2 whitespace-nowrap align-middle">
-                          <button 
-                            onClick={() => toggleMasterCollapse(masterAccount.id)}
+                          <button
+                            onClick={() =>
+                              toggleMasterCollapse(masterAccount.id)
+                            }
                             className="focus:outline-none flex items-center justify-center w-6 h-6 rounded-full hover:bg-blue-200 transition-colors"
                           >
                             {collapsedMasters[masterAccount.id] ? (
@@ -798,7 +819,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                               <ChevronDown className="h-4 w-4 text-blue-700" />
                             )}
                             <span className="sr-only">
-                              {collapsedMasters[masterAccount.id] ? "Expand" : "Collapse"}
+                              {collapsedMasters[masterAccount.id]
+                                ? "Expand"
+                                : "Collapse"}
                             </span>
                           </button>
                         </td>
@@ -898,117 +921,149 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                       </tr>
 
                       {/* Slave accounts connected to this master */}
-                      {!collapsedMasters[masterAccount.id] && accounts
-                        .filter(
-                          (account) =>
-                            account.accountType === "slave" &&
-                            account.connectedToMaster ===
-                              masterAccount.accountNumber
-                        )
-                        .map((slaveAccount) => (
-                          <tr
-                            key={slaveAccount.id}
-                            className="hover:bg-muted/50 border-t border-dashed border-gray-200"
-                          >
-                            <td className="px-4 py-1.5 whitespace-nowrap align-middle">
-                              <span
-                                className={
-                                  slaveAccount.status === "synchronized"
-                                    ? "text-green-600 text-sm"
+                      {!collapsedMasters[masterAccount.id] &&
+                        accounts
+                          .filter(
+                            (account) =>
+                              account.accountType === "slave" &&
+                              account.connectedToMaster ===
+                                masterAccount.accountNumber
+                          )
+                          .map((slaveAccount) => (
+                            <tr
+                              key={slaveAccount.id}
+                              className="hover:bg-muted/50 border-t border-dashed border-gray-200"
+                            >
+                              <td className="px-4 py-1.5 whitespace-nowrap align-middle">
+                                <span
+                                  className={
+                                    slaveAccount.status === "synchronized"
+                                      ? "text-green-600 text-sm"
+                                      : slaveAccount.status === "pending"
+                                        ? "text-blue-600 text-sm"
+                                        : "text-red-600 text-sm"
+                                  }
+                                >
+                                  {slaveAccount.status === "synchronized"
+                                    ? "Synced"
                                     : slaveAccount.status === "pending"
-                                      ? "text-blue-600 text-sm"
-                                      : "text-red-600 text-sm"
-                                }
-                              >
-                                {slaveAccount.status === "synchronized"
-                                  ? "Synced"
-                                  : slaveAccount.status === "pending"
-                                    ? "Pending"
-                                    : "Invalid"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
-                              <div className="flex items-center">
-                                {slaveAccount.accountNumber}
-                              </div>
-                            </td>
-                            <td className="px-4 py-1.5 whitespace-nowrap text-sm text-green-700 align-middle">
-                              Slave
-                            </td>
-                            <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
-                              {slaveAccount.platform === "mt4"
-                                ? "MetaTrader 4"
-                                : slaveAccount.platform === "mt5"
-                                  ? "MetaTrader 5"
-                                  : slaveAccount.platform === "ctrader"
-                                    ? "cTrader"
-                                    : slaveAccount.platform}
-                            </td>
-                            <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
-                              {slaveAccount.server}
-                            </td>
-                            <td className="px-4 py-1.5 whitespace-nowrap text-xs align-middle">
-                              <div className="space-y-1">
-                                {slaveAccount.lotCoefficient && (
-                                  <div>
-                                    Lot Coef: {slaveAccount.lotCoefficient}x
+                                      ? "Pending"
+                                      : "Invalid"}
+                                </span>
+                              </td>
+                              <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
+                                <div className="flex items-center">
+                                  {slaveAccount.accountNumber}
+                                </div>
+                              </td>
+                              <td className="px-4 py-1.5 whitespace-nowrap text-sm text-green-700 align-middle">
+                                Slave
+                              </td>
+                              <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
+                                {slaveAccount.platform === "mt4"
+                                  ? "MetaTrader 4"
+                                  : slaveAccount.platform === "mt5"
+                                    ? "MetaTrader 5"
+                                    : slaveAccount.platform === "ctrader"
+                                      ? "cTrader"
+                                      : slaveAccount.platform}
+                              </td>
+                              <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
+                                {slaveAccount.server}
+                              </td>
+                              <td className="px-4 py-1.5 whitespace-nowrap text-xs align-middle">
+                                <div className="flex flex-wrap gap-2 max-w-[200px]">
+                                  {(() => {
+                                    // Crear array de etiquetas
+                                    const configLabels = [];
+                                    
+                                    if (slaveAccount.forceLot && slaveAccount.forceLot > 0) {
+                                      configLabels.push(
+                                        <div key="force" className="rounded-full px-2 py-0.5 text-xs bg-blue-100 text-blue-800 inline-block">
+                                          Force lot {slaveAccount.forceLot}
+                                        </div>
+                                      );
+                                    } else if (slaveAccount.lotCoefficient) {
+                                      configLabels.push(
+                                        <div key="lot" className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block">
+                                          Lot multiplier {slaveAccount.lotCoefficient}
+                                        </div>
+                                      );
+                                    }
+                                    
+                                    if (slaveAccount.reverseTrade) {
+                                      configLabels.push(
+                                        <div key="reverse" className="rounded-full px-2 py-0.5 text-xs bg-purple-100 text-purple-800 inline-block">
+                                          Reverse trades
+                                        </div>
+                                      );
+                                    }
+                                    
+                                    // Limitar número de etiquetas visibles
+                                    const maxLabels = 2;
+                                    const visibleLabels = configLabels.slice(0, maxLabels);
+                                    const hiddenCount = configLabels.length - maxLabels;
+                                    
+                                    return (
+                                      <>
+                                        {visibleLabels}
+                                        {hiddenCount > 0 && (
+                                          <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-800 inline-block">
+                                            +{hiddenCount} more
+                                          </div>
+                                        )}
+                                      </>
+                                    );
+                                  })()}
+                                </div>
+                              </td>
+                              <td className="px-4 py-1.5 whitespace-nowrap align-middle">
+                                {deleteConfirmId === slaveAccount.id ? (
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={confirmDeleteAccount}
+                                    >
+                                      Confirm
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={cancelDeleteAccount}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        handleEditAccount(slaveAccount)
+                                      }
+                                      className="h-8 w-8 p-0"
+                                    >
+                                      <Pencil className="h-4 w-4" />
+                                      <span className="sr-only">Edit</span>
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        handleDeleteAccount(slaveAccount.id)
+                                      }
+                                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
+                                    >
+                                      <Trash className="h-4 w-4" />
+                                      <span className="sr-only">Delete</span>
+                                    </Button>
                                   </div>
                                 )}
-                                {slaveAccount.forceLot > 0 && (
-                                  <div>Force Lot: {slaveAccount.forceLot}</div>
-                                )}
-                                {slaveAccount.reverseTrade && (
-                                  <div>Reverse: Yes</div>
-                                )}
-                              </div>
-                            </td>
-                            <td className="px-4 py-1.5 whitespace-nowrap align-middle">
-                              {deleteConfirmId === slaveAccount.id ? (
-                                <div className="flex space-x-2">
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    onClick={confirmDeleteAccount}
-                                  >
-                                    Confirm
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={cancelDeleteAccount}
-                                  >
-                                    Cancel
-                                  </Button>
-                                </div>
-                              ) : (
-                                <div className="flex space-x-2">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() =>
-                                      handleEditAccount(slaveAccount)
-                                    }
-                                    className="h-8 w-8 p-0"
-                                  >
-                                    <Pencil className="h-4 w-4" />
-                                    <span className="sr-only">Edit</span>
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() =>
-                                      handleDeleteAccount(slaveAccount.id)
-                                    }
-                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
-                                  >
-                                    <Trash className="h-4 w-4" />
-                                    <span className="sr-only">Delete</span>
-                                  </Button>
-                                </div>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
+                              </td>
+                            </tr>
+                          ))}
                     </React.Fragment>
                   ))}
 
@@ -1065,17 +1120,55 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                         {orphanSlave.server}
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-xs align-middle">
-                        <div className="space-y-1">
-                          <div className="text-orange-600">
-                            Not connected to any master
-                          </div>
-                          {orphanSlave.lotCoefficient && (
-                            <div>Lot Coef: {orphanSlave.lotCoefficient}x</div>
-                          )}
-                          {orphanSlave.forceLot > 0 && (
-                            <div>Force Lot: {orphanSlave.forceLot}</div>
-                          )}
-                          {orphanSlave.reverseTrade && <div>Reverse: Yes</div>}
+                        <div className="flex flex-wrap gap-1 max-w-[200px]">
+                          {(() => {
+                            // Crear array de etiquetas
+                            const configLabels = [];
+                            
+                            configLabels.push(
+                              <div key="unconnected" className="rounded-full px-2 py-0.5 text-xs bg-orange-100 text-orange-800 inline-block">
+                                Not connected
+                              </div>
+                            );
+                            
+                            if (orphanSlave.forceLot && orphanSlave.forceLot > 0) {
+                              configLabels.push(
+                                <div key="force" className="rounded-full px-2 py-0.5 text-xs bg-blue-100 text-blue-800 inline-block">
+                                  Force lot {orphanSlave.forceLot}
+                                </div>
+                              );
+                            } else if (orphanSlave.lotCoefficient) {
+                              configLabels.push(
+                                <div key="lot" className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block">
+                                  Lot multiplier {orphanSlave.lotCoefficient}
+                                </div>
+                              );
+                            }
+                            
+                            if (orphanSlave.reverseTrade) {
+                              configLabels.push(
+                                <div key="reverse" className="rounded-full px-2 py-0.5 text-xs bg-purple-100 text-purple-800 inline-block">
+                                  Reverse trades
+                                </div>
+                              );
+                            }
+                            
+                            // Limitar número de etiquetas visibles
+                            const maxLabels = 2;
+                            const visibleLabels = configLabels.slice(0, maxLabels);
+                            const hiddenCount = configLabels.length - maxLabels;
+                            
+                            return (
+                              <>
+                                {visibleLabels}
+                                {hiddenCount > 0 && (
+                                  <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-800 inline-block">
+                                    +{hiddenCount} more
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
                         </div>
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap align-middle">
