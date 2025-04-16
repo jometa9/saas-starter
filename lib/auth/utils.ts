@@ -3,6 +3,20 @@ import { getUser } from '@/lib/db/queries';
 import { getSession } from './session';
 
 /**
+ * Gets the current user session and auth status
+ * @returns The session object and current user
+ */
+export async function getUserAuth() {
+  const session = await getSession();
+  const user = await getUser();
+
+  return {
+    session,
+    user
+  };
+}
+
+/**
  * Verifica si una solicitud proviene de un usuario administrador
  * @param req - La solicitud HTTP
  * @returns true si el usuario es administrador, false en caso contrario

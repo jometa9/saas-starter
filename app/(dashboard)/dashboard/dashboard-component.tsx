@@ -69,6 +69,7 @@ import { LicenseCard } from "@/components/licence-card";
 import DownloadCard from "@/components/downloads-card";
 import SupportCards from "@/components/support-cards";
 import { TradingAccountsConfig } from "@/components/trading-accounts-config";
+import { ChevronRightIcon } from "@radix-ui/react-icons";
 
 export function Dashboard({
   user,
@@ -653,6 +654,34 @@ export function Dashboard({
 
       {isAdmin && (
         <div className="pt-4 px-0">
+          <Card className="mb-4">
+            <CardHeader>
+              <CardTitle>Admin Dashboard</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Access administrative tools and reports
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col space-y-2">
+                <Link 
+                  href="/dashboard/admin" 
+                  className="flex items-center justify-between p-3 rounded-md hover:bg-muted/80 transition-colors"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 rounded-full bg-primary/10">
+                      <ShieldCheck className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-medium">Admin Panel</div>
+                      <div className="text-sm text-muted-foreground">Manage users and system settings</div>
+                    </div>
+                  </div>
+                  <ChevronRightIcon className="h-5 w-5 text-muted-foreground" />
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="mb-4">
             <CardHeader>
               <CardTitle>Version Management</CardTitle>
