@@ -45,9 +45,8 @@ export async function PATCH(
 
     const { status } = validated.data;
     
-    // Convertir params.id a número después de asegurarnos que está disponible
-    const paramsData = await params;
-    const accountId = parseInt(paramsData.id, 10);
+    // Convertir params.id a número directamente
+    const accountId = parseInt(params.id, 10);
 
     if (isNaN(accountId)) {
       return NextResponse.json(

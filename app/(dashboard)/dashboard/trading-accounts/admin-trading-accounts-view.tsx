@@ -687,9 +687,7 @@ export function AdminTradingAccountsView({
 
                                     if (
                                       slaveAccount.forceLot &&
-                                      parseFloat(
-                                        String(slaveAccount.forceLot)
-                                      ) > 0
+                                      parseFloat(String(slaveAccount.forceLot)) > 0
                                     ) {
                                       configLabels.push(
                                         <div
@@ -705,8 +703,7 @@ export function AdminTradingAccountsView({
                                           key="lot"
                                           className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block"
                                         >
-                                          Lot multiplier{" "}
-                                          {slaveAccount.lotCoefficient}
+                                          Lot multiplier {slaveAccount.lotCoefficient}
                                         </div>
                                       );
                                     }

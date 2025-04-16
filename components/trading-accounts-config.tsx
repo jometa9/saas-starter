@@ -354,8 +354,8 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         accountType: formState.accountType,
         status: formState.status,
         ...(formState.accountType === "slave" && {
-          lotCoefficient: formState.lotCoefficient,
-          forceLot: formState.forceLot,
+          lotCoefficient: Number(formState.lotCoefficient),
+          forceLot: Number(formState.forceLot),
           reverseTrade: formState.reverseTrade,
           connectedToMaster:
             formState.connectedToMaster === "none"
@@ -379,7 +379,39 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to update trading account");
+          let errorMessage = "Failed to update trading account";
+          try {
+            if (data && typeof data === 'object') {
+              // Manejar específicamente errores de validación de Zod
+              if (data._errors || (data.error && typeof data.error === 'object' && data.error._errors)) {
+                const zodErrors = data._errors || data.error._errors;
+                if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+                  errorMessage = zodErrors.join(', ');
+                } else {
+                  // Revisar errores de campo específicos
+                  const fieldErrors = [];
+                  for (const [field, value] of Object.entries(data)) {
+                    if (value && typeof value === 'object' && '_errors' in value) {
+                      fieldErrors.push(`${field}: ${value._errors.join(', ')}`);
+                    }
+                  }
+                  if (fieldErrors.length > 0) {
+                    errorMessage = `Validation errors: ${fieldErrors.join('; ')}`;
+                  }
+                }
+              } else if ('error' in data) {
+                if (typeof data.error === 'string') {
+                  errorMessage = data.error;
+                } else if (typeof data.error === 'object') {
+                  // Intentar extraer un mensaje más significativo o convertir a JSON
+                  errorMessage = data.error.message || JSON.stringify(data.error);
+                }
+              }
+            }
+          } catch (e) {
+            console.error("Error parsing error message:", e);
+          }
+          throw new Error(errorMessage);
         }
 
         // Update state with the response
@@ -434,7 +466,39 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to create trading account");
+          let errorMessage = "Failed to create trading account";
+          try {
+            if (data && typeof data === 'object') {
+              // Manejar específicamente errores de validación de Zod
+              if (data._errors || (data.error && typeof data.error === 'object' && data.error._errors)) {
+                const zodErrors = data._errors || data.error._errors;
+                if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+                  errorMessage = zodErrors.join(', ');
+                } else {
+                  // Revisar errores de campo específicos
+                  const fieldErrors = [];
+                  for (const [field, value] of Object.entries(data)) {
+                    if (value && typeof value === 'object' && '_errors' in value) {
+                      fieldErrors.push(`${field}: ${value._errors.join(', ')}`);
+                    }
+                  }
+                  if (fieldErrors.length > 0) {
+                    errorMessage = `Validation errors: ${fieldErrors.join('; ')}`;
+                  }
+                }
+              } else if ('error' in data) {
+                if (typeof data.error === 'string') {
+                  errorMessage = data.error;
+                } else if (typeof data.error === 'object') {
+                  // Intentar extraer un mensaje más significativo o convertir a JSON
+                  errorMessage = data.error.message || JSON.stringify(data.error);
+                }
+              }
+            }
+          } catch (e) {
+            console.error("Error parsing error message:", e);
+          }
+          throw new Error(errorMessage);
         }
 
         // Add the new account to state
@@ -930,11 +994,11 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                         min="0.01"
                         max="100"
                         step="0.01"
-                        value={formState.lotCoefficient}
+                        value={formState.lotCoefficient?.toString() || "1"}
                         onChange={(e) =>
                           setFormState({
                             ...formState,
-                            lotCoefficient: parseFloat(e.target.value),
+                            lotCoefficient: e.target.value === '' ? 1 : parseFloat(e.target.value),
                           })
                         }
                         className="bg-white"
@@ -955,11 +1019,11 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                         min="0"
                         max="100"
                         step="0.01"
-                        value={formState.forceLot}
+                        value={formState.forceLot?.toString() || "0"}
                         onChange={(e) =>
                           setFormState({
                             ...formState,
-                            forceLot: parseFloat(e.target.value),
+                            forceLot: e.target.value === '' ? 0 : parseFloat(e.target.value),
                           })
                         }
                         className="bg-white"
