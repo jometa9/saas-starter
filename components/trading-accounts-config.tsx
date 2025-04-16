@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { User } from "@/lib/db/schema";
 import {
   Card,
@@ -34,6 +34,7 @@ import {
   Clock,
   XCircle,
   Info,
+  ArrowUpRight,
 } from "lucide-react";
 
 export function TradingAccountsConfig({ user }: { user: User }) {
@@ -381,30 +382,40 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         if (!response.ok) {
           let errorMessage = "Failed to update trading account";
           try {
-            if (data && typeof data === 'object') {
+            if (data && typeof data === "object") {
               // Manejar específicamente errores de validación de Zod
-              if (data._errors || (data.error && typeof data.error === 'object' && data.error._errors)) {
+              if (
+                data._errors ||
+                (data.error &&
+                  typeof data.error === "object" &&
+                  data.error._errors)
+              ) {
                 const zodErrors = data._errors || data.error._errors;
                 if (Array.isArray(zodErrors) && zodErrors.length > 0) {
-                  errorMessage = zodErrors.join(', ');
+                  errorMessage = zodErrors.join(", ");
                 } else {
                   // Revisar errores de campo específicos
                   const fieldErrors = [];
                   for (const [field, value] of Object.entries(data)) {
-                    if (value && typeof value === 'object' && '_errors' in value) {
-                      fieldErrors.push(`${field}: ${value._errors.join(', ')}`);
+                    if (
+                      value &&
+                      typeof value === "object" &&
+                      "_errors" in value
+                    ) {
+                      fieldErrors.push(`${field}: ${value._errors.join(", ")}`);
                     }
                   }
                   if (fieldErrors.length > 0) {
-                    errorMessage = `Validation errors: ${fieldErrors.join('; ')}`;
+                    errorMessage = `Validation errors: ${fieldErrors.join("; ")}`;
                   }
                 }
-              } else if ('error' in data) {
-                if (typeof data.error === 'string') {
+              } else if ("error" in data) {
+                if (typeof data.error === "string") {
                   errorMessage = data.error;
-                } else if (typeof data.error === 'object') {
+                } else if (typeof data.error === "object") {
                   // Intentar extraer un mensaje más significativo o convertir a JSON
-                  errorMessage = data.error.message || JSON.stringify(data.error);
+                  errorMessage =
+                    data.error.message || JSON.stringify(data.error);
                 }
               }
             }
@@ -468,30 +479,40 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         if (!response.ok) {
           let errorMessage = "Failed to create trading account";
           try {
-            if (data && typeof data === 'object') {
+            if (data && typeof data === "object") {
               // Manejar específicamente errores de validación de Zod
-              if (data._errors || (data.error && typeof data.error === 'object' && data.error._errors)) {
+              if (
+                data._errors ||
+                (data.error &&
+                  typeof data.error === "object" &&
+                  data.error._errors)
+              ) {
                 const zodErrors = data._errors || data.error._errors;
                 if (Array.isArray(zodErrors) && zodErrors.length > 0) {
-                  errorMessage = zodErrors.join(', ');
+                  errorMessage = zodErrors.join(", ");
                 } else {
                   // Revisar errores de campo específicos
                   const fieldErrors = [];
                   for (const [field, value] of Object.entries(data)) {
-                    if (value && typeof value === 'object' && '_errors' in value) {
-                      fieldErrors.push(`${field}: ${value._errors.join(', ')}`);
+                    if (
+                      value &&
+                      typeof value === "object" &&
+                      "_errors" in value
+                    ) {
+                      fieldErrors.push(`${field}: ${value._errors.join(", ")}`);
                     }
                   }
                   if (fieldErrors.length > 0) {
-                    errorMessage = `Validation errors: ${fieldErrors.join('; ')}`;
+                    errorMessage = `Validation errors: ${fieldErrors.join("; ")}`;
                   }
                 }
-              } else if ('error' in data) {
-                if (typeof data.error === 'string') {
+              } else if ("error" in data) {
+                if (typeof data.error === "string") {
                   errorMessage = data.error;
-                } else if (typeof data.error === 'object') {
+                } else if (typeof data.error === "object") {
                   // Intentar extraer un mensaje más significativo o convertir a JSON
-                  errorMessage = data.error.message || JSON.stringify(data.error);
+                  errorMessage =
+                    data.error.message || JSON.stringify(data.error);
                 }
               }
             }
@@ -613,8 +634,8 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   };
 
   const getServerIP = () => {
-    // En un caso real, esto podría obtener la IP del servidor desde una API
-    return "192.168.1.100";
+    // Obtener la IP del servidor desde los datos del usuario
+    return user.serverIP || "Waiting for configuration"; // Mostrar mensaje cuando no hay IP configurada
   };
 
   const [selectedPlatform, setSelectedPlatform] = useState<string>("mt4");
@@ -637,6 +658,50 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       [masterId]: !prev[masterId],
     }));
   };
+
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Function to handle table scroll and show shadows when necessary
+  const handleTableScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const isScrolledRight = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10;
+    const isScrolledLeft = container.scrollLeft <= 10;
+    
+    if (tableContainerRef.current) {
+      if (!isScrolledLeft) {
+        tableContainerRef.current.classList.add('shadow-left');
+      } else {
+        tableContainerRef.current.classList.remove('shadow-left');
+      }
+      
+      if (!isScrolledRight) {
+        tableContainerRef.current.classList.add('shadow-right');
+      } else {
+        tableContainerRef.current.classList.remove('shadow-right');
+      }
+    }
+  };
+
+  // Add effect to initialize shadows
+  useEffect(() => {
+    if (tableContainerRef.current) {
+      const container = tableContainerRef.current;
+      const isScrollable = container.scrollWidth > container.clientWidth;
+      
+      if (isScrollable) {
+        const isScrolledRight = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10;
+        const isScrolledLeft = container.scrollLeft <= 10;
+        
+        if (!isScrolledLeft) {
+          container.classList.add('shadow-left');
+        }
+        
+        if (!isScrolledRight) {
+          container.classList.add('shadow-right');
+        }
+      }
+    }
+  }, [accounts]); // Run when accounts list changes
 
   return (
     <Card>
@@ -706,7 +771,13 @@ export function TradingAccountsConfig({ user }: { user: User }) {
             </div>
             <div className="flex items-center gap-2">
               <div className="text-sm text-muted-foreground">Server IP:</div>
-              <div className="text-sm">{getServerIP()}</div>
+              <div className="text-sm">
+                {user.serverIP ? (
+                  getServerIP()
+                ) : (
+                  <span className="text-yellow-600">Waiting for admin configuration</span>
+                )}
+              </div>
             </div>
           </div>
           <div className="border-b border-gray-200 mx-4"></div>
@@ -998,7 +1069,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                         onChange={(e) =>
                           setFormState({
                             ...formState,
-                            lotCoefficient: e.target.value === '' ? 1 : parseFloat(e.target.value),
+                            lotCoefficient:
+                              e.target.value === ""
+                                ? 1
+                                : parseFloat(e.target.value),
                           })
                         }
                         className="bg-white"
@@ -1023,7 +1097,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                         onChange={(e) =>
                           setFormState({
                             ...formState,
-                            forceLot: e.target.value === '' ? 0 : parseFloat(e.target.value),
+                            forceLot:
+                              e.target.value === ""
+                                ? 0
+                                : parseFloat(e.target.value),
                           })
                         }
                         className="bg-white"
@@ -1084,130 +1161,513 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
         {accounts.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-muted-foreground">
-              No trading accounts configured yet.
-            </p>
-            <Button onClick={handleAddAccount} className="mt-4">
-              Add your first trading account
-            </Button>
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center gap-2">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500"></div>
+                <p className="text-muted-foreground">Loading your trading accounts...</p>
+              </div>
+            ) : (
+              <>
+                <p className="text-muted-foreground">
+                  No trading accounts configured yet.
+                </p>
+                <Button onClick={handleAddAccount} className="mt-4">
+                  Add your first trading account
+                </Button>
+              </>
+            )}
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-gray-200">
-            <table className="w-full border-collapse">
-              <thead className="bg-muted/50 ronded-t-xl">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Status</th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Account Number</th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Type</th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Platform</th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Server</th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Configuration</th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-card divide-y divide-gray-200">
-                {/* First display master accounts */}
-                {accounts
-                  .filter((account) => account.accountType === "master")
-                  .map((masterAccount) => (
-                    <React.Fragment key={`master-group-${masterAccount.id}`}>
-                      {/* Master account row with highlight */}
-                      <tr
-                        className="bg-blue-50 hover:bg-blue-100 cursor-pointer"
-                        onClick={(e) => {
-                          // Evitar activación si se hace clic en los botones de acción
-                          if (
-                            !(e.target as HTMLElement).closest(
-                              ".actions-column"
+          <div className="mt-4 rounded-md border shadow-sm relative overflow-x-auto">
+            <div 
+              className="max-w-full overflow-x-auto overflow-y-hidden relative" 
+              style={{
+                boxShadow: 'inset 10px 0 6px -6px rgba(0, 0, 0, 0.05), inset -10px 0 6px -6px rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-muted/50 ronded-t-xl">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs uppercase align-middle">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs uppercase align-middle">
+                      Account Number
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs uppercase align-middle">
+                      Type
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs uppercase align-middle">
+                      Platform
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs uppercase align-middle">
+                      Server
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs uppercase align-middle">
+                      Configuration
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs uppercase align-middle">
+                      Copying From
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs uppercase align-middle">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-card divide-y divide-gray-200">
+                  {/* First display master accounts */}
+                  {accounts
+                    .filter((account) => account.accountType === "master")
+                    .map((masterAccount) => (
+                      <React.Fragment key={`master-group-${masterAccount.id}`}>
+                        {/* Master account row with highlight */}
+                        <tr
+                          className="bg-blue-50 hover:bg-blue-100 cursor-pointer"
+                          onClick={(e) => {
+                            // Evitar activación si se hace clic en los botones de acción
+                            if (
+                              !(e.target as HTMLElement).closest(
+                                ".actions-column"
+                              )
+                            ) {
+                              toggleMasterCollapse(masterAccount.id);
+                            }
+                          }}
+                        >
+                          <td className="px-4 py-2 whitespace-nowrap align-middle">
+                            <span
+                              className={
+                                masterAccount.status === "synchronized"
+                                  ? "text-green-600 text-sm"
+                                  : masterAccount.status === "pending"
+                                    ? "text-blue-600 text-sm"
+                                    : "text-red-600 text-sm"
+                              }
+                            >
+                              {masterAccount.status === "synchronized"
+                                ? "Synced"
+                                : masterAccount.status === "pending"
+                                  ? "Pending"
+                                  : "Invalid"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                            <div className="flex items-center">
+                              {masterAccount.accountNumber}
+                            </div>
+                          </td>
+                          <td className="px-4 py-2 whitespace-nowrap text-sm text-yellow-700 align-middle">
+                            Master
+                          </td>
+                          <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                            {masterAccount.platform === "mt4"
+                              ? "MetaTrader 4"
+                              : masterAccount.platform === "mt5"
+                                ? "MetaTrader 5"
+                                : masterAccount.platform}
+                          </td>
+                          <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                            {masterAccount.server}
+                          </td>
+                          <td className="px-4 py-2 whitespace-nowrap align-middle">
+                            {accounts.filter(
+                              (acc) =>
+                                acc.connectedToMaster ===
+                                masterAccount.accountNumber
+                            ).length > 0 ? (
+                              <div className="rounded-full px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 inline-block">
+                                {
+                                  accounts.filter(
+                                    (acc) =>
+                                      acc.connectedToMaster ===
+                                      masterAccount.accountNumber
+                                  ).length
+                                }{" "}
+                                slave
+                                {accounts.filter(
+                                  (acc) =>
+                                    acc.connectedToMaster ===
+                                    masterAccount.accountNumber
+                                ).length > 1
+                                  ? "s"
+                                  : ""}{" "}
+                                connected
+                              </div>
+                            ) : (
+                              <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-600 inline-block">
+                                No slaves connected
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-4 py-2 whitespace-nowrap align-middle">
+                            <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-600 inline-block">
+                              N/A
+                            </div>
+                          </td>
+                          <td className="px-4 py-2 whitespace-nowrap align-middle actions-column">
+                            {deleteConfirmId === masterAccount.id ? (
+                              <div className="flex space-x-2">
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    confirmDeleteAccount();
+                                  }}
+                                >
+                                  Confirm
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    cancelDeleteAccount();
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditAccount(masterAccount);
+                                  }}
+                                  title="Edit Account"
+                                >
+                                  <Pencil className="h-4 w-4 text-blue-600" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteAccount(masterAccount.id);
+                                  }}
+                                  title="Delete Account"
+                                >
+                                  <Trash className="h-4 w-4 text-red-600" />
+                                </Button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+
+                        {/* Slave accounts connected to this master */}
+                        {!collapsedMasters[masterAccount.id] &&
+                          accounts
+                            .filter(
+                              (account) =>
+                                account.accountType === "slave" &&
+                                account.connectedToMaster ===
+                                  masterAccount.accountNumber
                             )
-                          ) {
-                            toggleMasterCollapse(masterAccount.id);
-                          }
-                        }}
+                            .map((slaveAccount) => (
+                              <tr
+                                key={slaveAccount.id}
+                                className="bg-white hover:bg-muted/50"
+                              >
+                                <td className="px-4 py-1.5 whitespace-nowrap align-middle">
+                                  <span
+                                    className={
+                                      slaveAccount.status === "synchronized"
+                                        ? "text-green-600 text-sm"
+                                        : slaveAccount.status === "pending"
+                                          ? "text-blue-600 text-sm"
+                                          : "text-red-600 text-sm"
+                                    }
+                                  >
+                                    {slaveAccount.status === "synchronized"
+                                      ? "Synced"
+                                      : slaveAccount.status === "pending"
+                                        ? "Pending"
+                                        : "Invalid"}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
+                                  {slaveAccount.accountNumber}
+                                </td>
+                                <td className="px-4 py-1.5 whitespace-nowrap text-sm text-green-700 align-middle">
+                                  Slave
+                                </td>
+                                <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
+                                  {slaveAccount.platform === "mt4"
+                                    ? "MetaTrader 4"
+                                    : slaveAccount.platform === "mt5"
+                                      ? "MetaTrader 5"
+                                      : slaveAccount.platform}
+                                </td>
+                                <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
+                                  {slaveAccount.server}
+                                </td>
+                                <td className="px-4 py-1.5 whitespace-nowrap text-xs align-middle">
+                                  <div className="flex flex-wrap gap-2">
+                                    {(() => {
+                                      // Crear array de etiquetas
+                                      const configLabels = [];
+
+                                      if (
+                                        slaveAccount.forceLot &&
+                                        parseFloat(
+                                          String(slaveAccount.forceLot)
+                                        ) > 0
+                                      ) {
+                                        configLabels.push(
+                                          <div
+                                            key="force"
+                                            className="rounded-full px-2 py-0.5 text-xs bg-blue-100 text-blue-800 inline-block"
+                                          >
+                                            Force lot {slaveAccount.forceLot}
+                                          </div>
+                                        );
+                                      } else if (slaveAccount.lotCoefficient) {
+                                        configLabels.push(
+                                          <div
+                                            key="lot"
+                                            className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block"
+                                          >
+                                            Lot multiplier{" "}
+                                            {slaveAccount.lotCoefficient}
+                                          </div>
+                                        );
+                                      }
+
+                                      if (slaveAccount.reverseTrade) {
+                                        configLabels.push(
+                                          <div
+                                            key="reverse"
+                                            className="rounded-full px-2 py-0.5 text-xs bg-purple-100 text-purple-800 inline-block"
+                                          >
+                                            Reverse trades
+                                          </div>
+                                        );
+                                      }
+
+                                      // Limitar número de etiquetas visibles
+                                      const maxLabels = 2;
+                                      const visibleLabels = configLabels.slice(
+                                        0,
+                                        maxLabels
+                                      );
+                                      const hiddenCount =
+                                        configLabels.length - maxLabels;
+
+                                      return (
+                                        <>
+                                          {visibleLabels}
+                                          {hiddenCount > 0 && (
+                                            <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-800 inline-block">
+                                              +{hiddenCount} more
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+                                    })()}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-1.5 whitespace-nowrap align-middle">
+                                  <div className="flex items-center">
+                                    <div className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block flex items-center gap-1">
+                                      Master: {masterAccount.accountNumber}
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-1.5 whitespace-nowrap align-middle actions-column">
+                                  {deleteConfirmId === slaveAccount.id ? (
+                                    <div className="flex space-x-2">
+                                      <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        onClick={confirmDeleteAccount}
+                                      >
+                                        Confirm
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={cancelDeleteAccount}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <div className="flex space-x-2">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleEditAccount(slaveAccount);
+                                        }}
+                                        title="Edit Account"
+                                      >
+                                        <Pencil className="h-4 w-4 text-blue-600" />
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeleteAccount(slaveAccount.id);
+                                        }}
+                                        title="Delete Account"
+                                      >
+                                        <Trash className="h-4 w-4 text-red-600" />
+                                      </Button>
+                                    </div>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                      </React.Fragment>
+                    ))}
+
+                  {/* Show slave accounts not connected to any master at the end */}
+                  {accounts
+                    .filter(
+                      (account) =>
+                        account.accountType === "slave" &&
+                        (!account.connectedToMaster ||
+                          account.connectedToMaster === "" ||
+                          account.connectedToMaster === "none")
+                    )
+                    .map((orphanSlave) => (
+                      <tr
+                        key={orphanSlave.id}
+                        className="hover:bg-muted/50 bg-gray-50"
                       >
                         <td className="px-4 py-2 whitespace-nowrap align-middle">
                           <span
                             className={
-                              masterAccount.status === "synchronized"
+                              orphanSlave.status === "synchronized"
                                 ? "text-green-600 text-sm"
-                                : masterAccount.status === "pending"
+                                : orphanSlave.status === "pending"
                                   ? "text-blue-600 text-sm"
                                   : "text-red-600 text-sm"
                             }
                           >
-                            {masterAccount.status === "synchronized"
+                            {orphanSlave.status === "synchronized"
                               ? "Synced"
-                              : masterAccount.status === "pending"
+                              : orphanSlave.status === "pending"
                                 ? "Pending"
                                 : "Invalid"}
                           </span>
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
-                          <div className="flex items-center">
-                            {masterAccount.accountNumber}
+                          {orphanSlave.accountNumber}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                          <span className="text-orange-600">
+                            Slave (Unconnected)
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                          {orphanSlave.platform === "mt4"
+                            ? "MetaTrader 4"
+                            : orphanSlave.platform === "mt5"
+                              ? "MetaTrader 5"
+                              : orphanSlave.platform}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                          {orphanSlave.server}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-xs align-middle">
+                          <div className="flex flex-wrap gap-1">
+                            {(() => {
+                              // Crear array de etiquetas
+                              const configLabels = [];
+
+                              configLabels.push(
+                                <div
+                                  key="unconnected"
+                                  className="rounded-full px-2 py-0.5 text-xs bg-orange-100 text-orange-800 inline-block"
+                                >
+                                  Not connected
+                                </div>
+                              );
+
+                              if (
+                                orphanSlave.forceLot &&
+                                orphanSlave.forceLot > 0
+                              ) {
+                                configLabels.push(
+                                  <div
+                                    key="force"
+                                    className="rounded-full px-2 py-0.5 text-xs bg-blue-100 text-blue-800 inline-block"
+                                  >
+                                    Force lot {orphanSlave.forceLot}
+                                  </div>
+                                );
+                              } else if (orphanSlave.lotCoefficient) {
+                                configLabels.push(
+                                  <div
+                                    key="lot"
+                                    className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block"
+                                  >
+                                    Lot multiplier {orphanSlave.lotCoefficient}
+                                  </div>
+                                );
+                              }
+
+                              if (orphanSlave.reverseTrade) {
+                                configLabels.push(
+                                  <div
+                                    key="reverse"
+                                    className="rounded-full px-2 py-0.5 text-xs bg-purple-100 text-purple-800 inline-block"
+                                  >
+                                    Reverse trades
+                                  </div>
+                                );
+                              }
+
+                              // Limitar número de etiquetas visibles
+                              const maxLabels = 2;
+                              const visibleLabels = configLabels.slice(
+                                0,
+                                maxLabels
+                              );
+                              const hiddenCount = configLabels.length - maxLabels;
+
+                              return (
+                                <>
+                                  {visibleLabels}
+                                  {hiddenCount > 0 && (
+                                    <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-800 inline-block">
+                                      +{hiddenCount} more
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            })()}
                           </div>
                         </td>
-                        <td className="px-4 py-2 whitespace-nowrap text-sm text-yellow-700 align-middle">
-                          Master
-                        </td>
-                        <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
-                          {masterAccount.platform === "mt4"
-                            ? "MetaTrader 4"
-                            : masterAccount.platform === "mt5"
-                              ? "MetaTrader 5"
-                              : masterAccount.platform}
-                        </td>
-                        <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
-                          {masterAccount.server}
+                        <td className="px-4 py-2 whitespace-nowrap align-middle">
+                          <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-600 inline-block">
+                            Not copying
+                          </div>
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap align-middle">
-                          {accounts.filter(
-                            (acc) =>
-                              acc.connectedToMaster ===
-                              masterAccount.accountNumber
-                          ).length > 0 ? (
-                            <div className="rounded-full px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 inline-block">
-                              {accounts.filter(
-                                (acc) =>
-                                  acc.connectedToMaster ===
-                                  masterAccount.accountNumber
-                              ).length}{" "}
-                              slave
-                              {accounts.filter(
-                                (acc) =>
-                                  acc.connectedToMaster ===
-                                  masterAccount.accountNumber
-                              ).length > 1
-                                ? "s"
-                                : ""}{" "}
-                              connected
-                            </div>
-                          ) : (
-                            <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-600 inline-block">
-                              No slaves connected
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-4 py-2 whitespace-nowrap align-middle actions-column">
-                          {deleteConfirmId === masterAccount.id ? (
+                          {deleteConfirmId === orphanSlave.id ? (
                             <div className="flex space-x-2">
                               <Button
                                 size="sm"
                                 variant="destructive"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  confirmDeleteAccount();
-                                }}
+                                onClick={confirmDeleteAccount}
                               >
                                 Confirm
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  cancelDeleteAccount();
-                                }}
+                                onClick={cancelDeleteAccount}
                               >
                                 Cancel
                               </Button>
@@ -1217,10 +1677,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
+                                className="h-9 w-9 p-0 rounded-full bg-white border border-gray-200 hover:bg-gray-50"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleEditAccount(masterAccount);
+                                  handleEditAccount(orphanSlave);
                                 }}
                                 title="Edit Account"
                               >
@@ -1229,10 +1689,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
+                                className="h-9 w-9 p-0 rounded-full bg-white border border-gray-200 hover:bg-gray-50"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteAccount(masterAccount.id);
+                                  handleDeleteAccount(orphanSlave.id);
                                 }}
                                 title="Delete Account"
                               >
@@ -1242,341 +1702,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                           )}
                         </td>
                       </tr>
-
-                      {/* Slave accounts connected to this master */}
-                      {!collapsedMasters[masterAccount.id] &&
-                        accounts
-                          .filter(
-                            (account) =>
-                              account.accountType === "slave" &&
-                              account.connectedToMaster ===
-                                masterAccount.accountNumber
-                          )
-                          .map((slaveAccount) => (
-                            <tr
-                              key={slaveAccount.id}
-                              className="bg-white hover:bg-muted/50"
-                            >
-                              <td className="px-4 py-1.5 whitespace-nowrap align-middle">
-                                <span
-                                  className={
-                                    slaveAccount.status === "synchronized"
-                                      ? "text-green-600 text-sm"
-                                      : slaveAccount.status === "pending"
-                                        ? "text-blue-600 text-sm"
-                                        : "text-red-600 text-sm"
-                                  }
-                                >
-                                  {slaveAccount.status === "synchronized"
-                                    ? "Synced"
-                                    : slaveAccount.status === "pending"
-                                      ? "Pending"
-                                      : "Invalid"}
-                                </span>
-                              </td>
-                              <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
-                                {slaveAccount.accountNumber}
-                              </td>
-                              <td className="px-4 py-1.5 whitespace-nowrap text-sm text-green-700 align-middle">
-                                Slave
-                              </td>
-                              <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
-                                {slaveAccount.platform === "mt4"
-                                  ? "MetaTrader 4"
-                                  : slaveAccount.platform === "mt5"
-                                    ? "MetaTrader 5"
-                                    : slaveAccount.platform}
-                              </td>
-                              <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
-                                {slaveAccount.server}
-                              </td>
-                              <td className="px-4 py-1.5 whitespace-nowrap text-xs align-middle">
-                                <div className="flex flex-wrap gap-2">
-                                  {(() => {
-                                    // Crear array de etiquetas
-                                    const configLabels = [];
-
-                                    if (
-                                      slaveAccount.forceLot &&
-                                      parseFloat(
-                                        String(slaveAccount.forceLot)
-                                      ) > 0
-                                    ) {
-                                      configLabels.push(
-                                        <div
-                                          key="force"
-                                          className="rounded-full px-2 py-0.5 text-xs bg-blue-100 text-blue-800 inline-block"
-                                        >
-                                          Force lot {slaveAccount.forceLot}
-                                        </div>
-                                      );
-                                    } else if (slaveAccount.lotCoefficient) {
-                                      configLabels.push(
-                                        <div
-                                          key="lot"
-                                          className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block"
-                                        >
-                                          Lot multiplier{" "}
-                                          {slaveAccount.lotCoefficient}
-                                        </div>
-                                      );
-                                    }
-
-                                    if (slaveAccount.reverseTrade) {
-                                      configLabels.push(
-                                        <div
-                                          key="reverse"
-                                          className="rounded-full px-2 py-0.5 text-xs bg-purple-100 text-purple-800 inline-block"
-                                        >
-                                          Reverse trades
-                                        </div>
-                                      );
-                                    }
-
-                                    // Limitar número de etiquetas visibles
-                                    const maxLabels = 2;
-                                    const visibleLabels = configLabels.slice(
-                                      0,
-                                      maxLabels
-                                    );
-                                    const hiddenCount =
-                                      configLabels.length - maxLabels;
-
-                                    return (
-                                      <>
-                                        {visibleLabels}
-                                        {hiddenCount > 0 && (
-                                          <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-800 inline-block">
-                                            +{hiddenCount} more
-                                          </div>
-                                        )}
-                                      </>
-                                    );
-                                  })()}
-                                </div>
-                              </td>
-                              <td className="px-4 py-1.5 whitespace-nowrap align-middle actions-column">
-                                {deleteConfirmId === slaveAccount.id ? (
-                                  <div className="flex space-x-2">
-                                    <Button
-                                      size="sm"
-                                      variant="destructive"
-                                      onClick={confirmDeleteAccount}
-                                    >
-                                      Confirm
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={cancelDeleteAccount}
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </div>
-                                ) : (
-                                  <div className="flex space-x-2">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleEditAccount(slaveAccount);
-                                      }}
-                                      title="Edit Account"
-                                    >
-                                      <Pencil className="h-4 w-4 text-blue-600" />
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteAccount(slaveAccount.id);
-                                      }}
-                                      title="Delete Account"
-                                    >
-                                      <Trash className="h-4 w-4 text-red-600" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                    </React.Fragment>
-                  ))}
-
-                {/* Show slave accounts not connected to any master at the end */}
-                {accounts
-                  .filter(
-                    (account) =>
-                      account.accountType === "slave" &&
-                      (!account.connectedToMaster ||
-                        account.connectedToMaster === "" ||
-                        account.connectedToMaster === "none")
-                  )
-                  .map((orphanSlave) => (
-                    <tr
-                      key={orphanSlave.id}
-                      className="hover:bg-muted/50 bg-gray-50"
-                    >
-                      <td className="px-4 py-2 whitespace-nowrap align-middle">
-                        <span
-                          className={
-                            orphanSlave.status === "synchronized"
-                              ? "text-green-600 text-sm"
-                              : orphanSlave.status === "pending"
-                                ? "text-blue-600 text-sm"
-                                : "text-red-600 text-sm"
-                          }
-                        >
-                          {orphanSlave.status === "synchronized"
-                            ? "Synced"
-                            : orphanSlave.status === "pending"
-                              ? "Pending"
-                              : "Invalid"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
-                        {orphanSlave.accountNumber}
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
-                        <span className="text-orange-600">
-                          Slave (Unconnected)
-                        </span>
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
-                        {orphanSlave.platform === "mt4"
-                          ? "MetaTrader 4"
-                          : orphanSlave.platform === "mt5"
-                            ? "MetaTrader 5"
-                            : orphanSlave.platform}
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
-                        {orphanSlave.server}
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap text-xs align-middle">
-                        <div className="flex flex-wrap gap-1">
-                          {(() => {
-                            // Crear array de etiquetas
-                            const configLabels = [];
-
-                            configLabels.push(
-                              <div
-                                key="unconnected"
-                                className="rounded-full px-2 py-0.5 text-xs bg-orange-100 text-orange-800 inline-block"
-                              >
-                                Not connected
-                              </div>
-                            );
-
-                            if (
-                              orphanSlave.forceLot &&
-                              orphanSlave.forceLot > 0
-                            ) {
-                              configLabels.push(
-                                <div
-                                  key="force"
-                                  className="rounded-full px-2 py-0.5 text-xs bg-blue-100 text-blue-800 inline-block"
-                                >
-                                  Force lot {orphanSlave.forceLot}
-                                </div>
-                              );
-                            } else if (orphanSlave.lotCoefficient) {
-                              configLabels.push(
-                                <div
-                                  key="lot"
-                                  className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block"
-                                >
-                                  Lot multiplier {orphanSlave.lotCoefficient}
-                                </div>
-                              );
-                            }
-
-                            if (orphanSlave.reverseTrade) {
-                              configLabels.push(
-                                <div
-                                  key="reverse"
-                                  className="rounded-full px-2 py-0.5 text-xs bg-purple-100 text-purple-800 inline-block"
-                                >
-                                  Reverse trades
-                                </div>
-                              );
-                            }
-
-                            // Limitar número de etiquetas visibles
-                            const maxLabels = 2;
-                            const visibleLabels = configLabels.slice(
-                              0,
-                              maxLabels
-                            );
-                            const hiddenCount = configLabels.length - maxLabels;
-
-                            return (
-                              <>
-                                {visibleLabels}
-                                {hiddenCount > 0 && (
-                                  <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-800 inline-block">
-                                    +{hiddenCount} more
-                                  </div>
-                                )}
-                              </>
-                            );
-                          })()}
-                        </div>
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap align-middle">
-                        {deleteConfirmId === orphanSlave.id ? (
-                          <div className="flex space-x-2">
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={confirmDeleteAccount}
-                            >
-                              Confirm
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={cancelDeleteAccount}
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="flex space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-9 w-9 p-0 rounded-full bg-white border border-gray-200 hover:bg-gray-50"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditAccount(orphanSlave);
-                              }}
-                              title="Edit Account"
-                            >
-                              <Pencil className="h-4 w-4 text-blue-600" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-9 w-9 p-0 rounded-full bg-white border border-gray-200 hover:bg-gray-50"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteAccount(orphanSlave.id);
-                              }}
-                              title="Delete Account"
-                            >
-                              <Trash className="h-4 w-4 text-red-600" />
-                            </Button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </CardContent>

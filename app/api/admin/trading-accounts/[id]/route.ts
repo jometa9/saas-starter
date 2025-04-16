@@ -44,7 +44,7 @@ export async function PATCH(
     }
 
     const { status } = validated.data;
-    
+
     // Convertir params.id a número directamente
     const accountId = parseInt(params.id, 10);
 
@@ -72,4 +72,4 @@ export async function PATCH(
       { status: 500 }
     );
   }
-} 
+}
