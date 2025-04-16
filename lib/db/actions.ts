@@ -269,6 +269,7 @@ export async function createTradingAccount(data: NewTradingAccount) {
       .insert(tradingAccounts)
       .values({
         ...data,
+        status: "pending",
         createdAt: new Date(),
         updatedAt: new Date(),
       })

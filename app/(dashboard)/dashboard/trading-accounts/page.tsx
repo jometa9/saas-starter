@@ -29,8 +29,9 @@ export default async function UserTradingAccountsPage({
     return redirect('/dashboard');
   }
 
-  // Obtener el userId de los parámetros de consulta
-  const userId = searchParams.userId;
+  // Obtener el userId de los parámetros de consulta después de esperar que estén disponibles
+  const params = await searchParams;
+  const userId = params.userId;
   
   if (!userId) {
     return redirect('/dashboard/managed-users');
@@ -45,19 +46,11 @@ export default async function UserTradingAccountsPage({
   });
 
   if (!targetUser) {
-    // Si el usuario no existe, redirigir a la lista de usuarios gestionados
     return redirect('/dashboard/managed-users');
   }
 
-  // Convertir ID de forma segura
   const userIdNum = Number(userId);
   
-  // Imprimir información para depuración (se verá en los logs del servidor)
-  console.log(`Buscando cuentas para el usuario ID: ${userId} (${typeof userId})`);
-  console.log(`ID de usuario convertido: ${userIdNum} (${typeof userIdNum})`);
-  console.log(`ID del targetUser: ${targetUser.id} (${typeof targetUser.id})`);
-  
-  // Obtener las cuentas de trading usando el ID de targetUser directamente
   const accounts = await db.select()
     .from(tradingAccounts)
     .where(
@@ -67,12 +60,6 @@ export default async function UserTradingAccountsPage({
       )
     )
     .orderBy(tradingAccounts.createdAt);
-  
-  console.log(`Número de cuentas encontradas: ${accounts.length}`);
-  
-  if (accounts.length > 0) {
-    console.log('Primera cuenta:', accounts[0]);
-  }
 
   return (
     <div className="container mx-auto py-6">

@@ -28,6 +28,7 @@ export const users = pgTable("users", {
   planName: varchar("plan_name", { length: 50 }),
   subscriptionStatus: varchar("subscription_status", { length: 20 }),
   subscriptionExpiryDate: timestamp("subscription_expiry_date"),
+  serverIP: text("server_ip"),
 });
 
 export const tradingAccounts = pgTable("trading_accounts", {

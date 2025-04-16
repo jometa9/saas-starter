@@ -36,10 +36,6 @@ export async function GET() {
       )
     );
 
-    // Logging para depuración
-    console.log(`Encontrados ${managedUsers.length} usuarios con plan Managed VPS`);
-
-    // For each user, count their trading accounts more directamente
     const usersWithAccountCounts = await Promise.all(
       managedUsers.map(async (user) => {
         // Consulta directa usando join adecuado
@@ -54,9 +50,6 @@ export async function GET() {
           );
         
         const count = accountsQuery[0]?.count || 0;
-        
-        // Logging para depuración
-        console.log(`Usuario ID ${user.id}: ${count} cuentas de trading`);
         
         return {
           ...user,

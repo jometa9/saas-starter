@@ -996,27 +996,13 @@ export function TradingAccountsConfig({ user }: { user: User }) {
             <table className="w-full border-collapse ">
               <thead className="bg-muted/50 ronded-t-xl">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                    Account Number
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                    Type
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                    Platform
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                    Server
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                    Configuration
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                    Actions
-                  </th>
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Status</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Account Number</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Type</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Platform</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Server</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Configuration</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-card divide-y divide-gray-200">
@@ -1040,24 +1026,19 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                         }}
                       >
                         <td className="px-4 py-2 whitespace-nowrap align-middle">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevenir propagación para evitar doble activación
-                              toggleMasterCollapse(masterAccount.id);
-                            }}
-                            className="focus:outline-none flex items-center justify-center w-6 h-6 rounded-full hover:bg-blue-200 transition-colors"
-                          >
-                            {collapsedMasters[masterAccount.id] ? (
-                              <ChevronRight className="h-4 w-4 text-blue-700" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 text-blue-700" />
-                            )}
-                            <span className="sr-only">
-                              {collapsedMasters[masterAccount.id]
-                                ? "Expand"
-                                : "Collapse"}
-                            </span>
-                          </button>
+                          <span className={
+                            masterAccount.status === 'synchronized'
+                              ? 'text-green-600 text-sm'
+                              : masterAccount.status === 'pending'
+                                ? 'text-blue-600 text-sm'
+                                : 'text-red-600 text-sm'
+                          }>
+                            {masterAccount.status === 'synchronized'
+                              ? 'Synced'
+                              : masterAccount.status === 'pending'
+                                ? 'Pending'
+                                : 'Invalid'}
+                          </span>
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
                           <div className="flex items-center">
@@ -1174,7 +1155,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                           .map((slaveAccount) => (
                             <tr
                               key={slaveAccount.id}
-                              className="hover:bg-muted/50 border-t border-dashed border-gray-200"
+                              className="bg-white hover:bg-muted/50"
                             >
                               <td className="px-4 py-1.5 whitespace-nowrap align-middle">
                                 <span
@@ -1194,9 +1175,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                 </span>
                               </td>
                               <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
-                                <div className="flex items-center">
-                                  {slaveAccount.accountNumber}
-                                </div>
+                                {slaveAccount.accountNumber}
                               </td>
                               <td className="px-4 py-1.5 whitespace-nowrap text-sm text-green-700 align-middle">
                                 Slave
@@ -1219,7 +1198,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
                                     if (
                                       slaveAccount.forceLot &&
-                                      slaveAccount.forceLot > 0
+                                      parseFloat(String(slaveAccount.forceLot)) > 0
                                     ) {
                                       configLabels.push(
                                         <div
@@ -1235,8 +1214,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                           key="lot"
                                           className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block"
                                         >
-                                          Lot multiplier{" "}
-                                          {slaveAccount.lotCoefficient}
+                                          Lot multiplier {slaveAccount.lotCoefficient}
                                         </div>
                                       );
                                     }
@@ -1274,7 +1252,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                   })()}
                                 </div>
                               </td>
-                              <td className="px-4 py-1.5 whitespace-nowrap align-middle">
+                              <td className="px-4 py-1.5 whitespace-nowrap align-middle actions-column">
                                 {deleteConfirmId === slaveAccount.id ? (
                                   <div className="flex space-x-2">
                                     <Button

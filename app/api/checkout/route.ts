@@ -26,21 +26,15 @@ export async function POST(request: NextRequest) {
     });
     
     if (typeof checkoutResult === 'string') {
-      // Si es una URL directa, redirigir
       const redirectUrl = new URL(checkoutResult, request.url);
-      console.log(`Redirecting to: ${redirectUrl.toString()}`);
       return NextResponse.redirect(redirectUrl, { status: 307 });
     } else if (checkoutResult.redirect) {
-      // Si es un objeto con propiedad redirect, redirigir
       const redirectUrl = new URL(checkoutResult.redirect, request.url);
-      console.log(`Redirecting to: ${redirectUrl.toString()}`);
       return NextResponse.redirect(redirectUrl, { status: 307 });
     } else if (checkoutResult.error) {
-      // Si hay un error específico, devolverlo
       console.error(`Checkout error: ${checkoutResult.error}`);
       return NextResponse.json({ error: checkoutResult.error }, { status: 400 });
     } else {
-      // Error genérico si no hay redirección o error específico
       return NextResponse.json({ error: 'Unable to create checkout session' }, { status: 500 });
     }
   } catch (error) {

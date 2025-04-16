@@ -3,8 +3,6 @@
 - boton al lado de delete accont que sea para reset password
 - panel de usuario que tiene el self managed
 
-
-
 - corregir el template del email
 
 
@@ -20,16 +18,6 @@ unificar los readme del proyecto y hacerlo en ingles
 - cerrar con dashboard para largar un mbp
 
 acomodar el start del docker
-
-
-IPTRADE Premium anual price_1RB3jfA3C4QniATDbeuwOUrx
-IPTRADE Premium mensual price_1RB3j0A3C4QniATDapoM1A3a
-IPTRADE Unlimited anual price_1RDo2sA3C4QniATDbnZkwM0E
-IPTRADE Unlimited mensual price_1RDo2sA3C4QniATDKk2O4xZb
-IPTRADE Managed VPS anual price_1RDo4gA3C4QniATDR0bB6698
-IPTRADE Managed VPS mensual price_1RDo4HA3C4QniATDCV2KY2JF
-
-
 
 - en la pantalla de precios debo mostrar una tabla a detalle con los planes y como es
 - en la pantalla del home de landing, donde estan los precios, veo donde meter un boton o algo para enviarlo a la pagina de precios para que vean la tabla
