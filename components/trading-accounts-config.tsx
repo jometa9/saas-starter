@@ -29,6 +29,11 @@ import {
   Trash,
   ChevronDown,
   ChevronRight,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  XCircle,
+  Info,
 } from "lucide-react";
 
 export function TradingAccountsConfig({ user }: { user: User }) {
@@ -49,22 +54,22 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       connectedToMaster?: string;
     }>
   >([]);
-  
+
   // Add loading state
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Add useEffect to fetch accounts from API
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
         setIsLoading(true);
         const response = await fetch("/api/trading-accounts");
-        
+
         if (!response.ok) {
           const error = await response.json();
           throw new Error(error.error || "Failed to fetch trading accounts");
         }
-        
+
         const data = await response.json();
         if (data.accounts && data.accounts.length > 0) {
           // Convert numeric IDs to strings and ensure copyingTo exists
@@ -87,7 +92,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         setIsLoading(false);
       }
     };
-    
+
     fetchAccounts();
   }, []);
 
@@ -210,7 +215,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       lotCoefficient: account.lotCoefficient || 1,
       forceLot: account.forceLot || 0,
       reverseTrade: account.reverseTrade || false,
-      connectedToMaster: account.connectedToMaster ? account.connectedToMaster : "none",
+      connectedToMaster: account.connectedToMaster
+        ? account.connectedToMaster
+        : "none",
     });
 
     // Scroll hacia el formulario después de un pequeño retraso para permitir que el DOM se actualice
@@ -227,35 +234,48 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     if (deleteConfirmId) {
       try {
         setIsSubmitting(true);
-        
+
         // Check if the account being deleted is a master
-        const accountToDelete = accounts.find(acc => acc.id === deleteConfirmId);
-        const isMaster = accountToDelete && accountToDelete.accountType === "master";
+        const accountToDelete = accounts.find(
+          (acc) => acc.id === deleteConfirmId
+        );
+        const isMaster =
+          accountToDelete && accountToDelete.accountType === "master";
         const masterAccountNumber = accountToDelete?.accountNumber;
-        
-        const response = await fetch(`/api/trading-accounts/${deleteConfirmId}`, {
-          method: "DELETE",
-        });
-        
+
+        const response = await fetch(
+          `/api/trading-accounts/${deleteConfirmId}`,
+          {
+            method: "DELETE",
+          }
+        );
+
         if (!response.ok) {
           const error = await response.json();
           throw new Error(error.error || "Failed to delete trading account");
         }
-        
+
         // If this was a master account, update any connected slave accounts
         if (isMaster && masterAccountNumber) {
           // Update local state - unlink slaves from the deleted master
-          setAccounts(accounts.map(account => 
-            account.accountType === "slave" && account.connectedToMaster === masterAccountNumber
-              ? { ...account, connectedToMaster: "" }
-              : account
-          ).filter(account => account.id !== deleteConfirmId));
-          
+          setAccounts(
+            accounts
+              .map((account) =>
+                account.accountType === "slave" &&
+                account.connectedToMaster === masterAccountNumber
+                  ? { ...account, connectedToMaster: "" }
+                  : account
+              )
+              .filter((account) => account.id !== deleteConfirmId)
+          );
+
           // Update slave accounts in the backend
           const slavesToUpdate = accounts.filter(
-            acc => acc.accountType === "slave" && acc.connectedToMaster === masterAccountNumber
+            (acc) =>
+              acc.accountType === "slave" &&
+              acc.connectedToMaster === masterAccountNumber
           );
-          
+
           // Update each connected slave in the backend
           for (const slave of slavesToUpdate) {
             try {
@@ -270,20 +290,26 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 }),
               });
             } catch (slaveUpdateError) {
-              console.error(`Error updating slave account ${slave.id}:`, slaveUpdateError);
+              console.error(
+                `Error updating slave account ${slave.id}:`,
+                slaveUpdateError
+              );
               // Continue with other updates even if one fails
             }
           }
         } else {
           // Not a master account, just remove it from the list
-          setAccounts(accounts.filter((account) => account.id !== deleteConfirmId));
+          setAccounts(
+            accounts.filter((account) => account.id !== deleteConfirmId)
+          );
         }
-        
+
         toast({
           title: "Account Deleted",
-          description: isMaster && masterAccountNumber 
-            ? `The master account has been removed and ${accounts.filter(acc => acc.connectedToMaster === masterAccountNumber).length} slave accounts have been unlinked.`
-            : "The account has been removed successfully.",
+          description:
+            isMaster && masterAccountNumber
+              ? `The master account has been removed and ${accounts.filter((acc) => acc.connectedToMaster === masterAccountNumber).length} slave accounts have been unlinked.`
+              : "The account has been removed successfully.",
         });
       } catch (error) {
         console.error("Error deleting trading account:", error);
@@ -331,12 +357,15 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           lotCoefficient: formState.lotCoefficient,
           forceLot: formState.forceLot,
           reverseTrade: formState.reverseTrade,
-          connectedToMaster: formState.connectedToMaster === "none" ? "" : formState.connectedToMaster,
+          connectedToMaster:
+            formState.connectedToMaster === "none"
+              ? ""
+              : formState.connectedToMaster,
         }),
       };
 
       let response, data;
-      
+
       if (editingAccount) {
         // Update existing account
         response = await fetch(`/api/trading-accounts/${editingAccount.id}`, {
@@ -346,13 +375,13 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           },
           body: JSON.stringify(payload),
         });
-        
+
         data = await response.json();
-        
+
         if (!response.ok) {
           throw new Error(data.error || "Failed to update trading account");
         }
-        
+
         // Update state with the response
         setAccounts(
           accounts.map((acc) =>
@@ -365,9 +394,12 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                   password: formState.password ? "••••••••" : acc.password,
                   accountType: formState.accountType,
                   status: formState.status,
-                  connectedToMaster: formState.accountType === "slave" 
-                    ? (formState.connectedToMaster === "none" ? "" : formState.connectedToMaster)
-                    : undefined,
+                  connectedToMaster:
+                    formState.accountType === "slave"
+                      ? formState.connectedToMaster === "none"
+                        ? ""
+                        : formState.connectedToMaster
+                      : undefined,
                   lotCoefficient:
                     formState.accountType === "slave"
                       ? formState.lotCoefficient
@@ -398,13 +430,13 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           },
           body: JSON.stringify(payload),
         });
-        
+
         data = await response.json();
-        
+
         if (!response.ok) {
           throw new Error(data.error || "Failed to create trading account");
         }
-        
+
         // Add the new account to state
         setAccounts([
           ...accounts,
@@ -419,7 +451,10 @@ export function TradingAccountsConfig({ user }: { user: User }) {
               lotCoefficient: formState.lotCoefficient,
               forceLot: formState.forceLot,
               reverseTrade: formState.reverseTrade,
-              connectedToMaster: formState.connectedToMaster === "none" ? "" : formState.connectedToMaster,
+              connectedToMaster:
+                formState.connectedToMaster === "none"
+                  ? ""
+                  : formState.connectedToMaster,
             }),
           },
         ]);
@@ -475,27 +510,6 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         );
       default:
         return <Monitor className="h-5 w-5 text-blue-500" />;
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "optimal":
-        return (
-          <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
-        );
-      case "warning":
-        return (
-          <div className="h-3 w-3 rounded-full bg-yellow-500 animate-pulse"></div>
-        );
-      case "pending":
-        return (
-          <div className="h-3 w-3 rounded-full bg-blue-500 animate-pulse"></div>
-        );
-      case "error":
-        return <div className="h-3 w-3 rounded-full bg-red-500"></div>;
-      default:
-        return <div className="h-3 w-3 rounded-full bg-gray-500"></div>;
     }
   };
 
@@ -600,7 +614,20 @@ export function TradingAccountsConfig({ user }: { user: User }) {
               <div className="text-sm text-muted-foreground">
                 Server Status:
               </div>
-              {getStatusIcon(getServerStatus())}
+              {(() => {
+                switch (getServerStatus()) {
+                  case "optimal":
+                    return <CheckCircle className="h-4 w-4 text-green-500" />;
+                  case "warning":
+                    return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+                  case "pending":
+                    return <Clock className="h-4 w-4 text-blue-500" />;
+                  case "error":
+                    return <XCircle className="h-4 w-4 text-red-500" />;
+                  default:
+                    return <Info className="h-4 w-4 text-gray-500" />;
+                }
+              })()}
               <div className="text-sm font-medium">
                 {getServerStatus() === "optimal"
                   ? "All Synchronized"
@@ -856,7 +883,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 {formState.accountType === "slave" && (
                   <>
                     <div>
-                      <Label htmlFor="connectedToMaster">Connect to Master Account</Label>
+                      <Label htmlFor="connectedToMaster">
+                        Connect to Master Account
+                      </Label>
                       <Select
                         name="connectedToMaster"
                         value={formState.connectedToMaster}
@@ -868,12 +897,19 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                           <SelectValue placeholder="Select Master Account (Optional)" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">Not Connected (Independent)</SelectItem>
+                          <SelectItem value="none">
+                            Not Connected (Independent)
+                          </SelectItem>
                           {accounts
                             .filter((acc) => acc.accountType === "master")
                             .map((masterAcc) => (
-                              <SelectItem key={masterAcc.id} value={masterAcc.accountNumber}>
-                                {masterAcc.accountNumber} ({masterAcc.platform.toUpperCase()} - {masterAcc.server})
+                              <SelectItem
+                                key={masterAcc.id}
+                                value={masterAcc.accountNumber}
+                              >
+                                {masterAcc.accountNumber} (
+                                {masterAcc.platform.toUpperCase()} -{" "}
+                                {masterAcc.server})
                               </SelectItem>
                             ))}
                         </SelectContent>
@@ -993,7 +1029,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           </div>
         ) : (
           <div className="overflow-x-auto rounded-xl border border-gray-200">
-            <table className="w-full border-collapse ">
+            <table className="w-full border-collapse">
               <thead className="bg-muted/50 ronded-t-xl">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs uppercase align-middle">Status</th>
@@ -1026,18 +1062,20 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                         }}
                       >
                         <td className="px-4 py-2 whitespace-nowrap align-middle">
-                          <span className={
-                            masterAccount.status === 'synchronized'
-                              ? 'text-green-600 text-sm'
-                              : masterAccount.status === 'pending'
-                                ? 'text-blue-600 text-sm'
-                                : 'text-red-600 text-sm'
-                          }>
-                            {masterAccount.status === 'synchronized'
-                              ? 'Synced'
-                              : masterAccount.status === 'pending'
-                                ? 'Pending'
-                                : 'Invalid'}
+                          <span
+                            className={
+                              masterAccount.status === "synchronized"
+                                ? "text-green-600 text-sm"
+                                : masterAccount.status === "pending"
+                                  ? "text-blue-600 text-sm"
+                                  : "text-red-600 text-sm"
+                            }
+                          >
+                            {masterAccount.status === "synchronized"
+                              ? "Synced"
+                              : masterAccount.status === "pending"
+                                ? "Pending"
+                                : "Invalid"}
                           </span>
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
@@ -1065,13 +1103,11 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                               masterAccount.accountNumber
                           ).length > 0 ? (
                             <div className="rounded-full px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 inline-block">
-                              {
-                                accounts.filter(
-                                  (acc) =>
-                                    acc.connectedToMaster ===
-                                    masterAccount.accountNumber
-                                ).length
-                              }{" "}
+                              {accounts.filter(
+                                (acc) =>
+                                  acc.connectedToMaster ===
+                                  masterAccount.accountNumber
+                              ).length}{" "}
                               slave
                               {accounts.filter(
                                 (acc) =>
@@ -1115,28 +1151,28 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                           ) : (
                             <div className="flex space-x-2">
                               <Button
-                                size="sm"
                                 variant="outline"
+                                size="sm"
+                                className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleEditAccount(masterAccount);
                                 }}
-                                className="h-8 w-8 p-0 cursor-pointer"
+                                title="Edit Account"
                               >
-                                <Pencil className="h-4 w-4" />
-                                <span className="sr-only">Edit</span>
+                                <Pencil className="h-4 w-4 text-blue-600" />
                               </Button>
                               <Button
-                                size="sm"
                                 variant="outline"
+                                size="sm"
+                                className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleDeleteAccount(masterAccount.id);
                                 }}
-                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50 cursor-pointer"
+                                title="Delete Account"
                               >
-                                <Trash className="h-4 w-4" />
-                                <span className="sr-only">Delete</span>
+                                <Trash className="h-4 w-4 text-red-600" />
                               </Button>
                             </div>
                           )}
@@ -1191,14 +1227,16 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                 {slaveAccount.server}
                               </td>
                               <td className="px-4 py-1.5 whitespace-nowrap text-xs align-middle">
-                                <div className="flex flex-wrap gap-2 max-w-[200px]">
+                                <div className="flex flex-wrap gap-2">
                                   {(() => {
                                     // Crear array de etiquetas
                                     const configLabels = [];
 
                                     if (
                                       slaveAccount.forceLot &&
-                                      parseFloat(String(slaveAccount.forceLot)) > 0
+                                      parseFloat(
+                                        String(slaveAccount.forceLot)
+                                      ) > 0
                                     ) {
                                       configLabels.push(
                                         <div
@@ -1214,7 +1252,8 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                           key="lot"
                                           className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block"
                                         >
-                                          Lot multiplier {slaveAccount.lotCoefficient}
+                                          Lot multiplier{" "}
+                                          {slaveAccount.lotCoefficient}
                                         </div>
                                       );
                                     }
@@ -1273,28 +1312,28 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                 ) : (
                                   <div className="flex space-x-2">
                                     <Button
-                                      size="sm"
                                       variant="outline"
+                                      size="sm"
+                                      className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleEditAccount(slaveAccount);
                                       }}
-                                      className="h-8 w-8 p-0"
+                                      title="Edit Account"
                                     >
-                                      <Pencil className="h-4 w-4" />
-                                      <span className="sr-only">Edit</span>
+                                      <Pencil className="h-4 w-4 text-blue-600" />
                                     </Button>
                                     <Button
-                                      size="sm"
                                       variant="outline"
+                                      size="sm"
+                                      className="h-9 w-9 p-0 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleDeleteAccount(slaveAccount.id);
                                       }}
-                                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
+                                      title="Delete Account"
                                     >
-                                      <Trash className="h-4 w-4" />
-                                      <span className="sr-only">Delete</span>
+                                      <Trash className="h-4 w-4 text-red-600" />
                                     </Button>
                                   </div>
                                 )}
@@ -1309,7 +1348,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                   .filter(
                     (account) =>
                       account.accountType === "slave" &&
-                      (!account.connectedToMaster || account.connectedToMaster === "" || account.connectedToMaster === "none")
+                      (!account.connectedToMaster ||
+                        account.connectedToMaster === "" ||
+                        account.connectedToMaster === "none")
                   )
                   .map((orphanSlave) => (
                     <tr
@@ -1352,7 +1393,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                         {orphanSlave.server}
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-xs align-middle">
-                        <div className="flex flex-wrap gap-1 max-w-[200px]">
+                        <div className="flex flex-wrap gap-1">
                           {(() => {
                             // Crear array de etiquetas
                             const configLabels = [];
@@ -1442,28 +1483,28 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                         ) : (
                           <div className="flex space-x-2">
                             <Button
-                              size="sm"
                               variant="outline"
+                              size="sm"
+                              className="h-9 w-9 p-0 rounded-full bg-white border border-gray-200 hover:bg-gray-50"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleEditAccount(orphanSlave);
                               }}
-                              className="h-8 w-8 p-0"
+                              title="Edit Account"
                             >
-                              <Pencil className="h-4 w-4" />
-                              <span className="sr-only">Edit</span>
+                              <Pencil className="h-4 w-4 text-blue-600" />
                             </Button>
                             <Button
-                              size="sm"
                               variant="outline"
+                              size="sm"
+                              className="h-9 w-9 p-0 rounded-full bg-white border border-gray-200 hover:bg-gray-50"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleDeleteAccount(orphanSlave.id);
                               }}
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
+                              title="Delete Account"
                             >
-                              <Trash className="h-4 w-4" />
-                              <span className="sr-only">Delete</span>
+                              <Trash className="h-4 w-4 text-red-600" />
                             </Button>
                           </div>
                         )}
