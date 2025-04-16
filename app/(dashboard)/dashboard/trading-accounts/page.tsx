@@ -12,11 +12,17 @@ export const metadata = {
   description: 'View and manage trading accounts for a specific user',
 };
 
+interface SearchParams {
+  userId?: string;
+}
+
+interface PageProps {
+  searchParams: SearchParams;
+}
+
 export default async function UserTradingAccountsPage({
   searchParams,
-}: {
-  searchParams: { userId?: string };
-}) {
+}: PageProps) {
   // Verificar autenticación del usuario
   const { session, user } = await getUserAuth();
   
@@ -29,9 +35,8 @@ export default async function UserTradingAccountsPage({
     return redirect('/dashboard');
   }
 
-  // Obtener el userId de los parámetros de consulta después de esperar que estén disponibles
-  const params = await searchParams;
-  const userId = params.userId;
+  // Obtener el userId de los parámetros de consulta
+  const userId = searchParams.userId;
   
   if (!userId) {
     return redirect('/dashboard/managed-users');
