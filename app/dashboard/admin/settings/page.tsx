@@ -45,9 +45,7 @@ export default function AdminSettingsPage() {
   const [emailCtaLabel, setEmailCtaLabel] = useState("View Dashboard");
   const [emailCtaUrl, setEmailCtaUrl] = useState("");
   const [emailIsImportant, setEmailIsImportant] = useState(false);
-  const [emailTargetGroup, setEmailTargetGroup] = useState("all");
 
-  // Free Subscription
   const [isAssigningSubscription, setIsAssigningSubscription] = useState(false);
   const [subscriptionEmail, setSubscriptionEmail] = useState("");
   const [subscriptionPlan, setSubscriptionPlan] = useState("");
@@ -62,10 +60,14 @@ export default function AdminSettingsPage() {
     };
   } | null>(null);
 
-  // Obtener la función toast de useToast
+  const availablePlans = [
+    { value: "IPTRADE Premium", label: "Premium" },
+    { value: "IPTRADE Unlimited", label: "Unlimited" },
+    { value: "IPTRADE Managed VPS", label: "Managed VPS" }
+  ];
+
   const { toast } = useToast();
 
-  // Cargar la versión actual cuando el componente se monte
   useEffect(() => {
     const fetchCurrentVersion = async () => {
       try {
@@ -194,11 +196,11 @@ export default function AdminSettingsPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Subject and message are required",
+          description: "Subject and message are required"
         });
         return;
       }
-
+      
       setIsSendingMassEmail(true);
       const response = await fetch("/api/admin/mass-email", {
         method: "POST",
@@ -210,8 +212,7 @@ export default function AdminSettingsPage() {
           message: emailMessage,
           ctaLabel: emailCtaLabel,
           ctaUrl: emailCtaUrl || `${window.location.origin}/dashboard`,
-          isImportant: emailIsImportant,
-          targetGroup: emailTargetGroup,
+          isImportant: emailIsImportant
         }),
       });
 
@@ -225,12 +226,12 @@ export default function AdminSettingsPage() {
         toast({
           variant: "warning",
           title: "Warning",
-          description: data.message,
+          description: data.message
         });
       } else {
         toast({
           title: "Success",
-          description: data.message || "Mass email sent successfully!",
+          description: data.message || "Mass email sent successfully!"
         });
         // Resetear el formulario
         setEmailSubject("");
@@ -238,14 +239,13 @@ export default function AdminSettingsPage() {
         setEmailCtaLabel("View Dashboard");
         setEmailCtaUrl("");
         setEmailIsImportant(false);
-        setEmailTargetGroup("all");
       }
     } catch (error) {
       console.error("Error sending mass email:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to send mass email. Please try again.",
+        description: "Failed to send mass email. Please try again."
       });
     } finally {
       setIsSendingMassEmail(false);
@@ -262,7 +262,7 @@ export default function AdminSettingsPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Please fill in all fields",
+          description: "Please fill in all fields"
         });
         return;
       }
@@ -300,7 +300,7 @@ export default function AdminSettingsPage() {
 
       toast({
         title: "Success",
-        description: data.message || "Free subscription assigned successfully!",
+        description: data.message || `Free ${subscriptionPlan} subscription assigned successfully!`
       });
 
       // Resetear el formulario solo en caso de éxito
@@ -313,7 +313,7 @@ export default function AdminSettingsPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to assign free subscription. Please try again.",
+        description: "Failed to assign free subscription. Please try again."
       });
     } finally {
       setIsAssigningSubscription(false);
@@ -451,23 +451,6 @@ export default function AdminSettingsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="target-group">Target Group</Label>
-                <Select
-                  value={emailTargetGroup}
-                  onValueChange={setEmailTargetGroup}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select target group" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Users</SelectItem>
-                    <SelectItem value="free">Free Subscribers</SelectItem>
-                    <SelectItem value="paid">Paid Subscribers</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="email-subject">Subject</Label>
                 <Input
                   id="email-subject"
@@ -537,9 +520,9 @@ export default function AdminSettingsPage() {
         <TabsContent value="subscription">
           <Card>
             <CardHeader>
-              <CardTitle>Promotional Free Subscriptions</CardTitle>
+              <CardTitle>Assign Free Subscription</CardTitle>
               <CardDescription>
-                Assign free subscriptions to users
+                Assign free subscription plans to users with specified duration
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -547,8 +530,7 @@ export default function AdminSettingsPage() {
                 <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded mb-4">
                   <p className="font-medium">{subscriptionWarning.message}</p>
                   <p className="text-sm">
-                    Current plan:{" "}
-                    {subscriptionWarning.existingSubscription.planName}
+                    Current plan: {subscriptionWarning.existingSubscription.planName}
                     <br />
                     Status: {subscriptionWarning.existingSubscription.status}
                     <br />
@@ -571,12 +553,21 @@ export default function AdminSettingsPage() {
 
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="sub-plan">Plan Name</Label>
-                <Input
-                  id="sub-plan"
-                  placeholder="Pro Plan"
+                <Select
                   value={subscriptionPlan}
-                  onChange={(e) => setSubscriptionPlan(e.target.value)}
-                />
+                  onValueChange={setSubscriptionPlan}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select plan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availablePlans.map((plan) => (
+                      <SelectItem key={plan.value} value={plan.value}>
+                        {plan.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid w-full items-center gap-1.5">
@@ -620,6 +611,7 @@ export default function AdminSettingsPage() {
                   !subscriptionPlan ||
                   !subscriptionDuration
                 }
+                className="w-full"
               >
                 {isAssigningSubscription
                   ? "Assigning..."

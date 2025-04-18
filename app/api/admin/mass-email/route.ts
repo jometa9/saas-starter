@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAdminRequest } from '@/lib/auth/utils';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
-import { isNull, sql, inArray, and, eq, or } from 'drizzle-orm';
+import { isNull } from 'drizzle-orm';
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,62 +21,26 @@ export async function POST(req: NextRequest) {
       message, 
       ctaLabel, 
       ctaUrl, 
-      isImportant = false,
-      targetGroup = 'all' // Puede ser 'all', 'free', 'paid', etc.
+      isImportant = false
     } = data;
 
     if (!subject || !message) {
       return NextResponse.json({ error: 'Subject and message are required' }, { status: 400 });
     }
 
-    // Construir la consulta según el grupo objetivo
-    let query = db.select().from(users).where(isNull(users.deletedAt));
-
-    if (targetGroup === 'free') {
-      // Usuarios con suscripciones gratuitas:
-      // - Estado "active" o "admin_assigned" sin stripeSubscriptionId, o
-      // - Estado diferente de "active", "trialing" (suscripciones inactivas)
-      query = query.where(
-        or(
-          // Suscripciones asignadas manualmente por el admin (gratuitas)
-          and(
-            eq(users.subscriptionStatus, 'admin_assigned'),
-            isNull(users.stripeSubscriptionId)
-          ),
-          // Suscripciones gratuitas activas sin Stripe
-          and(
-            eq(users.subscriptionStatus, 'active'),
-            isNull(users.stripeSubscriptionId)
-          ),
-          // Usuarios sin suscripción activa
-          and(
-            sql`${users.subscriptionStatus} IS NULL OR ${users.subscriptionStatus} NOT IN ('active', 'trialing')`
-          )
-        )
-      );
-    } else if (targetGroup === 'paid') {
-      // Usuarios con suscripciones pagas:
-      // - Estado "active" o "trialing" con stripeSubscriptionId
-      query = query.where(
-        and(
-          inArray(users.subscriptionStatus, ['active', 'trialing']),
-          sql`${users.stripeSubscriptionId} IS NOT NULL`
-        )
-      );
-    }
-    // Para 'all', no hacemos filtro adicional
-
-    // Obtener la lista de usuarios
-    const usersList = await query;
+    // Consulta simple para obtener todos los usuarios activos
+    const usersList = await db
+      .select()
+      .from(users)
+      .where(isNull(users.deletedAt));
 
     if (usersList.length === 0) {
       return NextResponse.json({ 
         warning: true,
-        message: 'No users found matching the criteria'
+        message: 'No users found in the database'
       }, { status: 200 });
     }
 
-    // Importar dinámicamente el servicio de email para evitar errores de "Cannot use server-only APIs in client components"
     const { sendBroadcastEmail } = await import('@/lib/email');
 
     // Preparar para envío en lotes de 10 emails a la vez para no sobrecargar el servidor
