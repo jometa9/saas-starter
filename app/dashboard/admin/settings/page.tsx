@@ -6,7 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import {
@@ -23,7 +29,7 @@ import { Toast } from "@/components/ui/toast";
 export default function AdminSettingsPage() {
   // Test Emails
   const [isSending, setIsSending] = useState(false);
-  
+
   // Version Management
   const [isUpdatingVersion, setIsUpdatingVersion] = useState(false);
   const [newVersion, setNewVersion] = useState("");
@@ -31,7 +37,7 @@ export default function AdminSettingsPage() {
   const [releaseNotes, setReleaseNotes] = useState("");
   const [downloadUrl, setDownloadUrl] = useState("");
   const [isCritical, setIsCritical] = useState(false);
-  
+
   // Mass Email
   const [isSendingMassEmail, setIsSendingMassEmail] = useState(false);
   const [emailSubject, setEmailSubject] = useState("");
@@ -40,7 +46,7 @@ export default function AdminSettingsPage() {
   const [emailCtaUrl, setEmailCtaUrl] = useState("");
   const [emailIsImportant, setEmailIsImportant] = useState(false);
   const [emailTargetGroup, setEmailTargetGroup] = useState("all");
-  
+
   // Free Subscription
   const [isAssigningSubscription, setIsAssigningSubscription] = useState(false);
   const [subscriptionEmail, setSubscriptionEmail] = useState("");
@@ -72,7 +78,7 @@ export default function AdminSettingsPage() {
         console.error("Error fetching current version:", error);
       }
     };
-    
+
     fetchCurrentVersion();
   }, []); // Array vacío para que solo se ejecute una vez al montar el componente
 
@@ -92,14 +98,14 @@ export default function AdminSettingsPage() {
 
       toast({
         title: "Success",
-        description: "Test emails sent successfully! Check your inbox."
+        description: "Test emails sent successfully! Check your inbox.",
       });
     } catch (error) {
       console.error("Error sending test emails:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to send test emails. Please try again."
+        description: "Failed to send test emails. Please try again.",
       });
     } finally {
       setIsSending(false);
@@ -113,33 +119,33 @@ export default function AdminSettingsPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Please enter a new version"
+          description: "Please enter a new version",
         });
         return;
       }
-      
+
       // Validar formato de versión (x.y.z)
       const versionRegex = /^\d+\.\d+\.\d+$/;
       if (!versionRegex.test(newVersion)) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Invalid version format. Use x.y.z format."
+          description: "Invalid version format. Use x.y.z format.",
         });
         return;
       }
-      
+
       setIsUpdatingVersion(true);
       const response = await fetch("/api/admin/version", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           version: newVersion,
           releaseNotes,
           downloadUrl,
-          isCritical
+          isCritical,
         }),
       });
 
@@ -151,19 +157,19 @@ export default function AdminSettingsPage() {
 
       // Usar el nombre de campo correcto de la respuesta
       const updatedVersion = data.newVersion || data.version;
-      
+
       // Mostrar los toasts para confirmar la actualización
       toast({
         title: "Success",
-        description: `Version updated to ${updatedVersion}`
+        description: `Version updated to ${updatedVersion}`,
       });
-      
+
       // Toast separado para el envío de emails
       toast({
         title: "Success",
-        description: "Email notifications sent to users"
+        description: "Email notifications sent to users",
       });
-      
+
       setCurrentVersion(updatedVersion);
       setNewVersion("");
       setReleaseNotes("");
@@ -174,7 +180,7 @@ export default function AdminSettingsPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to update version. Please try again."
+        description: "Failed to update version. Please try again.",
       });
     } finally {
       setIsUpdatingVersion(false);
@@ -188,11 +194,11 @@ export default function AdminSettingsPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Subject and message are required"
+          description: "Subject and message are required",
         });
         return;
       }
-      
+
       setIsSendingMassEmail(true);
       const response = await fetch("/api/admin/mass-email", {
         method: "POST",
@@ -219,12 +225,12 @@ export default function AdminSettingsPage() {
         toast({
           variant: "warning",
           title: "Warning",
-          description: data.message
+          description: data.message,
         });
       } else {
         toast({
           title: "Success",
-          description: data.message || "Mass email sent successfully!"
+          description: data.message || "Mass email sent successfully!",
         });
         // Resetear el formulario
         setEmailSubject("");
@@ -239,7 +245,7 @@ export default function AdminSettingsPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to send mass email. Please try again."
+        description: "Failed to send mass email. Please try again.",
       });
     } finally {
       setIsSendingMassEmail(false);
@@ -256,7 +262,7 @@ export default function AdminSettingsPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Please fill in all fields"
+          description: "Please fill in all fields",
         });
         return;
       }
@@ -294,7 +300,7 @@ export default function AdminSettingsPage() {
 
       toast({
         title: "Success",
-        description: data.message || "Free subscription assigned successfully!"
+        description: data.message || "Free subscription assigned successfully!",
       });
 
       // Resetear el formulario solo en caso de éxito
@@ -307,7 +313,7 @@ export default function AdminSettingsPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to assign free subscription. Please try again."
+        description: "Failed to assign free subscription. Please try again.",
       });
     } finally {
       setIsAssigningSubscription(false);
@@ -315,17 +321,15 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <h1 className="text-2xl font-bold mb-6">Admin Settings</h1>
-
-      <Tabs defaultValue="version" className="space-y-6">
+    <div className="container mx-auto px-4">
+      <Tabs defaultValue="version" className="space-y-6 mb-0 pb-0">
         <TabsList className="grid grid-cols-4 mb-4">
           <TabsTrigger value="version">Version</TabsTrigger>
           <TabsTrigger value="email">Emails</TabsTrigger>
           <TabsTrigger value="mass-email">Mass Email</TabsTrigger>
           <TabsTrigger value="subscription">Subscriptions</TabsTrigger>
         </TabsList>
-        
+
         {/* Tab de Gestión de Versiones */}
         <TabsContent value="version">
           <Card>
@@ -338,9 +342,11 @@ export default function AdminSettingsPage() {
             <CardContent className="space-y-4">
               <div className="bg-gray-50 p-4 rounded-md mb-4">
                 <h3 className="text-sm font-medium mb-1">Current Version</h3>
-                <p className="text-lg font-semibold">{currentVersion || "Loading..."}</p>
+                <p className="text-lg font-semibold">
+                  {currentVersion || "Loading..."}
+                </p>
               </div>
-              
+
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="version">New Version</Label>
                 <Input
@@ -349,9 +355,11 @@ export default function AdminSettingsPage() {
                   value={newVersion}
                   onChange={(e) => setNewVersion(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">Use semantic versioning: X.Y.Z (example: 1.0.0)</p>
+                <p className="text-xs text-muted-foreground">
+                  Use semantic versioning: X.Y.Z (example: 1.0.0)
+                </p>
               </div>
-              
+
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="release-notes">Release Notes</Label>
                 <Textarea
@@ -361,9 +369,11 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setReleaseNotes(e.target.value)}
                   rows={4}
                 />
-                <p className="text-xs text-muted-foreground">This information will be sent to users via email.</p>
+                <p className="text-xs text-muted-foreground">
+                  This information will be sent to users via email.
+                </p>
               </div>
-              
+
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="download-url">Download URL (optional)</Label>
                 <Input
@@ -372,19 +382,22 @@ export default function AdminSettingsPage() {
                   value={downloadUrl}
                   onChange={(e) => setDownloadUrl(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">URL where users can download this version.</p>
+                <p className="text-xs text-muted-foreground">
+                  URL where users can download this version.
+                </p>
               </div>
-              
+
               <div className="flex items-center space-x-2 mt-2">
                 <Checkbox
                   id="critical-update"
                   checked={isCritical}
                   onCheckedChange={(checked) => setIsCritical(checked === true)}
                 />
-                <Label htmlFor="critical-update">
-                  Critical Update
-                </Label>
-                <p className="text-xs text-muted-foreground ml-2">Check this option if the update contains important security fixes.</p>
+                <Label htmlFor="critical-update">Critical Update</Label>
+                <p className="text-xs text-muted-foreground ml-2">
+                  Check this option if the update contains important security
+                  fixes.
+                </p>
               </div>
             </CardContent>
             <CardFooter>
@@ -393,12 +406,14 @@ export default function AdminSettingsPage() {
                 disabled={isUpdatingVersion || !newVersion}
                 className="w-full"
               >
-                {isUpdatingVersion ? "Updating..." : "Update Version and Notify Users"}
+                {isUpdatingVersion
+                  ? "Updating..."
+                  : "Update Version and Notify Users"}
               </Button>
             </CardFooter>
           </Card>
         </TabsContent>
-        
+
         {/* Tab de Test Emails */}
         <TabsContent value="email">
           <Card>
@@ -418,12 +433,13 @@ export default function AdminSettingsPage() {
                 {isSending ? "Sending..." : "Send Test Emails"}
               </Button>
               <p className="text-sm text-muted-foreground mt-2">
-                This will send one email of each type to your admin email address.
+                This will send one email of each type to your admin email
+                address.
               </p>
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Tab de Mass Email */}
         <TabsContent value="mass-email">
           <Card>
@@ -450,7 +466,7 @@ export default function AdminSettingsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="email-subject">Subject</Label>
                 <Input
@@ -460,7 +476,7 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setEmailSubject(e.target.value)}
                 />
               </div>
-              
+
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="email-message">Message</Label>
                 <Textarea
@@ -471,7 +487,7 @@ export default function AdminSettingsPage() {
                   rows={5}
                 />
               </div>
-              
+
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="cta-label">Button Label (optional)</Label>
                 <Input
@@ -481,7 +497,7 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setEmailCtaLabel(e.target.value)}
                 />
               </div>
-              
+
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="cta-url">Button URL (optional)</Label>
                 <Input
@@ -494,7 +510,7 @@ export default function AdminSettingsPage() {
                   Leave empty to use your dashboard URL
                 </p>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="is-important"
@@ -516,7 +532,7 @@ export default function AdminSettingsPage() {
             </CardFooter>
           </Card>
         </TabsContent>
-        
+
         {/* Tab de Promotional Free Subscriptions */}
         <TabsContent value="subscription">
           <Card>
@@ -531,7 +547,8 @@ export default function AdminSettingsPage() {
                 <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded mb-4">
                   <p className="font-medium">{subscriptionWarning.message}</p>
                   <p className="text-sm">
-                    Current plan: {subscriptionWarning.existingSubscription.planName}
+                    Current plan:{" "}
+                    {subscriptionWarning.existingSubscription.planName}
                     <br />
                     Status: {subscriptionWarning.existingSubscription.status}
                     <br />
@@ -541,7 +558,7 @@ export default function AdminSettingsPage() {
                   </p>
                 </div>
               )}
-              
+
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="sub-email">User Email</Label>
                 <Input
@@ -551,7 +568,7 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setSubscriptionEmail(e.target.value)}
                 />
               </div>
-              
+
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="sub-plan">Plan Name</Label>
                 <Input
@@ -561,7 +578,7 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setSubscriptionPlan(e.target.value)}
                 />
               </div>
-              
+
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="sub-duration">Duration (months)</Label>
                 <Select
@@ -580,7 +597,7 @@ export default function AdminSettingsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="force-assign"
@@ -604,7 +621,9 @@ export default function AdminSettingsPage() {
                   !subscriptionDuration
                 }
               >
-                {isAssigningSubscription ? "Assigning..." : "Assign Free Subscription"}
+                {isAssigningSubscription
+                  ? "Assigning..."
+                  : "Assign Free Subscription"}
               </Button>
             </CardFooter>
           </Card>

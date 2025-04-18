@@ -1,62 +1,57 @@
-import React from 'react';
-import { Metadata } from 'next';
-import { getUserAuth } from '@/lib/auth/utils';
-import { redirect } from 'next/navigation';
-import { db } from '@/lib/db/drizzle';
-import { eq } from 'drizzle-orm';
-import { users } from '@/lib/db/schema';
-import Link from 'next/link';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { UsersIcon, SettingsIcon, ChevronRightIcon, ServerIcon, MailIcon } from 'lucide-react';
+import React from "react";
+import { Metadata } from "next";
+import { getUserAuth } from "@/lib/auth/utils";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { UsersIcon, SettingsIcon, ChevronRightIcon } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: 'Admin Dashboard',
-  description: 'Administration panel for managing users and settings',
+  title: "Admin Dashboard",
+  description: "Administration panel for managing users and settings",
 };
 
 export default async function AdminDashboardPage() {
   const { session, user } = await getUserAuth();
-  
+
   if (!session || !user) {
-    return redirect('/auth/login');
+    return redirect("/auth/login");
   }
 
-  // Check if the user is an admin
-  if (user.role !== 'admin' && user.role !== 'superadmin') {
-    return redirect('/dashboard');
+  if (user.role !== "admin" && user.role !== "superadmin") {
+    return redirect("/dashboard");
   }
 
   const adminMenuItems = [
     {
-      title: 'Managed Users',
-      description: 'View and manage users with managed service subscription',
-      icon: <UsersIcon className="h-5 w-5" />,
-      href: '/dashboard/managed-users',
+      title: "Managed Users",
+      description: "View and manage users with managed service subscription",
+      icon: <UsersIcon className="h-4 w-4" />,
+      href: "/dashboard/managed-users",
     },
     {
-      title: 'Admin Settings',
-      description: 'Configure application settings and preferences',
-      icon: <SettingsIcon className="h-5 w-5" />,
-      href: '/dashboard/admin/settings',
+      title: "Admin Settings",
+      description: "Configure application settings and preferences",
+      icon: <SettingsIcon className="h-4 w-4" />,
+      href: "/dashboard/admin/settings",
     },
   ];
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-6 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Admin Dashboard</h1>
         <p className="text-muted-foreground">
           Manage users, settings, and application features
         </p>
       </div>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         {adminMenuItems.map((item) => (
           <Card key={item.href} className="hover:shadow-md transition-all">
@@ -83,4 +78,4 @@ export default async function AdminDashboardPage() {
       </div>
     </div>
   );
-} 
+}

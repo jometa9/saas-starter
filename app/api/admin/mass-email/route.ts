@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAdminRequest } from '@/lib/auth/utils';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
-import { isNull } from 'drizzle-orm';
+import { isNull, sql, inArray, and, eq, or } from 'drizzle-orm';
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,11 +33,36 @@ export async function POST(req: NextRequest) {
     let query = db.select().from(users).where(isNull(users.deletedAt));
 
     if (targetGroup === 'free') {
-      // Solo usuarios con suscripciones gratuitas (sin stripeSubscriptionId)
-      query = query.where(isNull(users.stripeSubscriptionId));
+      // Usuarios con suscripciones gratuitas:
+      // - Estado "active" o "admin_assigned" sin stripeSubscriptionId, o
+      // - Estado diferente de "active", "trialing" (suscripciones inactivas)
+      query = query.where(
+        or(
+          // Suscripciones asignadas manualmente por el admin (gratuitas)
+          and(
+            eq(users.subscriptionStatus, 'admin_assigned'),
+            isNull(users.stripeSubscriptionId)
+          ),
+          // Suscripciones gratuitas activas sin Stripe
+          and(
+            eq(users.subscriptionStatus, 'active'),
+            isNull(users.stripeSubscriptionId)
+          ),
+          // Usuarios sin suscripción activa
+          and(
+            sql`${users.subscriptionStatus} IS NULL OR ${users.subscriptionStatus} NOT IN ('active', 'trialing')`
+          )
+        )
+      );
     } else if (targetGroup === 'paid') {
-      // Solo usuarios con suscripciones pagas (con stripeSubscriptionId)
-      query = query.where(isNull(users.stripeSubscriptionId).not());
+      // Usuarios con suscripciones pagas:
+      // - Estado "active" o "trialing" con stripeSubscriptionId
+      query = query.where(
+        and(
+          inArray(users.subscriptionStatus, ['active', 'trialing']),
+          sql`${users.stripeSubscriptionId} IS NOT NULL`
+        )
+      );
     }
     // Para 'all', no hacemos filtro adicional
 

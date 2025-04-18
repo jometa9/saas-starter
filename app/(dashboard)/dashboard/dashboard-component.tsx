@@ -206,11 +206,11 @@ export function Dashboard({ user }: { user: User; currentVersion: string }) {
               <div className="flex flex-col space-y-2">
                 <Link
                   href="/dashboard/admin"
-                  className="flex items-center justify-between p-3 rounded-md hover:bg-muted/80 transition-colors"
+                  className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/80 transition-colors"
                 >
                   <div className="flex items-center space-x-3">
                     <div className="p-2 rounded-full bg-primary/10">
-                      <ShieldCheck className="h-5 w-5 text-primary" />
+                      <ShieldCheck className="h-8 w-8 p-1 text-primary" />
                     </div>
                     <div>
                       <div className="font-medium">Admin Panel</div>
