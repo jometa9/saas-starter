@@ -109,20 +109,126 @@ function getDefaultTemplate(templateName: string): string {
     "version-update": `<!DOCTYPE html>
 <html>
 <head>
-  <title>Version Update</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Version Available</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 28px;
+      color: #111;
+      margin-bottom: 10px;
+    }
+    .greeting {
+      margin-bottom: 20px;
+    }
+    .content {
+      margin-bottom: 30px;
+    }
+    .version-info {
+      display: flex;
+      justify-content: space-between;
+      margin: 25px 0;
+    }
+    .version-box {
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .current-version {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+    .new-version {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    .release-notes {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 25px;
+    }
+    .release-notes h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .btn {
+      display: inline-block;
+      background: #4b5563;
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-weight: 500;
+      text-align: center;
+    }
+    .footer {
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      margin-top: 40px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h1>New Version Available!</h1>
-  <p>Hello {{name}},</p>
-  <p>A new version of IPTRADE is now available.</p>
-  <p>Current version: {{currentVersion}}</p>
-  <p>New version: {{newVersion}}</p>
-  {{#if releaseNotes}}
-  <p>{{releaseNotes}}</p>
-  {{/if}}
-  {{#if downloadUrl}}
-  <a href="{{downloadUrl}}">Download Update</a>
-  {{/if}}
+  <div class="container">
+    <div class="header">
+      <h1>New Version Available</h1>
+    </div>
+    
+    <div class="greeting">
+      <p>Hi {{name}},</p>
+      <p>A new version of IPTRADE is now available.</p>
+    </div>
+    
+    <div class="content">
+      <div class="version-info">
+        <div class="version-box current-version">
+          Current: {{currentVersion}}
+        </div>
+        <div class="version-box new-version">
+          New: {{newVersion}}
+        </div>
+      </div>
+      
+      {{#if releaseNotes}}
+      <div class="release-notes">
+        <h3>What's New:</h3>
+        <p>{{releaseNotes}}</p>
+      </div>
+      {{/if}}
+      
+      {{#if downloadUrl}}
+      <div style="text-align: center;">
+        <a href="{{downloadUrl}}" class="btn">Download Update</a>
+      </div>
+      {{/if}}
+    </div>
+    
+    <div class="footer">
+      <p>&copy; {{year}} IPTRADE. All rights reserved.</p>
+    </div>
+  </div>
 </body>
 </html>`,
 

@@ -96,35 +96,6 @@ export function AccountInfoCard({
     }
   };
 
-  const handleTestEmails = async () => {
-    try {
-      setIsSendingEmails(true);
-      const response = await fetch("/api/admin/test-emails", {
-        method: "POST",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to send test emails");
-      }
-
-      toast({
-        title: "Success",
-        description: "Test emails sent successfully! Check your inbox.",
-      });
-    } catch (error) {
-      console.error("Error sending test emails:", error);
-      toast({
-        title: "Error",
-        description: "Failed to send test emails. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSendingEmails(false);
-    }
-  };
-
   return (
     <Card className={`${className}`}>
       <CardHeader>
@@ -154,29 +125,9 @@ export function AccountInfoCard({
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto cursor-pointer">
-          {user.role === "admin" && (
-            <Button
-              variant="outline"
-              className="border-blue-600  hover:text-blue-600 text-blue-600 hover:bg-blue-50 w-full md:w-auto cursor-pointer"
-              onClick={handleTestEmails}
-              disabled={isSendingEmails}
-            >
-              {isSendingEmails ? (
-                <>
-                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></span>
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Mail className="mr-2 h-4 w-4" />
-                  Test Emails
-                </>
-              )}
-            </Button>
-          )}
-          {(user.subscriptionStatus === "active" || 
-           user.subscriptionStatus === "trialing" || 
-           user.subscriptionStatus === "admin_assigned") ? (
+          {user.subscriptionStatus === "active" ||
+          user.subscriptionStatus === "trialing" ||
+          user.subscriptionStatus === "admin_assigned" ? (
             <>
               <Button
                 variant="outline"
@@ -196,7 +147,8 @@ export function AccountInfoCard({
                   </>
                 )}
               </Button>
-              {(user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing") && (
+              {(user.subscriptionStatus === "active" ||
+                user.subscriptionStatus === "trialing") && (
                 <Button
                   variant="outline"
                   className="border-green-600 text-green-600 hover:bg-green-50 w-full md:w-auto cursor-pointer"

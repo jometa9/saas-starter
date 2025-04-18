@@ -1,89 +1,55 @@
-import { NextResponse } from "next/server";
-import { getUser } from "@/lib/db/queries";
-import {
-  sendWelcomeEmail,
-  sendVersionUpdateEmail,
-  sendBroadcastEmail,
-  sendPasswordResetEmail,
-  sendSubscriptionChangeEmail,
-} from "@/lib/email/services";
+'use server';
 
-export async function POST() {
+import { NextRequest, NextResponse } from 'next/server';
+import { isAdminRequest } from '@/lib/auth/utils';
+import { sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionChangeEmail } from '@/lib/email';
+import { getUser } from '@/lib/db/queries';
+
+export async function POST(req: NextRequest) {
   try {
-    // Verify that the user is an admin
-    const user = await getUser();
-    if (!user?.email || user?.role !== "admin") {
-      return new NextResponse("Unauthorized", { status: 401 });
+    // Verificar si la solicitud proviene de un administrador
+    const isAdmin = await isAdminRequest(req);
+    if (!isAdmin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const adminEmail = user.email;
-    const adminName = user.name || "Admin";
+    // Obtener el usuario administrador
+    const admin = await getUser();
+    if (!admin) {
+      return NextResponse.json({ error: 'Admin user not found' }, { status: 404 });
+    }
 
-    // Send all types of test emails
-    await Promise.all([
-      // Welcome email
-      sendWelcomeEmail({
-        email: adminEmail,
-        name: adminName,
-        loginUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
-      }),
+    // Enviar los correos de prueba al administrador
+    const adminEmail = admin.email;
+    const adminName = admin.name || adminEmail.split('@')[0];
 
-      // Version update email
-      sendVersionUpdateEmail({
-        email: adminEmail,
-        name: adminName,
-        currentVersion: "1.0.0",
-        newVersion: "1.1.0",
-        releaseNotes:
-          "- New user interface\n- Performance improvements\n- Bug fixes",
-        downloadUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
-        isCritical: true,
-      }),
-
-      // Broadcast email
-      sendBroadcastEmail({
-        email: adminEmail,
-        name: adminName,
-        subject: "Important Announcement",
-        message: "This is a test message for the broadcast email.",
-        ctaLabel: "View Dashboard",
-        ctaUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
-        isImportant: true,
-      }),
-
-      // Password reset email
-      sendPasswordResetEmail({
-        email: adminEmail,
-        name: adminName,
-        token: "test-token-123",
-        expiryMinutes: 60,
-      }),
-
-      // Subscription change email
-      sendSubscriptionChangeEmail({
-        email: adminEmail,
-        name: adminName,
-        planName: "Pro Plan",
-        status: "active",
-        expiryDate: new Date(
-          Date.now() + 30 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
-      }),
-    ]);
-
-    return NextResponse.json({
-      success: true,
-      message: "Test emails sent successfully",
+    // Enviar email de bienvenida
+    await sendWelcomeEmail({
+      email: adminEmail,
+      name: adminName,
+      loginUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     });
+
+    // Enviar email de restablecimiento de contraseña
+    await sendPasswordResetEmail({
+      email: adminEmail,
+      name: adminName,
+      resetToken: 'dummy-token-for-testing',
+      resetUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=dummy-token-for-testing`
+    });
+
+    // Enviar email de cambio de suscripción
+    await sendSubscriptionChangeEmail({
+      email: adminEmail,
+      name: adminName,
+      planName: 'Premium (Test)',
+      status: 'active',
+      expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    });
+
+    return NextResponse.json({ success: true, message: 'Test emails sent successfully' });
   } catch (error) {
-    console.error("Error sending test emails:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to send test emails",
-      },
-      { status: 500 }
-    );
+    console.error('Error sending test emails:', error);
+    return NextResponse.json({ error: 'Failed to send test emails' }, { status: 500 });
   }
 }
