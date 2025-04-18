@@ -43,14 +43,14 @@ export async function PATCH(
     
     // Imprimir los valores para debugging
     console.log('Actualizando usuario:', userId);
-    console.log('Valor recibido server_ip:', body.server_ip);
+    console.log('Valor recibido serverIP:', body.serverIP);
     console.log('Campo en la base de datos: serverIP');
 
     try {
       // Realizar una sola actualización
       const result = await db.update(users)
         .set({
-          serverIP: body.server_ip, // El campo en la base de datos se llama serverIP, pero estamos recibiendo server_ip
+          serverIP: body.serverIP, // Corregido para usar el mismo nombre de propiedad que envía el cliente
           updatedAt: new Date(),
         })
         .where(eq(users.id, userId));
@@ -61,7 +61,7 @@ export async function PATCH(
       return NextResponse.json({ 
         success: true,
         message: 'User serverIP updated successfully',
-        updatedValue: body.server_ip
+        updatedValue: body.serverIP
       });
     } catch (updateError) {
       console.error('Error específico al actualizar serverIP:', updateError);

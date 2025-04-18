@@ -1,10 +1,10 @@
+import React from "react";
 import Link from "next/link";
-import { Instagram, Linkedin } from "lucide-react";
 
 export function Footer() {
   return (
     <div>
-      <div className="border-t border-gray-200 mx-4"></div>
+      <div className="border-t border-gray-200 mx-4 mt-4"></div>
       <div className="w-full p-4 ">
         <div className="mb-4">
           <Link href="/" className="flex items-center">

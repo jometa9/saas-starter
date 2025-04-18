@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -600,8 +601,8 @@ export function Dashboard({
 
   const hasTradingAccountsAccess = (): boolean => {
     return !!(
-      (user.planName === "IPTRADE Unlimited" || 
-       user.planName === "IPTRADE Managed VPS") &&
+      (user.planName === "IPTRADE Unlimited" ||
+        user.planName === "IPTRADE Managed VPS") &&
       (user.subscriptionStatus === "active" ||
         user.subscriptionStatus === "trialing" ||
         user.subscriptionStatus === "admin_assigned")
@@ -625,8 +626,14 @@ export function Dashboard({
         onGoToPricing={goToPricing}
         className="mb-4"
         title="User Profile"
-        subscriptionButtonText={user.subscriptionStatus === "admin_assigned" ? "Switch to Paid Plan" : "Subscribe Now"}
+        subscriptionButtonText={
+          user.subscriptionStatus === "admin_assigned"
+            ? "Switch to Paid Plan"
+            : "Subscribe Now"
+        }
       />
+
+      {hasTradingAccountsAccess() && <TradingAccountsConfig user={user} />}
       <LicenseCard
         user={user}
         showLicense={showLicense}
@@ -639,8 +646,6 @@ export function Dashboard({
         canAccessApiKey={canAccessApiKey}
         isManagedServicePlan={isManagedServicePlan}
       />
-      {hasTradingAccountsAccess() && <TradingAccountsConfig user={user} />}
-
       <DownloadCard compactMode={true} />
 
       <SupportCards />
@@ -663,8 +668,8 @@ export function Dashboard({
             </CardHeader>
             <CardContent>
               <div className="flex flex-col space-y-2">
-                <Link 
-                  href="/dashboard/admin" 
+                <Link
+                  href="/dashboard/admin"
                   className="flex items-center justify-between p-3 rounded-md hover:bg-muted/80 transition-colors"
                 >
                   <div className="flex items-center space-x-3">
@@ -673,7 +678,9 @@ export function Dashboard({
                     </div>
                     <div>
                       <div className="font-medium">Admin Panel</div>
-                      <div className="text-sm text-muted-foreground">Manage users and system settings</div>
+                      <div className="text-sm text-muted-foreground">
+                        Manage users and system settings
+                      </div>
                     </div>
                   </div>
                   <ChevronRightIcon className="h-5 w-5 text-muted-foreground" />

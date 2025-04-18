@@ -47,8 +47,12 @@ export function AdminTradingAccountsView({
   const [isEditingIP, setIsEditingIP] = useState<boolean>(false);
   const [savingIP, setSavingIP] = useState<boolean>(false);
   const ipInputRef = useRef<HTMLInputElement>(null);
-  const [visiblePasswords, setVisiblePasswords] = useState<Record<number, boolean>>({});
-  const [recentlyCopied, setRecentlyCopied] = useState<Record<string, boolean>>({});
+  const [visiblePasswords, setVisiblePasswords] = useState<
+    Record<number, boolean>
+  >({});
+  const [recentlyCopied, setRecentlyCopied] = useState<Record<string, boolean>>(
+    {}
+  );
 
   const getPlatformIcon = (platform: string) => {
     return (
@@ -253,30 +257,36 @@ export function AdminTradingAccountsView({
 
   // Función para alternar la visibilidad de la contraseña de una cuenta
   const togglePasswordVisibility = (accountId: number) => {
-    setVisiblePasswords(prev => ({
+    setVisiblePasswords((prev) => ({
       ...prev,
-      [accountId]: !prev[accountId]
+      [accountId]: !prev[accountId],
     }));
   };
 
   // Función para copiar al portapapeles
-  const copyToClipboard = (text: string, fieldName: string, id: number, field: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = (
+    text: string,
+    fieldName: string,
+    id: number,
+    field: string
+  ) => {
+    navigator.clipboard
+      .writeText(text)
       .then(() => {
         toast.success(`${fieldName} copiado al portapapeles`);
-        
+
         // Establecer el estado para mostrar el icono de verificación
         const key = `${id}-${field}`;
-        setRecentlyCopied(prev => ({ ...prev, [key]: true }));
-        
+        setRecentlyCopied((prev) => ({ ...prev, [key]: true }));
+
         // Restablecer después de 1.5 segundos
         setTimeout(() => {
-          setRecentlyCopied(prev => ({ ...prev, [key]: false }));
+          setRecentlyCopied((prev) => ({ ...prev, [key]: false }));
         }, 1500);
       })
       .catch((err) => {
-        console.error('Error al copiar: ', err);
-        toast.error('No se pudo copiar al portapapeles');
+        console.error("Error al copiar: ", err);
+        toast.error("No se pudo copiar al portapapeles");
       });
   };
 
@@ -485,7 +495,7 @@ export function AdminTradingAccountsView({
                     Configuration
                   </th>
                   <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                    Copying From
+                    Copying
                   </th>
                   <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Actions
@@ -533,20 +543,28 @@ export function AdminTradingAccountsView({
                         <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
                           <div className="flex items-center">
                             <span>{masterAccount.accountNumber}</span>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-6 w-6 p-0 ml-1" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                copyToClipboard(masterAccount.accountNumber, "Número de cuenta", masterAccount.id, "accountNumber");
+                                copyToClipboard(
+                                  masterAccount.accountNumber,
+                                  "Número de cuenta",
+                                  masterAccount.id,
+                                  "accountNumber"
+                                );
                               }}
                               title="Copiar número de cuenta"
                             >
-                              {recentlyCopied[`${masterAccount.id}-accountNumber`] ? 
-                                <Check className="h-3 w-3 text-green-500" /> : 
+                              {recentlyCopied[
+                                `${masterAccount.id}-accountNumber`
+                              ] ? (
+                                <Check className="h-3 w-3 text-green-500" />
+                              ) : (
                                 <Copy className="h-3 w-3" />
-                              }
+                              )}
                             </Button>
                           </div>
                         </td>
@@ -563,54 +581,78 @@ export function AdminTradingAccountsView({
                         <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
                           <div className="flex items-center">
                             <span>{masterAccount.server}</span>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-6 w-6 p-0 ml-1" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                copyToClipboard(masterAccount.server, "Servidor", masterAccount.id, "server");
+                                copyToClipboard(
+                                  masterAccount.server,
+                                  "Servidor",
+                                  masterAccount.id,
+                                  "server"
+                                );
                               }}
                               title="Copiar servidor"
                             >
-                              {recentlyCopied[`${masterAccount.id}-server`] ? 
-                                <Check className="h-3 w-3 text-green-500" /> : 
+                              {recentlyCopied[`${masterAccount.id}-server`] ? (
+                                <Check className="h-3 w-3 text-green-500" />
+                              ) : (
                                 <Copy className="h-3 w-3" />
-                              }
+                              )}
                             </Button>
                           </div>
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
                           <div className="flex items-center space-x-1">
                             <span>
-                              {visiblePasswords[masterAccount.id] ? masterAccount.password : '••••••••'}
+                              {visiblePasswords[masterAccount.id]
+                                ? masterAccount.password
+                                : "••••••••"}
                             </span>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-6 w-6 p-0 ml-1" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 togglePasswordVisibility(masterAccount.id);
                               }}
-                              title={visiblePasswords[masterAccount.id] ? "Hide Password" : "Show Password"}
+                              title={
+                                visiblePasswords[masterAccount.id]
+                                  ? "Hide Password"
+                                  : "Show Password"
+                              }
                             >
-                              {visiblePasswords[masterAccount.id] ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                              {visiblePasswords[masterAccount.id] ? (
+                                <EyeOff className="h-3 w-3" />
+                              ) : (
+                                <Eye className="h-3 w-3" />
+                              )}
                             </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-6 w-6 p-0" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                copyToClipboard(masterAccount.password, "Contraseña", masterAccount.id, "password");
+                                copyToClipboard(
+                                  masterAccount.password,
+                                  "Contraseña",
+                                  masterAccount.id,
+                                  "password"
+                                );
                               }}
                               title="Copiar contraseña"
                             >
-                              {recentlyCopied[`${masterAccount.id}-password`] ? 
-                                <Check className="h-3 w-3 text-green-500" /> : 
+                              {recentlyCopied[
+                                `${masterAccount.id}-password`
+                              ] ? (
+                                <Check className="h-3 w-3 text-green-500" />
+                              ) : (
                                 <Copy className="h-3 w-3" />
-                              }
+                              )}
                             </Button>
                           </div>
                         </td>
@@ -644,8 +686,10 @@ export function AdminTradingAccountsView({
                             </div>
                           )}
                         </td>
-                        <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
-                          <span className="text-gray-500">Master account</span>
+                        <td className="px-4 py-2 whitespace-nowrap align-middle">
+                          <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-600 inline-block">
+                            N/A
+                          </div>
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap align-middle actions-column">
                           {loadingAccounts[masterAccount.id] ? (
@@ -766,20 +810,28 @@ export function AdminTradingAccountsView({
                               <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
                                 <div className="flex items-center">
                                   <span>{slaveAccount.accountNumber}</span>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="h-6 w-6 p-0 ml-1" 
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0 ml-1"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      copyToClipboard(slaveAccount.accountNumber, "Número de cuenta", slaveAccount.id, "accountNumber");
+                                      copyToClipboard(
+                                        slaveAccount.accountNumber,
+                                        "Número de cuenta",
+                                        slaveAccount.id,
+                                        "accountNumber"
+                                      );
                                     }}
                                     title="Copiar número de cuenta"
                                   >
-                                    {recentlyCopied[`${slaveAccount.id}-accountNumber`] ? 
-                                      <Check className="h-3 w-3 text-green-500" /> : 
+                                    {recentlyCopied[
+                                      `${slaveAccount.id}-accountNumber`
+                                    ] ? (
+                                      <Check className="h-3 w-3 text-green-500" />
+                                    ) : (
                                       <Copy className="h-3 w-3" />
-                                    }
+                                    )}
                                   </Button>
                                 </div>
                               </td>
@@ -796,66 +848,94 @@ export function AdminTradingAccountsView({
                               <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
                                 <div className="flex items-center">
                                   <span>{slaveAccount.server}</span>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="h-6 w-6 p-0 ml-1" 
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0 ml-1"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      copyToClipboard(slaveAccount.server, "Servidor", slaveAccount.id, "server");
+                                      copyToClipboard(
+                                        slaveAccount.server,
+                                        "Servidor",
+                                        slaveAccount.id,
+                                        "server"
+                                      );
                                     }}
                                     title="Copiar servidor"
                                   >
-                                    {recentlyCopied[`${slaveAccount.id}-server`] ? 
-                                      <Check className="h-3 w-3 text-green-500" /> : 
+                                    {recentlyCopied[
+                                      `${slaveAccount.id}-server`
+                                    ] ? (
+                                      <Check className="h-3 w-3 text-green-500" />
+                                    ) : (
                                       <Copy className="h-3 w-3" />
-                                    }
+                                    )}
                                   </Button>
                                 </div>
                               </td>
                               <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
                                 <div className="flex items-center space-x-1">
                                   <span>
-                                    {visiblePasswords[slaveAccount.id] ? slaveAccount.password : '••••••••'}
+                                    {visiblePasswords[slaveAccount.id]
+                                      ? slaveAccount.password
+                                      : "••••••••"}
                                   </span>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="h-6 w-6 p-0 ml-1" 
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0 ml-1"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       togglePasswordVisibility(slaveAccount.id);
                                     }}
-                                    title={visiblePasswords[slaveAccount.id] ? "Hide Password" : "Show Password"}
+                                    title={
+                                      visiblePasswords[slaveAccount.id]
+                                        ? "Hide Password"
+                                        : "Show Password"
+                                    }
                                   >
-                                    {visiblePasswords[slaveAccount.id] ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                                    {visiblePasswords[slaveAccount.id] ? (
+                                      <EyeOff className="h-3 w-3" />
+                                    ) : (
+                                      <Eye className="h-3 w-3" />
+                                    )}
                                   </Button>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="h-6 w-6 p-0" 
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      copyToClipboard(slaveAccount.password, "Contraseña", slaveAccount.id, "password");
+                                      copyToClipboard(
+                                        slaveAccount.password,
+                                        "Contraseña",
+                                        slaveAccount.id,
+                                        "password"
+                                      );
                                     }}
                                     title="Copiar contraseña"
                                   >
-                                    {recentlyCopied[`${slaveAccount.id}-password`] ? 
-                                      <Check className="h-3 w-3 text-green-500" /> : 
+                                    {recentlyCopied[
+                                      `${slaveAccount.id}-password`
+                                    ] ? (
+                                      <Check className="h-3 w-3 text-green-500" />
+                                    ) : (
                                       <Copy className="h-3 w-3" />
-                                    }
+                                    )}
                                   </Button>
                                 </div>
                               </td>
                               <td className="px-4 py-1.5 whitespace-nowrap text-xs align-middle">
-                                <div className="flex gap-x-2 flex-wrap gap-y-1">
+                                <div className="flex gap-2">
                                   {(() => {
                                     // Crear array de etiquetas
                                     const configLabels = [];
 
                                     if (
                                       slaveAccount.forceLot &&
-                                      parseFloat(String(slaveAccount.forceLot)) > 0
+                                      parseFloat(
+                                        String(slaveAccount.forceLot)
+                                      ) > 0
                                     ) {
                                       configLabels.push(
                                         <div
@@ -871,7 +951,8 @@ export function AdminTradingAccountsView({
                                           key="lot"
                                           className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block"
                                         >
-                                          Lot multiplier {slaveAccount.lotCoefficient}
+                                          Lot multiplier{" "}
+                                          {slaveAccount.lotCoefficient}
                                         </div>
                                       );
                                     }
@@ -910,9 +991,11 @@ export function AdminTradingAccountsView({
                                 </div>
                               </td>
                               <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
-                                {slaveAccount.connectedToMaster && (
-                                  <span className="text-green-600">Master: {slaveAccount.connectedToMaster}</span>
-                                )}
+                                <div className="flex items-center">
+                                  <div className="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-800 inline-block flex items-center gap-1">
+                                    Master: {slaveAccount.connectedToMaster}
+                                  </div>
+                                </div>
                               </td>
                               <td className="px-4 py-1.5 whitespace-nowrap align-middle actions-column">
                                 {loadingAccounts[slaveAccount.id] ? (
@@ -1032,20 +1115,28 @@ export function AdminTradingAccountsView({
                       <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
                         <div className="flex items-center">
                           <span>{orphanSlave.accountNumber}</span>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-6 w-6 p-0 ml-1" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 ml-1"
                             onClick={(e) => {
                               e.stopPropagation();
-                              copyToClipboard(orphanSlave.accountNumber, "Número de cuenta", orphanSlave.id, "accountNumber");
+                              copyToClipboard(
+                                orphanSlave.accountNumber,
+                                "Número de cuenta",
+                                orphanSlave.id,
+                                "accountNumber"
+                              );
                             }}
                             title="Copiar número de cuenta"
                           >
-                            {recentlyCopied[`${orphanSlave.id}-accountNumber`] ? 
-                              <Check className="h-3 w-3 text-green-500" /> : 
+                            {recentlyCopied[
+                              `${orphanSlave.id}-accountNumber`
+                            ] ? (
+                              <Check className="h-3 w-3 text-green-500" />
+                            ) : (
                               <Copy className="h-3 w-3" />
-                            }
+                            )}
                           </Button>
                         </div>
                       </td>
@@ -1064,59 +1155,81 @@ export function AdminTradingAccountsView({
                       <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
                         <div className="flex items-center">
                           <span>{orphanSlave.server}</span>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-6 w-6 p-0 ml-1" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 ml-1"
                             onClick={(e) => {
                               e.stopPropagation();
-                              copyToClipboard(orphanSlave.server, "Servidor", orphanSlave.id, "server");
+                              copyToClipboard(
+                                orphanSlave.server,
+                                "Servidor",
+                                orphanSlave.id,
+                                "server"
+                              );
                             }}
                             title="Copiar servidor"
                           >
-                            {recentlyCopied[`${orphanSlave.id}-server`] ? 
-                              <Check className="h-3 w-3 text-green-500" /> : 
+                            {recentlyCopied[`${orphanSlave.id}-server`] ? (
+                              <Check className="h-3 w-3 text-green-500" />
+                            ) : (
                               <Copy className="h-3 w-3" />
-                            }
+                            )}
                           </Button>
                         </div>
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
                         <div className="flex items-center space-x-1">
                           <span>
-                            {visiblePasswords[orphanSlave.id] ? orphanSlave.password : '••••••••'}
+                            {visiblePasswords[orphanSlave.id]
+                              ? orphanSlave.password
+                              : "••••••••"}
                           </span>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-6 w-6 p-0 ml-1" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 ml-1"
                             onClick={(e) => {
                               e.stopPropagation();
                               togglePasswordVisibility(orphanSlave.id);
                             }}
-                            title={visiblePasswords[orphanSlave.id] ? "Hide Password" : "Show Password"}
+                            title={
+                              visiblePasswords[orphanSlave.id]
+                                ? "Hide Password"
+                                : "Show Password"
+                            }
                           >
-                            {visiblePasswords[orphanSlave.id] ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                            {visiblePasswords[orphanSlave.id] ? (
+                              <EyeOff className="h-3 w-3" />
+                            ) : (
+                              <Eye className="h-3 w-3" />
+                            )}
                           </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-6 w-6 p-0" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0"
                             onClick={(e) => {
                               e.stopPropagation();
-                              copyToClipboard(orphanSlave.password, "Contraseña", orphanSlave.id, "password");
+                              copyToClipboard(
+                                orphanSlave.password,
+                                "Contraseña",
+                                orphanSlave.id,
+                                "password"
+                              );
                             }}
                             title="Copiar contraseña"
                           >
-                            {recentlyCopied[`${orphanSlave.id}-password`] ? 
-                              <Check className="h-3 w-3 text-green-500" /> : 
+                            {recentlyCopied[`${orphanSlave.id}-password`] ? (
+                              <Check className="h-3 w-3 text-green-500" />
+                            ) : (
                               <Copy className="h-3 w-3" />
-                            }
+                            )}
                           </Button>
                         </div>
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-xs align-middle">
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-2">
                           {(() => {
                             // Crear array de etiquetas
                             const configLabels = [];
@@ -1186,11 +1299,9 @@ export function AdminTradingAccountsView({
                         </div>
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
-                        {orphanSlave.connectedToMaster ? (
-                          <span className="text-green-600">Master: {orphanSlave.connectedToMaster}</span>
-                        ) : (
-                          <span className="text-orange-600 text-sm">N/A</span>
-                        )}
+                        <div className="rounded-full px-2 py-0.5 text-xs bg-gray-100 text-gray-600 inline-block">
+                          Not copying
+                        </div>
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap align-middle actions-column">
                         {loadingAccounts[orphanSlave.id] ? (

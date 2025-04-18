@@ -291,6 +291,7 @@ export async function updateTradingAccount(
       .update(tradingAccounts)
       .set({
         ...data,
+        status: "pending",
         updatedAt: new Date(),
       })
       .where(eq(tradingAccounts.id, id))

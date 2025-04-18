@@ -660,24 +660,26 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   };
 
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  
+
   // Function to handle table scroll and show shadows when necessary
   const handleTableScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
-    const isScrolledRight = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10;
+    const isScrolledRight =
+      container.scrollLeft + container.clientWidth >=
+      container.scrollWidth - 10;
     const isScrolledLeft = container.scrollLeft <= 10;
-    
+
     if (tableContainerRef.current) {
       if (!isScrolledLeft) {
-        tableContainerRef.current.classList.add('shadow-left');
+        tableContainerRef.current.classList.add("shadow-left");
       } else {
-        tableContainerRef.current.classList.remove('shadow-left');
+        tableContainerRef.current.classList.remove("shadow-left");
       }
-      
+
       if (!isScrolledRight) {
-        tableContainerRef.current.classList.add('shadow-right');
+        tableContainerRef.current.classList.add("shadow-right");
       } else {
-        tableContainerRef.current.classList.remove('shadow-right');
+        tableContainerRef.current.classList.remove("shadow-right");
       }
     }
   };
@@ -687,17 +689,19 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     if (tableContainerRef.current) {
       const container = tableContainerRef.current;
       const isScrollable = container.scrollWidth > container.clientWidth;
-      
+
       if (isScrollable) {
-        const isScrolledRight = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10;
+        const isScrolledRight =
+          container.scrollLeft + container.clientWidth >=
+          container.scrollWidth - 10;
         const isScrolledLeft = container.scrollLeft <= 10;
-        
+
         if (!isScrolledLeft) {
-          container.classList.add('shadow-left');
+          container.classList.add("shadow-left");
         }
-        
+
         if (!isScrolledRight) {
-          container.classList.add('shadow-right');
+          container.classList.add("shadow-right");
         }
       }
     }
@@ -775,7 +779,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 {user.serverIP ? (
                   getServerIP()
                 ) : (
-                  <span className="text-yellow-600">Waiting for admin configuration</span>
+                  <span className="text-yellow-600">
+                    Waiting for admin configuration
+                  </span>
                 )}
               </div>
             </div>
@@ -1164,7 +1170,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center gap-2">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500"></div>
-                <p className="text-muted-foreground">Loading your trading accounts...</p>
+                <p className="text-muted-foreground">
+                  Loading your trading accounts...
+                </p>
               </div>
             ) : (
               <>
@@ -1179,10 +1187,11 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           </div>
         ) : (
           <div className="mt-4 rounded-md border shadow-sm relative overflow-x-auto">
-            <div 
-              className="max-w-full overflow-x-auto overflow-y-hidden relative" 
+            <div
+              className="max-w-full overflow-x-auto overflow-y-hidden relative"
               style={{
-                boxShadow: 'inset 10px 0 6px -6px rgba(0, 0, 0, 0.05), inset -10px 0 6px -6px rgba(0, 0, 0, 0.05)'
+                boxShadow:
+                  "inset 10px 0 6px -6px rgba(0, 0, 0, 0.05), inset -10px 0 6px -6px rgba(0, 0, 0, 0.05)",
               }}
             >
               <table className="min-w-full divide-y divide-gray-200">
@@ -1207,7 +1216,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                       Configuration
                     </th>
                     <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                      Copying From
+                      Copying
                     </th>
                     <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                       Actions
@@ -1407,7 +1416,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                   {slaveAccount.server}
                                 </td>
                                 <td className="px-4 py-1.5 whitespace-nowrap text-xs align-middle">
-                                  <div className="flex flex-wrap gap-2">
+                                  <div className="flex gap-2">
                                     {(() => {
                                       // Crear array de etiquetas
                                       const configLabels = [];
@@ -1634,7 +1643,8 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                 0,
                                 maxLabels
                               );
-                              const hiddenCount = configLabels.length - maxLabels;
+                              const hiddenCount =
+                                configLabels.length - maxLabels;
 
                               return (
                                 <>
