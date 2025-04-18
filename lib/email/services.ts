@@ -18,7 +18,7 @@ async function withRetry<T>(
     return await operation();
   } catch (error) {
     if (retries <= 0) {
-      console.error(`❌ ${name} failed after all retries:`, error);
+      
       throw error;
     }
 
@@ -110,10 +110,7 @@ export async function sendSubscriptionChangeEmail({
       `Subscription email to ${email}`
     );
   } catch (error) {
-    console.error(
-      `❌ Critical error preparing subscription email for ${email}:`,
-      error
-    );
+    
     throw error;
   }
 }

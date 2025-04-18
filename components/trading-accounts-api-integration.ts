@@ -40,7 +40,7 @@ const TradingAccountsAPI = () => {
           setAccounts(formattedAccounts);
         }
       } catch (error) {
-        console.error("Error fetching trading accounts:", error);
+        
         toast({
           title: "Error",
           description: "Failed to load trading accounts. Please try again.",
@@ -153,7 +153,7 @@ const TradingAccountsAPI = () => {
       setIsAddingAccount(false);
       setEditingAccount(null);
     } catch (error) {
-      console.error("Error saving trading account:", error);
+      
       toast({
         title: "Error",
         description: "There was a problem processing your request. Please try again.",
@@ -185,7 +185,7 @@ const TradingAccountsAPI = () => {
           description: "The account has been removed successfully.",
         });
       } catch (error) {
-        console.error("Error deleting trading account:", error);
+        
         toast({
           title: "Error",
           description: "Failed to delete trading account. Please try again.",

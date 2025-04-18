@@ -32,13 +32,13 @@ export async function POST(request: NextRequest) {
       const redirectUrl = new URL(checkoutResult.redirect, request.url);
       return NextResponse.redirect(redirectUrl, { status: 307 });
     } else if (checkoutResult.error) {
-      console.error(`Checkout error: ${checkoutResult.error}`);
+      
       return NextResponse.json({ error: checkoutResult.error }, { status: 400 });
     } else {
       return NextResponse.json({ error: 'Unable to create checkout session' }, { status: 500 });
     }
   } catch (error) {
-    console.error('Error starting checkout:', error);
+    
     return NextResponse.json({ 
       error: 'Checkout failed', 
       details: error instanceof Error ? error.message : 'Unknown error'

@@ -40,7 +40,7 @@ ${validatedData.message}
       { status: 200 }
     );
   } catch (error) {
-    console.error("Contact form error:", error);
+    
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

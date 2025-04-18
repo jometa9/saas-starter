@@ -114,7 +114,7 @@ export function Dashboard({ user }: { user: User; currentVersion: string }) {
           });
         })
         .catch((err) => {
-          console.error("Error copying to clipboard:", err);
+          
           toast({
             title: "Error",
             description: "Could not copy to clipboard",

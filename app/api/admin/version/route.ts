@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ version: appVersion });
   } catch (error) {
-    console.error('Error getting app version:', error);
+    
     return NextResponse.json({ error: 'Failed to get app version' }, { status: 500 });
   }
 }
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       .from(users)
       .where(isNull(users.deletedAt));
 
-    console.log(`Found ${usersList.length} users for version update notifications`);
+    
     let notificationSent = false;
 
     if (usersList.length > 0) {
@@ -114,9 +114,9 @@ export async function POST(req: NextRequest) {
           }
         }
         
-        console.log(`Email notifications sent: ${notificationSent}`);
+        
       } catch (emailError) {
-        console.error('Error sending version update emails:', emailError);
+        
         // Continuamos con el proceso aunque fallen los emails
       }
     }
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
       usersCount: usersList.length
     });
   } catch (error) {
-    console.error('Error updating app version:', error);
+    
     return NextResponse.json({ error: 'Failed to update app version' }, { status: 500 });
   }
 } 

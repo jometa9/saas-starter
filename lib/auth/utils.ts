@@ -42,7 +42,7 @@ export async function isAdminRequest(req: NextRequest): Promise<boolean> {
     
     return isAdmin;
   } catch (error) {
-    console.error('❌ Error in isAdminRequest:', error);
+    
     return false;
   }
 } 

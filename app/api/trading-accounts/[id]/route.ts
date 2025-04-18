@@ -58,7 +58,7 @@ export async function GET(
 
     return NextResponse.json({ account: accessCheck.account });
   } catch (error) {
-    console.error("Error getting trading account:", error);
+    
     return NextResponse.json(
       { error: "Failed to get trading account" },
       { status: 500 }
@@ -111,7 +111,7 @@ export async function PUT(
 
     return NextResponse.json({ account: result.account });
   } catch (error) {
-    console.error("Error updating trading account:", error);
+    
     return NextResponse.json(
       { error: "Failed to update trading account" },
       { status: 500 }
@@ -155,7 +155,7 @@ export async function DELETE(
       { success: true, message: "Trading account deleted successfully" }
     );
   } catch (error) {
-    console.error("Error deleting trading account:", error);
+    
     return NextResponse.json(
       { error: "Failed to delete trading account" },
       { status: 500 }

@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
         expiryDate: expiryDateString
       });
     } catch (emailError) {
-      console.error('Error sending subscription notification email:', emailError);
+      
       // No bloqueamos el flujo principal si falla el envío de email
     }
 
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
       message: `Free subscription ${plan} assigned to ${email} for ${duration} month(s).`
     });
   } catch (error) {
-    console.error('Error assigning free subscription:', error);
+    
     return NextResponse.json({ error: 'Failed to assign free subscription' }, { status: 500 });
   }
 }

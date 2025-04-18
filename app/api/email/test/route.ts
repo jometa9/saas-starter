@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       smtpConfigured: !!process.env.SMTP_HOST,
     });
   } catch (error) {
-    console.error('Error al probar la configuración de email:', error);
+    
     return NextResponse.json(
       { error: 'Error al probar la configuración de email' },
       { status: 500 }
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
       testEmailAddress: process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev',
     });
   } catch (error) {
-    console.error('Error al enviar email de prueba:', error);
+    
     return NextResponse.json(
       { 
         error: 'Error al enviar email de prueba',

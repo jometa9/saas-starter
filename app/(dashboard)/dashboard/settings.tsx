@@ -314,7 +314,7 @@ export function Settings({
         setIsCritical(false);
       }
     } catch (error) {
-      console.error("Error al actualizar la versión:", error);
+      
       setActionState({ error: "Error al actualizar la versión" });
     } finally {
       setIsPending(false);
@@ -334,7 +334,7 @@ export function Settings({
           setTimeout(() => setIsCopied(false), 2000);
         })
         .catch((err) => {
-          console.error("Error al copiar al portapapeles:", err);
+          
         });
     }
   };
@@ -356,7 +356,7 @@ export function Settings({
         (event.target as HTMLFormElement).reset();
       }
     } catch (error) {
-      console.error("Error al actualizar la contraseña:", error);
+      
       setPasswordState({ error: "Error al actualizar la contraseña" });
     } finally {
       setIsPasswordPending(false);
@@ -432,10 +432,7 @@ export function Settings({
 
                       if (result?.error) {
                         // Si hay un error, mostrar el mensaje adecuado
-                        console.error(
-                          "Error al acceder al portal:",
-                          result.error
-                        );
+                        
                         let errorMessage =
                           "No se pudo acceder al portal de gestión.";
 
@@ -520,7 +517,7 @@ export function Settings({
                         }, 1500);
                       }
                     } catch (error) {
-                      console.error("Error al acceder al portal:", error);
+                      
                       // Mostrar mensaje de error más descriptivo
                       toast({
                         title: "No se pudo acceder al portal",

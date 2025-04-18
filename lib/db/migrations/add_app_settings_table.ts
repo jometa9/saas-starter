@@ -34,7 +34,7 @@ export async function migrateAppSettings() {
     
     return { success: true };
   } catch (error) {
-    console.error('❌ Error al crear la tabla app_settings:', error);
+    
     return { success: false, error };
   }
 } 

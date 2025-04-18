@@ -67,10 +67,7 @@ export async function GET(request: NextRequest) {
           user.subscriptionStatus = subscription.status;
         }
       } catch (stripeError) {
-        console.error(
-          "Error retrieving subscription from Stripe:",
-          stripeError
-        );
+        
         if (
           user.subscriptionExpiryDate &&
           user.subscriptionExpiryDate < now &&
@@ -113,9 +110,7 @@ export async function GET(request: NextRequest) {
       !user.subscriptionExpiryDate &&
       !user.stripeSubscriptionId
     ) {
-      console.warn(
-        `User ID ${user.id} has active status but no subscription details`
-      );
+      
     }
 
     const isSubscriptionActive =
@@ -155,7 +150,7 @@ export async function GET(request: NextRequest) {
             : "none",
     });
   } catch (error) {
-    console.error("Error validating subscription:", error);
+    
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

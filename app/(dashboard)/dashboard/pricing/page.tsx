@@ -45,7 +45,7 @@ export default function PricingPage() {
           }
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        
       } finally {
         setIsLoading(false);
       }
@@ -179,7 +179,7 @@ export default function PricingPage() {
         throw new Error("No redirect URL received from checkout");
       }
     } catch (error) {
-      console.error("Checkout error:", error);
+      
       toast({
         title: "Checkout Error",
         description:

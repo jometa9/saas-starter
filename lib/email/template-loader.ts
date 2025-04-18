@@ -34,7 +34,7 @@ export async function loadTemplate(templateName: string): Promise<string> {
     const filePath = path.join(TEMPLATES_DIR, `${templateName}.html`);
 
     if (!fs.existsSync(filePath)) {
-      console.warn(`⚠️ Template file does not exist: ${filePath}`);
+      
       const defaultTemplate = getDefaultTemplate(templateName);
       await saveTemplate(templateName, defaultTemplate);
       return defaultTemplate;
@@ -45,7 +45,7 @@ export async function loadTemplate(templateName: string): Promise<string> {
 
     return templateContent;
   } catch (error) {
-    console.error(`❌ Error loading template ${templateName}:`, error);
+    
 
     return getDefaultTemplate(templateName);
   }
@@ -74,7 +74,7 @@ export async function saveTemplate(
     templateCache[templateName] = content;
 
   } catch (error) {
-    console.error(`❌ Error saving template ${templateName}:`, error);
+    
     throw error;
   }
 }
@@ -293,7 +293,7 @@ function getDefaultTemplate(templateName: string): string {
 
   const template = defaultTemplates[templateName];
   if (!template) {
-    console.warn(`⚠️ No default template found for: ${templateName}`);
+    
     return "<p>Template not found</p>";
   }
 

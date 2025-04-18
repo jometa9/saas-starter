@@ -77,7 +77,7 @@ export default function AdminSettingsPage() {
           setCurrentVersion(data.version);
         }
       } catch (error) {
-        console.error("Error fetching current version:", error);
+        
       }
     };
 
@@ -103,7 +103,7 @@ export default function AdminSettingsPage() {
         description: "Test emails sent successfully! Check your inbox.",
       });
     } catch (error) {
-      console.error("Error sending test emails:", error);
+      
       toast({
         variant: "destructive",
         title: "Error",
@@ -178,7 +178,7 @@ export default function AdminSettingsPage() {
       setDownloadUrl("");
       setIsCritical(false);
     } catch (error) {
-      console.error("Error updating version:", error);
+      
       toast({
         variant: "destructive",
         title: "Error",
@@ -241,7 +241,7 @@ export default function AdminSettingsPage() {
         setEmailIsImportant(false);
       }
     } catch (error) {
-      console.error("Error sending mass email:", error);
+      
       toast({
         variant: "destructive",
         title: "Error",
@@ -309,7 +309,7 @@ export default function AdminSettingsPage() {
       setSubscriptionDuration("1");
       setForceAssign(false);
     } catch (error) {
-      console.error("Error assigning free subscription:", error);
+      
       toast({
         variant: "destructive",
         title: "Error",

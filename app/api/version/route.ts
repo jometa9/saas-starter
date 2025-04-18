@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       success: true
     });
   } catch (error) {
-    console.error("Error getting app version:", error);
+    
     return NextResponse.json(
       { error: "Internal server error", success: false },
       { status: 500 }

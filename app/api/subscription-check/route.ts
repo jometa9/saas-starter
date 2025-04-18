@@ -69,16 +69,10 @@ export async function POST(request: Request) {
           });
           results.notifications++;
         } catch (emailError) {
-          console.error(
-            `Error sending expiration email to ${user.email}:`,
-            emailError
-          );
+          
         }
       } catch (error) {
-        console.error(
-          `Error updating expired free subscription for user ${user.id}:`,
-          error
-        );
+        
         results.errors++;
       }
     }
@@ -130,18 +124,12 @@ export async function POST(request: Request) {
                 });
                 results.notifications++;
               } catch (emailError) {
-                console.error(
-                  `Error sending status change email to ${user.email}:`,
-                  emailError
-                );
+                
               }
             }
           }
         } catch (stripeError) {
-          console.error(
-            `Error retrieving subscription for user ${user.id}:`,
-            stripeError
-          );
+          
 
           if (
             stripeError.message?.includes("No such subscription") ||
@@ -167,10 +155,7 @@ export async function POST(request: Request) {
               });
               results.notifications++;
             } catch (emailError) {
-              console.error(
-                `Error sending cancellation email to ${user.email}:`,
-                emailError
-              );
+              
             }
           }
 
@@ -178,10 +163,7 @@ export async function POST(request: Request) {
         }
       }
     } catch (error) {
-      console.error(
-        "Error general al verificar suscripciones de Stripe:",
-        error
-      );
+      
       results.errors++;
     }
 
@@ -204,7 +186,7 @@ export async function POST(request: Request) {
       results,
     });
   } catch (error) {
-    console.error("Error general en la verificación de suscripciones:", error);
+    
     return NextResponse.json(
       { error: "Error processing subscription check", details: error.message },
       { status: 500 }

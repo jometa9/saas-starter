@@ -46,10 +46,10 @@ async function getValidStripePrice(): Promise<string | null> {
       return anyValidPrice.id;
     }
     
-    console.error('No se encontró ningún precio válido');
+    
     return null;
   } catch (error) {
-    console.error('Error al obtener precios de Stripe:', error);
+    
     return null;
   }
 }
@@ -77,7 +77,7 @@ export async function directCheckoutAction(): Promise<{ error?: string; redirect
     
     // Validar que tenemos un ID de precio
     if (!priceId) {
-      console.error('No se pudo determinar un ID de precio para el checkout');
+      
       return { error: 'no-price-id' };
     }
     
@@ -89,16 +89,16 @@ export async function directCheckoutAction(): Promise<{ error?: string; redirect
     });
     
     if (!checkoutSession || !checkoutSession.url) {
-      console.error('No se pudo crear la sesión de checkout');
+      
       return { error: 'checkout-creation-failed' };
     }
     
     return { redirect: checkoutSession.url };
   } catch (error) {
-    console.error('Error en directCheckoutAction:', error);
+    
     
     if (error instanceof Error) {
-      console.error(`❌ Mensaje de error: ${error.message}`);
+      
       
       if (error.message.includes('API key') || error.message.includes('stripe')) {
         return { error: 'stripe-api-key' };
@@ -123,7 +123,7 @@ export async function checkoutAction(
 
   try {
     if (!priceId || !priceId.startsWith('price_')) {
-      console.error(`❌ Formato de priceId inválido: ${priceId}`);
+      
       return { error: 'invalid-price-format' };
     }
     
@@ -139,7 +139,7 @@ export async function checkoutAction(
       user.subscriptionStatus === 'trialing'
     )) {
       try {
-        console.log(`🔄 Usuario ${user.id} está cambiando de plan: ${options.currentPlan} -> nuevo plan (price_id: ${priceId})`);
+        
         
         // Cancelar la suscripción actual al final del período
         await stripe.subscriptions.update(user.stripeSubscriptionId, {
@@ -150,9 +150,9 @@ export async function checkoutAction(
           }
         });
         
-        console.log(`✅ Suscripción ${user.stripeSubscriptionId} marcada para cancelación al final del período`);
+        
       } catch (cancelError) {
-        console.error(`❌ Error al cancelar suscripción existente:`, cancelError);
+        
         // Continuamos con el checkout aunque falle la cancelación
       }
     }
@@ -178,17 +178,17 @@ export async function checkoutAction(
     });
     
     if (!checkoutSession || !checkoutSession.url) {
-      console.error('No se pudo crear la sesión de checkout');
+      
       return { error: 'checkout-creation-failed' };
     }
     
     return { redirect: checkoutSession.url };
   } catch (error) {
-    console.error('Error en la acción de checkout:', error);
+    
     
     if (error instanceof Error) {
-      console.error(`❌ Mensaje de error: ${error.message}`);
-      console.error(`❌ Stack: ${error.stack}`);
+      
+      
       
       if (error.message.includes('API key') || error.message.includes('stripe')) {
         return { error: 'stripe-api-key' };
@@ -208,44 +208,44 @@ export async function customerPortalAction(): Promise<{ error?: string; redirect
     const user = await getUser();
     
     if (!user) {
-      console.error(`❌ No se encontró sesión de usuario`);
+      
       return { error: 'no-session' };
     }
     
     if (!user.stripeCustomerId) {
-      console.error(`❌ El usuario no tiene un ID de cliente de Stripe`);
+      
       return { error: 'no-customer-id' };
     }
     
     if (!user.stripeSubscriptionId || (user.subscriptionStatus !== 'active' && user.subscriptionStatus !== 'trialing')) {
-      console.error(`❌ El usuario no tiene una suscripción activa o en prueba (Status: ${user.subscriptionStatus})`);
+      
       return { error: 'no-active-subscription' };
     }
     
     if (!user.stripeProductId) {
-      console.error(`❌ El usuario no tiene un ID de producto`);
+      
       return { error: 'no-product-id' };
     }
     
     const session = await createCustomerPortalSession(user);
     
     if ('error' in session) {
-      console.error(`❌ Error de la sesión del portal: ${session.error}`);
+      
       return { error: session.error };
     }
     
     if (!session.url) {
-      console.error('❌ La sesión del portal no tiene URL');
+      
       return { error: 'portal-access' };
     }
     
     return { redirect: session.url };
   } catch (error) {
-    console.error('❌ Error en customerPortalAction:', error);
+    
     
     if (error instanceof Error) {
-      console.error(`❌ Mensaje de error: ${error.message}`);
-      console.error(`❌ Stack: ${error.stack}`);
+      
+      
       
       if (error.message.includes('API key') || error.message.includes('stripe')) {
         return { error: 'stripe-api-key' };

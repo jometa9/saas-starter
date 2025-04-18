@@ -39,13 +39,13 @@ export async function initializeEmailTransporter() {
         },
       });
     } catch (error) {
-      console.error('❌ Failed to create Ethereal test account:', error);
+      
       throw new Error('Failed to configure email transport');
     }
   } else {
     // En producción, usa SMTP configurado o un servicio externo
     if (!process.env.SMTP_HOST && !process.env.RESEND_API_KEY) {
-      console.warn('⚠️ No email configuration found. Set SMTP_* or RESEND_API_KEY env variables.');
+      
     }
     
     if (process.env.SMTP_HOST) {
@@ -60,13 +60,13 @@ export async function initializeEmailTransporter() {
           },
         });
       } catch (error) {
-        console.error('❌ Failed to configure SMTP transport:', error);
+        
         throw new Error('Failed to configure email transport');
       }
     } else {
       // Si no hay SMTP configurado, creamos un transporter "dummy" que lanza errores
       // Esto evita errores innecesarios en la aplicación, pero el envío fallará
-      console.warn('⚠️ No SMTP configuration found, creating fallback transport');
+      
       transporter = nodemailer.createTransport({
         name: 'no-reply',
         version: '1.0.0',
@@ -136,7 +136,7 @@ const getSafeResendEmail = (email: string): string => {
   // En modo producción, permitimos todos los dominios excepto los de prueba conocidos
   if (isProduction()) {
     if (isInvalidTestDomain) {
-      console.warn(`⚠️ Email ${email} es un dominio de prueba inválido. Usando dirección alternativa.`);
+      
       return process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev';
     }
     return email; // En producción, devolvemos el email tal cual si no es un dominio de prueba
@@ -144,7 +144,7 @@ const getSafeResendEmail = (email: string): string => {
   
   // En desarrollo, solo permitimos dominios verificados
   if (!isValidResendTestAddress(email)) {
-    console.warn(`⚠️ Email ${email} no es válido para Resend en desarrollo. Usando dirección de prueba alternativa.`);
+    
     return process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev';
   }
   
@@ -181,13 +181,13 @@ export async function sendEmail({
         });
         
         if (error) {
-          console.error('❌ Error sending email with Resend:', error);
+          
           throw error;
         }
         
         return { id: data?.id, provider: 'resend', originalRecipient: to, actualRecipient: safeRecipient };
       } catch (resendError) {
-        console.error('❌ Resend failed, trying Nodemailer as fallback:', resendError);
+        
         throw resendError; // Lanzamos el error para pasar al fallback
       }
     }
@@ -203,7 +203,7 @@ export async function sendEmail({
     
     return { id: info.messageId, provider: 'nodemailer' };
   } catch (error) {
-    console.error('❌ Failed to send email:', error);
+    
    
     throw error;
   }
@@ -221,7 +221,7 @@ export async function testEmailConfiguration() {
         const domains = await resend.domains.list();
         resendConfigured = true;
       } catch (error) {
-        console.error('❌ Resend test failed:', error);
+        
         // No lanzamos error aquí, dejamos que Nodemailer sea la alternativa
       }
     }
@@ -248,7 +248,7 @@ export async function testEmailConfiguration() {
           });
         }
       } catch (error) {
-        console.error('❌ Nodemailer test failed:', error);
+        
         // No lanzamos error aquí a menos que Resend también haya fallado
       }
     }
@@ -267,7 +267,7 @@ export async function testEmailConfiguration() {
       }
     };
   } catch (error) {
-    console.error('❌ Email configuration test failed:', error);
+    
     return { 
       success: false, 
       message: error instanceof Error ? error.message : 'Unknown error',

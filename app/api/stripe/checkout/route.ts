@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   const sessionId = req.nextUrl.searchParams.get('session_id');
   
   if (!sessionId) {
-    console.error(`❌ No se encontró session_id en la URL: ${req.url}`);
+    
     return NextResponse.redirect(new URL('/dashboard?error=missing-session', req.url));
   }
   
@@ -26,18 +26,18 @@ export async function GET(req: NextRequest) {
     });
     
     if (!session) {
-      console.error(`❌ Sesión de Stripe no encontrada: ${sessionId}`);
+      
       return NextResponse.redirect(new URL('/dashboard?error=invalid-session', req.url));
     }
     
     // Validar que tengamos los datos necesarios
     if (!session.customer) {
-      console.error(`❌ No hay customer en la sesión: ${sessionId}`);
+      
       return NextResponse.redirect(new URL('/dashboard?error=missing-customer', req.url));
     }
     
     if (!session.subscription) {
-      console.error(`❌ No hay subscription en la sesión: ${sessionId}`);
+      
       return NextResponse.redirect(new URL('/dashboard?error=missing-subscription', req.url));
     }
     
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     const customerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
     
     if (!subscriptionId || !customerId) {
-      console.error(`❌ Datos incompletos en la sesión. SubscriptionId: ${subscriptionId}, CustomerId: ${customerId}`);
+      
       return NextResponse.redirect(new URL('/dashboard?error=incomplete-data', req.url));
     }
     
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
     // Obtener información del producto
     const item = subscription.items.data[0];
     if (!item || !item.price) {
-      console.error(`❌ No hay items o price en la suscripción: ${subscriptionId}`);
+      
       return NextResponse.redirect(new URL('/dashboard?error=missing-price-data', req.url));
     }
     
@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
     
     const user = await getUser();
     if (!user) {
-      console.error(`❌ Usuario no encontrado en la sesión`);
+      
       return NextResponse.redirect(new URL('/sign-in?error=no-session', req.url));
     }
     
@@ -96,20 +96,20 @@ export async function GET(req: NextRequest) {
           expiryDate: expiryDate
         });
       } catch (emailError) {
-        console.error(`⚠️ Error al enviar email de confirmación:`, emailError);
+        
       }
     } catch (updateError) {
-      console.error(`❌ Error al actualizar usuario:`, updateError);
+      
       return NextResponse.redirect(new URL('/dashboard?error=update-error', req.url));
     }
     
     // Redirigir al dashboard con mensaje de éxito
     return NextResponse.redirect(new URL('/dashboard?success=subscription-activated', req.url));
   } catch (error) {
-    console.error('❌ Error procesando sesión de checkout:', error);
+    
     if (error instanceof Error) {
-      console.error(`❌ Detalles del error: ${error.message}`);
-      console.error(`❌ Stack: ${error.stack}`);
+      
+      
     }
     return NextResponse.redirect(new URL('/dashboard?error=checkout-error', req.url));
   }
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
       });
     } catch (emailError) {
       // No bloqueamos el flujo principal si falla el envío de email
-      console.error(`⚠️ Error al enviar email de confirmación simulada:`, emailError);
+      
     }
     
     return NextResponse.json({ 
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
       redirectUrl: '/dashboard?success=subscription-activated'
     });
   } catch (error) {
-    console.error('❌ Error en simulación de checkout:', error);
+    
     return NextResponse.json({ 
       error: 'Error en la simulación de checkout', 
       details: error instanceof Error ? error.message : 'Unknown error' 

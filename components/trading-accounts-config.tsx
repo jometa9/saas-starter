@@ -83,7 +83,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           setAccounts(formattedAccounts);
         }
       } catch (error) {
-        console.error("Error fetching trading accounts:", error);
+        
         toast({
           title: "Error",
           description: "Failed to load trading accounts. Please try again.",
@@ -291,10 +291,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 }),
               });
             } catch (slaveUpdateError) {
-              console.error(
-                `Error updating slave account ${slave.id}:`,
-                slaveUpdateError
-              );
+              
               // Continue with other updates even if one fails
             }
           }
@@ -313,7 +310,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
               : "The account has been removed successfully.",
         });
       } catch (error) {
-        console.error("Error deleting trading account:", error);
+        
         toast({
           title: "Error",
           description: "Failed to delete trading account. Please try again.",
@@ -420,7 +417,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
               }
             }
           } catch (e) {
-            console.error("Error parsing error message:", e);
+            
           }
           throw new Error(errorMessage);
         }
@@ -517,7 +514,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
               }
             }
           } catch (e) {
-            console.error("Error parsing error message:", e);
+            
           }
           throw new Error(errorMessage);
         }
@@ -554,7 +551,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       setIsAddingAccount(false);
       setEditingAccount(null);
     } catch (error) {
-      console.error("Error saving trading account:", error);
+      
       toast({
         title: "Error",
         description:

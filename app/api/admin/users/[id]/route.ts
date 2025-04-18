@@ -42,9 +42,9 @@ export async function PATCH(
     const body = await request.json();
     
     // Imprimir los valores para debugging
-    console.log('Actualizando usuario:', userId);
-    console.log('Valor recibido serverIP:', body.serverIP);
-    console.log('Campo en la base de datos: serverIP');
+    
+    
+    
 
     try {
       // Realizar una sola actualización
@@ -55,7 +55,7 @@ export async function PATCH(
         })
         .where(eq(users.id, userId));
 
-      console.log('Resultado de la actualización:', result);
+      
 
       // Retornar una respuesta informativa
       return NextResponse.json({ 
@@ -64,11 +64,11 @@ export async function PATCH(
         updatedValue: body.serverIP
       });
     } catch (updateError) {
-      console.error('Error específico al actualizar serverIP:', updateError);
+      
       throw updateError; // Re-lanzar para que lo maneje el catch externo
     }
   } catch (error) {
-    console.error('Error updating user serverIP:', error);
+    
     return NextResponse.json(
       { error: 'Failed to update user' },
       { status: 500 }

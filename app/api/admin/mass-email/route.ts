@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Error sending mass email:', error);
+    
     return NextResponse.json({ error: 'Failed to send mass email' }, { status: 500 });
   }
 } 

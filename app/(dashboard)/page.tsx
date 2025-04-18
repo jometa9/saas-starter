@@ -36,7 +36,7 @@ export default function HomePage() {
           }
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        
       } finally {
         setIsLoading(false);
       }
@@ -64,7 +64,7 @@ export default function HomePage() {
             "data-billing-period"
           );
           setIsAnnual(newBillingPeriod === "annual");
-          console.log(`Billing period changed to: ${newBillingPeriod}`);
+          
         }
       });
     });
@@ -146,9 +146,7 @@ export default function HomePage() {
       setSelectedPlan(plan.toLowerCase());
 
       if (!priceId) {
-        console.error(
-          `Error: No price ID available for ${plan} plan (${isAnnual ? "annual" : "monthly"})`
-        );
+        
         toast({
           title: "Configuration Error",
           description: `The selected plan (${plan} - ${isAnnual ? "annual" : "monthly"}) is not available. Please contact support or try another plan.`,
@@ -158,9 +156,7 @@ export default function HomePage() {
         return;
       }
 
-      console.log(
-        `Starting checkout for plan: ${plan} (${isAnnual ? "ANNUAL" : "MONTHLY"}), price ID: ${priceId}`
-      );
+      
 
       // Crear la URL para el checkout directamente
       const baseUrl = window.location.origin;
@@ -170,10 +166,10 @@ export default function HomePage() {
         checkoutUrl += `&changePlan=true&currentPlan=${encodeURIComponent(currentPlan)}`;
       }
 
-      console.log(`Redirecting to: ${checkoutUrl}`);
+      
       window.location.href = checkoutUrl;
     } catch (error) {
-      console.error("Checkout error:", error);
+      
       toast({
         title: "Checkout Error",
         description:

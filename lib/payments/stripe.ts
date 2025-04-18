@@ -77,7 +77,7 @@ export async function createCheckoutSession({
           stripeCustomerId: customer.id
         });
       } catch (createError) {
-        console.error(`Error al crear cliente en Stripe:`, createError);
+        
         throw new Error('customer-error');
       }
     }
@@ -85,7 +85,7 @@ export async function createCheckoutSession({
     try {
       await stripe.prices.retrieve(priceId);
     } catch (priceError) {
-      console.error(`Error: El precio ${priceId} no existe en Stripe:`, priceError);
+      
       throw new Error('invalid-price');
     }
 
@@ -116,13 +116,13 @@ export async function createCheckoutSession({
     const session = await stripe.checkout.sessions.create(sessionConfig);
     
     if (!session.url) {
-      console.error('Error: La sesión de checkout no tiene URL');
+      
       throw new Error('checkout-creation-failed');
     }
     
     return session;
   } catch (error) {
-    console.error('Error en createCheckoutSession:', error);
+    
     throw error;
   }
 }
@@ -139,24 +139,24 @@ async function updateUserById(userId: number, data: Partial<User>) {
       throw new Error(`Error actualizando usuario: ${response.status}`);
     }
   } catch (error) {
-    console.error(`❌ Error actualizando usuario ${userId}:`, error);
+    
     throw error;
   }
 }
 
 export async function createCustomerPortalSession(user: User): Promise<{ url: string } | { error: string }> {
   if (!user.stripeCustomerId) {
-    console.error(`❌ Error: Usuario sin stripeCustomerId`);
+    
     return { error: 'no-customer-id' };
   }
   
   if (!user.stripeSubscriptionId || (user.subscriptionStatus !== 'active' && user.subscriptionStatus !== 'trialing')) {
-    console.error(`❌ Error: Usuario sin suscripción activa o en prueba (Status: ${user.subscriptionStatus})`);
+    
     return { error: 'no-active-subscription' };
   }
   
   if (!user.stripeProductId) {
-    console.error(`❌ Error: Usuario sin stripeProductId`);
+    
     return { error: 'no-product-id' };
   }
 
@@ -172,7 +172,7 @@ export async function createCustomerPortalSession(user: User): Promise<{ url: st
       try {
         const product = await stripe.products.retrieve(user.stripeProductId);
         if (!product.active) {
-          console.error(`❌ Error: El producto ${user.stripeProductId} no está activo en Stripe`);
+          
           throw new Error("User's product is not active in Stripe");
         }
 
@@ -183,7 +183,7 @@ export async function createCustomerPortalSession(user: User): Promise<{ url: st
         });
         
         if (prices.data.length === 0) {
-          console.error(`❌ Error: No se encontraron precios activos para el producto ${product.id}`);
+          
           throw new Error("No active prices found for the user's product");
         }
 
@@ -221,7 +221,7 @@ export async function createCustomerPortalSession(user: User): Promise<{ url: st
           }
         });
       } catch (error) {
-        console.error(`❌ Error al verificar producto o crear configuración:`, error);
+        
         throw error;
       }
     }
@@ -235,10 +235,10 @@ export async function createCustomerPortalSession(user: User): Promise<{ url: st
     
     return { url: session.url };
   } catch (error) {
-    console.error(`❌ Error al crear sesión del portal:`, error);
+    
     
     if (error instanceof Error) {
-      console.error(`❌ Mensaje de error: ${error.message}`);
+      
       
       // Mapear errores comunes a códigos más amigables
       if (error.message.includes('API key') || error.message.includes('stripe')) {
@@ -265,7 +265,7 @@ export async function handleSubscriptionChange(
   const user = await getUserByStripeCustomerId(customerId);
 
   if (!user) {
-    console.error(`❌ User not found for Stripe customer: ${customerId}`);
+    
     return;
   }
 
@@ -278,7 +278,7 @@ export async function handleSubscriptionChange(
       const product = await stripe.products.retrieve(plan.product);
       planName = product.name;
     } catch (error) {
-      console.error(`❌ Error retrieving product: ${plan.product}`, error);
+      
     }
   } else if (plan && typeof plan.product === 'object') {
     planName = plan.product.name;
@@ -308,7 +308,7 @@ export async function handleSubscriptionChange(
         dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000'}/dashboard`
       });
     } catch (error) {
-      console.error(error);
+      
     }
   } else if (status === 'canceled' || status === 'unpaid' || status === 'incomplete_expired' || status === 'incomplete') {
     await updateUserSubscription(user.id, {
@@ -327,10 +327,10 @@ export async function handleSubscriptionChange(
         dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000'}/dashboard`
       });
     } catch (error) {
-      console.error(error);
+      
     }
   } else {
-    console.warn(`⚠️ Unhandled subscription status: ${status}`);
+    
   }
 }
 

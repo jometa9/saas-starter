@@ -65,7 +65,7 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
       const priceId = formData.get('priceId') as string;
       return createCheckoutSession({ user, priceId });
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      
       return {
         error: 'Error al conectar con el servicio de pagos. Por favor intenta de nuevo más tarde.',
       };
@@ -120,7 +120,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     
     stripeCustomerId = customer.id;
   } catch (stripeError) {
-    console.error('Error al crear cliente en Stripe durante registro:', stripeError);
+    
     // No bloqueamos el registro si falla la creación en Stripe
     // Lo intentaremos más tarde cuando se suscriba
   }
@@ -151,7 +151,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
       loginUrl: process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000'
     });
   } catch (error) {
-    console.error('❌ Error sending welcome email:', error);
+    
   }
 
   await setSession(createdUser);
@@ -162,7 +162,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
       const priceId = formData.get('priceId') as string;
       return createCheckoutSession({ user: createdUser, priceId });
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      
       redirect('/dashboard?error=payment-setup');
     }
   }
@@ -293,7 +293,7 @@ export const forgotPassword = validatedAction(
         expiryMinutes: 60, // 1 hora de validez
       });
     } catch (error) {
-      console.error('Error sending password reset email:', error);
+      
       // Aun en caso de error al enviar el email, seguimos devolviendo success
       // para evitar enumerar usuarios
     }

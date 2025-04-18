@@ -140,7 +140,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Error en diagnóstico de pago:', error);
+    
     return NextResponse.json({ error: 'Error al realizar diagnóstico' }, { status: 500 });
   }
 } 

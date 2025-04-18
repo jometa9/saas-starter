@@ -56,7 +56,7 @@ export function AccountInfoCard({
       }
     } catch (error) {
       setIsPortalLoading(false);
-      console.error("Error accessing Stripe portal:", error);
+      
       toast({
         title: "Error",
         description: "Could not access subscription management portal",
@@ -85,7 +85,7 @@ export function AccountInfoCard({
         window.location.href = "/dashboard/pricing";
       }
     } catch (error) {
-      console.error("Error in subscription flow:", error);
+      
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again later.",

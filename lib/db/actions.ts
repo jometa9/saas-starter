@@ -113,7 +113,7 @@ export async function updateAppVersionAction(
             successCount++;
             return true;
           }).catch(error => {
-            console.error(`❌ Failed to send version update email to ${recipient.email}:`, error);
+            
             failureCount++;
             // No bloqueamos el proceso si falla algún email individual
             return false;
@@ -133,7 +133,7 @@ export async function updateAppVersionAction(
       if (process.env.NEXT_PUBLIC_EMAIL_MODE !== 'production') {
       }
     } catch (error) {
-      console.error("❌ Error sending version update emails:", error);
+      
     }
     
     // Forzar la revalidación del path
@@ -147,7 +147,7 @@ export async function updateAppVersionAction(
       success: `App version updated to ${updatedVersion}`
     };
   } catch (error) {
-    console.error("❌ Error updating app version:", error);
+    
     return {
       error: 'Failed to update app version'
     };
@@ -235,7 +235,7 @@ export async function sendBroadcastEmailAction(
           successCount++;
           return true;
         }).catch(error => {
-          console.error(`❌ Failed to send broadcast email to ${recipient.email}:`, error);
+          
           failureCount++;
           // No bloqueamos el proceso si falla algún email individual
           return false;
@@ -255,7 +255,7 @@ export async function sendBroadcastEmailAction(
       success: `Email enviado con éxito a ${successCount} usuarios (${failureCount} fallidos)`
     };
   } catch (error) {
-    console.error("❌ Error sending broadcast emails:", error);
+    
     return {
       error: 'Ocurrió un error al enviar los emails'
     };
@@ -277,7 +277,7 @@ export async function createTradingAccount(data: NewTradingAccount) {
 
     return { success: true, account: result[0] };
   } catch (error) {
-    console.error('Error creating trading account:', error);
+    
     return { success: false, error: 'Failed to create trading account' };
   }
 }
@@ -299,7 +299,7 @@ export async function updateTradingAccount(
 
     return { success: true, account: result[0] };
   } catch (error) {
-    console.error('Error updating trading account:', error);
+    
     return { success: false, error: 'Failed to update trading account' };
   }
 }
@@ -318,7 +318,7 @@ export async function deleteTradingAccount(id: number) {
 
     return { success: true, account: result[0] };
   } catch (error) {
-    console.error('Error deleting trading account:', error);
+    
     return { success: false, error: 'Failed to delete trading account' };
   }
 }

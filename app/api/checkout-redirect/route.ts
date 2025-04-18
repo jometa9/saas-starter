@@ -29,13 +29,13 @@ export async function GET(request: NextRequest) {
     } else if (checkoutResult.redirect) {
       return NextResponse.redirect(checkoutResult.redirect);
     } else if (checkoutResult.error) {
-      console.error(`Error de checkout: ${checkoutResult.error}`);
+      
       return NextResponse.redirect(new URL(`/dashboard/pricing?error=${checkoutResult.error}`, request.url));
     } else {
       return NextResponse.redirect(new URL('/dashboard/pricing?error=checkout-failed', request.url));
     }
   } catch (error) {
-    console.error('Error iniciando checkout:', error);
+    
     const errorMessage = error instanceof Error ? encodeURIComponent(error.message) : 'unknown-error';
     return NextResponse.redirect(new URL(`/dashboard/pricing?error=${errorMessage}`, request.url));
   }

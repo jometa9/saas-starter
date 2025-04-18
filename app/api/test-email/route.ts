@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       configResult,
     });
   } catch (error) {
-    console.error('Error testing email configuration:', error);
+    
     return NextResponse.json(
       { error: 'Failed to test email configuration' },
       { status: 500 }
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       result,
     });
   } catch (error) {
-    console.error('Error sending test email:', error);
+    
     return NextResponse.json(
       { error: 'Failed to send test email', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

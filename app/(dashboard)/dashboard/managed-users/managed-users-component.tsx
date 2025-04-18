@@ -44,7 +44,7 @@ export function ManagedUsersComponent() {
         setUsers(data.users);
       } catch (err) {
         setError('Error loading managed users. Please try again later.');
-        console.error('Error fetching managed users:', err);
+        
       } finally {
         setLoading(false);
       }

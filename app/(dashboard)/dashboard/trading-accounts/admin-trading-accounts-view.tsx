@@ -163,7 +163,7 @@ export function AdminTradingAccountsView({
       toast.success("Server IP updated successfully");
       setIsEditingIP(false);
     } catch (error) {
-      console.error("Error updating server IP:", error);
+      
       toast.error(
         error instanceof Error ? error.message : "Error updating server IP"
       );
@@ -241,7 +241,7 @@ export function AdminTradingAccountsView({
 
       toast.success(`Estado de cuenta cambiado a ${newStatus}`);
     } catch (error) {
-      console.error("Error cambiando el estado de la cuenta:", error);
+      
       toast.error(
         error instanceof Error ? error.message : "Error al actualizar el estado"
       );
@@ -285,7 +285,7 @@ export function AdminTradingAccountsView({
         }, 1500);
       })
       .catch((err) => {
-        console.error("Error al copiar: ", err);
+        
         toast.error("No se pudo copiar al portapapeles");
       });
   };

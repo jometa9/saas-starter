@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
     const accounts = await getUserTradingAccounts(user.id);
     return NextResponse.json({ accounts });
   } catch (error) {
-    console.error("Error getting trading accounts:", error);
+    
     return NextResponse.json(
       { error: "Failed to get trading accounts" },
       { status: 500 }
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating trading account:", error);
+    
     return NextResponse.json(
       { error: "Failed to create trading account" },
       { status: 500 }

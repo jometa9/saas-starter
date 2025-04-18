@@ -28,11 +28,11 @@ export default function RootLayout({
   return (
     <html 
       lang="en"
-      className="min-h-[100dvh] text-black dark:text-white"
+      className="text-black dark:text-white"
     >
       <body className={`${inter.className}`} suppressHydrationWarning={true}>
         <UserProvider userPromise={userPromise}>
-          <div className="flex min-h-screen flex-col relative w-full mx-auto max-w-[1200px]">
+          <div className="flex flex-col relative w-full mx-auto max-w-[1200px]">
             <Header />
             <main className="flex-1 w-full">
               {children}
