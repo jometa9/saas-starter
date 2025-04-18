@@ -11,10 +11,6 @@ import {
   Clock,
   XCircle,
   Info,
-  ChevronDown,
-  ChevronRight,
-  Zap,
-  MoreVertical,
   Loader2,
   Pencil,
   Save,
@@ -25,12 +21,6 @@ import {
   Check,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 
@@ -52,7 +42,7 @@ export function AdminTradingAccountsView({
     Record<number, boolean>
   >({});
   const [serverIP, setServerIP] = useState<string>(
-    user.server_ip || "192.168.1.100"
+    user.serverIP || "192.168.1.100"
   );
   const [isEditingIP, setIsEditingIP] = useState<boolean>(false);
   const [savingIP, setSavingIP] = useState<boolean>(false);
@@ -157,7 +147,7 @@ export function AdminTradingAccountsView({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ server_ip: newIP }),
+        body: JSON.stringify({ serverIP: newIP }),
       });
 
       if (!response.ok) {
@@ -477,7 +467,7 @@ export function AdminTradingAccountsView({
                     Status
                   </th>
                   <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                    Account Number
+                    Account
                   </th>
                   <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Type
@@ -493,6 +483,9 @@ export function AdminTradingAccountsView({
                   </th>
                   <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Configuration
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs uppercase align-middle">
+                    Copying From
                   </th>
                   <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                     Actions
@@ -650,6 +643,9 @@ export function AdminTradingAccountsView({
                               No slaves connected
                             </div>
                           )}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                          <span className="text-gray-500">Master account</span>
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap align-middle actions-column">
                           {loadingAccounts[masterAccount.id] ? (
@@ -852,8 +848,8 @@ export function AdminTradingAccountsView({
                                 </div>
                               </td>
                               <td className="px-4 py-1.5 whitespace-nowrap text-xs align-middle">
-                              <div className="flex flex-wrap gap-2">
-                              {(() => {
+                                <div className="flex gap-x-2 flex-wrap gap-y-1">
+                                  {(() => {
                                     // Crear array de etiquetas
                                     const configLabels = [];
 
@@ -912,6 +908,11 @@ export function AdminTradingAccountsView({
                                     );
                                   })()}
                                 </div>
+                              </td>
+                              <td className="px-4 py-1.5 whitespace-nowrap text-sm align-middle">
+                                {slaveAccount.connectedToMaster && (
+                                  <span className="text-green-600">Master: {slaveAccount.connectedToMaster}</span>
+                                )}
                               </td>
                               <td className="px-4 py-1.5 whitespace-nowrap align-middle actions-column">
                                 {loadingAccounts[slaveAccount.id] ? (
@@ -1183,6 +1184,13 @@ export function AdminTradingAccountsView({
                             );
                           })()}
                         </div>
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm align-middle">
+                        {orphanSlave.connectedToMaster ? (
+                          <span className="text-green-600">Master: {orphanSlave.connectedToMaster}</span>
+                        ) : (
+                          <span className="text-orange-600 text-sm">N/A</span>
+                        )}
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap align-middle actions-column">
                         {loadingAccounts[orphanSlave.id] ? (

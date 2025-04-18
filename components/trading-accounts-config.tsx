@@ -1192,7 +1192,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                       Status
                     </th>
                     <th className="px-4 py-3 text-left text-xs uppercase align-middle">
-                      Account Number
+                      Account
                     </th>
                     <th className="px-4 py-3 text-left text-xs uppercase align-middle">
                       Type
