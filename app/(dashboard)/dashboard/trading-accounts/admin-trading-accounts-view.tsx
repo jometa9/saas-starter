@@ -228,7 +228,7 @@ export function AdminTradingAccountsView({
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.error || "Error al actualizar el estado de la cuenta"
+          errorData.error || "Error updating account status"
         );
       }
 
@@ -239,11 +239,11 @@ export function AdminTradingAccountsView({
         )
       );
 
-      toast.success(`Estado de cuenta cambiado a ${newStatus}`);
+      toast.success(`Account status changed to ${newStatus}`);
     } catch (error) {
       
       toast.error(
-        error instanceof Error ? error.message : "Error al actualizar el estado"
+        error instanceof Error ? error.message : "Error updating account status"
       );
     } finally {
       // Quitar el estado de carga de esta cuenta
@@ -273,7 +273,7 @@ export function AdminTradingAccountsView({
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        toast.success(`${fieldName} copiado al portapapeles`);
+        toast.success(`${fieldName} copied to clipboard`);
 
         // Establecer el estado para mostrar el icono de verificación
         const key = `${id}-${field}`;
@@ -286,7 +286,7 @@ export function AdminTradingAccountsView({
       })
       .catch((err) => {
         
-        toast.error("No se pudo copiar al portapapeles");
+        toast.error("Failed to copy to clipboard");
       });
   };
 
@@ -551,12 +551,12 @@ export function AdminTradingAccountsView({
                                 e.stopPropagation();
                                 copyToClipboard(
                                   masterAccount.accountNumber,
-                                  "Número de cuenta",
+                                  "Account Number",
                                   masterAccount.id,
                                   "accountNumber"
                                 );
                               }}
-                              title="Copiar número de cuenta"
+                              title="Copy account number"
                             >
                               {recentlyCopied[
                                 `${masterAccount.id}-accountNumber`
@@ -589,12 +589,12 @@ export function AdminTradingAccountsView({
                                 e.stopPropagation();
                                 copyToClipboard(
                                   masterAccount.server,
-                                  "Servidor",
+                                  "Server",
                                   masterAccount.id,
                                   "server"
                                 );
                               }}
-                              title="Copiar servidor"
+                              title="Copy server"
                             >
                               {recentlyCopied[`${masterAccount.id}-server`] ? (
                                 <Check className="h-3 w-3 text-green-500" />
@@ -639,12 +639,12 @@ export function AdminTradingAccountsView({
                                 e.stopPropagation();
                                 copyToClipboard(
                                   masterAccount.password,
-                                  "Contraseña",
+                                  "Password",
                                   masterAccount.id,
                                   "password"
                                 );
                               }}
-                              title="Copiar contraseña"
+                              title="Copy password"
                             >
                               {recentlyCopied[
                                 `${masterAccount.id}-password`
@@ -818,12 +818,12 @@ export function AdminTradingAccountsView({
                                       e.stopPropagation();
                                       copyToClipboard(
                                         slaveAccount.accountNumber,
-                                        "Número de cuenta",
+                                        "Account Number",
                                         slaveAccount.id,
                                         "accountNumber"
                                       );
                                     }}
-                                    title="Copiar número de cuenta"
+                                    title="Copy account number"
                                   >
                                     {recentlyCopied[
                                       `${slaveAccount.id}-accountNumber`
@@ -856,12 +856,12 @@ export function AdminTradingAccountsView({
                                       e.stopPropagation();
                                       copyToClipboard(
                                         slaveAccount.server,
-                                        "Servidor",
+                                        "Server",
                                         slaveAccount.id,
                                         "server"
                                       );
                                     }}
-                                    title="Copiar servidor"
+                                    title="Copy server"
                                   >
                                     {recentlyCopied[
                                       `${slaveAccount.id}-server`
@@ -908,12 +908,12 @@ export function AdminTradingAccountsView({
                                       e.stopPropagation();
                                       copyToClipboard(
                                         slaveAccount.password,
-                                        "Contraseña",
+                                        "Password",
                                         slaveAccount.id,
                                         "password"
                                       );
                                     }}
-                                    title="Copiar contraseña"
+                                    title="Copy password"
                                   >
                                     {recentlyCopied[
                                       `${slaveAccount.id}-password`
@@ -1123,12 +1123,12 @@ export function AdminTradingAccountsView({
                               e.stopPropagation();
                               copyToClipboard(
                                 orphanSlave.accountNumber,
-                                "Número de cuenta",
+                                "Account Number",
                                 orphanSlave.id,
                                 "accountNumber"
                               );
                             }}
-                            title="Copiar número de cuenta"
+                            title="Copy account number"
                           >
                             {recentlyCopied[
                               `${orphanSlave.id}-accountNumber`
@@ -1163,12 +1163,12 @@ export function AdminTradingAccountsView({
                               e.stopPropagation();
                               copyToClipboard(
                                 orphanSlave.server,
-                                "Servidor",
+                                "Server",
                                 orphanSlave.id,
                                 "server"
                               );
                             }}
-                            title="Copiar servidor"
+                            title="Copy server"
                           >
                             {recentlyCopied[`${orphanSlave.id}-server`] ? (
                               <Check className="h-3 w-3 text-green-500" />
@@ -1213,12 +1213,12 @@ export function AdminTradingAccountsView({
                               e.stopPropagation();
                               copyToClipboard(
                                 orphanSlave.password,
-                                "Contraseña",
+                                "Password",
                                 orphanSlave.id,
                                 "password"
                               );
                             }}
-                            title="Copiar contraseña"
+                            title="Copy password"
                           >
                             {recentlyCopied[`${orphanSlave.id}-password`] ? (
                               <Check className="h-3 w-3 text-green-500" />

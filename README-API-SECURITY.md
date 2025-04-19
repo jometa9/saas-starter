@@ -1,42 +1,43 @@
-# Mejoras de Seguridad en la API de Validación de Suscripciones
+# API Security Improvements for Subscription Validation
 
-## Cambios implementados
+## Implemented Changes
 
-1. **Verificación de origen de solicitudes**: 
-   - Se ha añadido un sistema que verifica el origen de las solicitudes HTTP a través de los encabezados `origin`.
-   - Solo se permiten solicitudes de dominios autorizados, definidos en la variable de entorno `ALLOWED_ORIGINS`.
+1. **Request Origin Verification**:
+- A system has been added that verifies the origin of HTTP requests through the `origin` headers.
+- Only requests from authorized domains, defined in the `ALLOWED_ORIGINS` environment variable, are allowed.
 
-2. **Sincronización con Stripe**:
-   - Ahora el endpoint verifica el estado actual de la suscripción directamente con Stripe antes de responder.
-   - Si detecta discrepancias entre el estado almacenado en la base de datos y el estado en Stripe, actualiza la base de datos automáticamente.
-   - Esto soluciona posibles desincronizaciones cuando la base de datos estaba inaccesible durante actualizaciones de suscripción.
+2. **Stripe Synchronization**:
+- The endpoint now verifies the current subscription status directly with Stripe before responding.
+- If it detects discrepancies between the status stored in the database and the status in Stripe, it automatically updates the database.
+- This solves possible desynchronizations when the database was inaccessible during subscription updates.
 
-3. **Soporte para Aplicaciones Electron**:
-   - Se ha añadido un parámetro especial `clientType` para identificar aplicaciones de escritorio.
-   - Las aplicaciones Electron pueden evitar la verificación de origen usando este parámetro.
+3. **Support for Electron Applications**:
+- A special parameter `clientType` has been added to identify desktop applications.
+- Electron applications can bypass origin verification using this parameter.
 
-## Configuración necesaria
+## Required Configuration
 
-Añade la siguiente variable de entorno a tu archivo `.env` o `.env.local`:
+Add the following environment variable to your `.env` or `.env.local` file:
 
 ```
-# Lista de dominios permitidos separados por comas
-ALLOWED_ORIGINS=https://tudominio.com,https://app.tudominio.com
+# List of allowed domains separated by commas
+ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
 ```
 
-Si `ALLOWED_ORIGINS` está vacío o no definido, la verificación de origen se desactivará. Para máxima seguridad, siempre define los dominios permitidos.
+If `ALLOWED_ORIGINS` is empty or not defined, origin verification will be disabled. For maximum security, always define the allowed domains.
 
-## Comportamiento de la API
+## API Behavior
 
-- Si una solicitud proviene de un origen no autorizado, recibirá un error 403 (Forbidden).
-- Si Stripe no puede ser contactado durante la verificación de suscripción, el sistema seguirá funcionando con los datos de la base de datos local.
-- La respuesta incluye toda la información anterior, pero ahora con datos de suscripción siempre actualizados y sincronizados con Stripe.
+- If a request comes from an unauthorized origin, it will receive a 403 (Forbidden) error.
+- If Stripe cannot be contacted during subscription verification, the system will continue to function with data from the local database.
+- The response includes all the previous information, but now with subscription data always updated and synchronized with Stripe.
 
-## Ejemplos de uso
+## Usage Examples
 
-### Para aplicaciones web:
+### For web applications:
+
 ```javascript
-// Ejemplo de cómo consumir esta API desde un cliente autorizado
+// Example of how to consume this API from an authorized client
 async function checkSubscription(apiKey) {
   const response = await fetch('https://tudominio.com/api/validate-subscription?apiKey=' + apiKey);
   if (!response.ok) {
@@ -46,9 +47,10 @@ async function checkSubscription(apiKey) {
 }
 ```
 
-### Para aplicaciones Electron:
+### For Electron applications:
+
 ```javascript
-// Ejemplo de cómo consumir esta API desde una aplicación Electron
+// Example of how to consume this API from an Electron application
 async function checkSubscriptionFromElectron(apiKey) {
   const response = await fetch('https://tudominio.com/api/validate-subscription?apiKey=' + apiKey + '&clientType=electron');
   if (!response.ok) {

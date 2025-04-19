@@ -144,18 +144,18 @@ export function PlansComparisonTable() {
   };
 
   const scrollToPrices = () => {
-    // Detectar si estamos en la página de dashboard/pricing
+    // Detect if we are on the dashboard/pricing page
     const isDashboardPricing =
       window.location.pathname.includes("/dashboard/pricing");
 
-    // Buscar elemento con ID "prices" para hacer scroll suave
+    // Look for element with ID "prices" for smooth scrolling
     const pricesElement = document.getElementById("prices");
 
     if (pricesElement) {
-      // Si el elemento existe, hacer scroll suave
+      // If the element exists, perform smooth scroll
       pricesElement.scrollIntoView({ behavior: "smooth" });
     } else {
-      // Si no existe el elemento, navegar a la ubicación según la página actual
+      // If the element doesn't exist, navigate according to the current page
       if (isDashboardPricing) {
         window.location.href = "/dashboard/pricing/#prices";
       } else {
@@ -164,13 +164,13 @@ export function PlansComparisonTable() {
     }
   };
 
-  // Determinar texto y estado de botones según estado de login y plan actual
+  // Determine button text and state based on login status and current plan
   const getButtonText = (planName: string): string => {
-    if (!user) return "Get " + planName; // Usuario no logueado
+    if (!user) return "Get " + planName; // User not logged in
 
-    if (planName === "Free") return "Start Now"; // Plan Free siempre muestra "Start Now"
+    if (planName === "Free") return "Start Now"; // Free plan always shows "Start Now"
 
-    // Para planes de pago, si coincide con el plan actual mostrar "Current", sino "Get" + nombre
+    // For paid plans, if it matches the current plan show "Current", otherwise "Get" + name
     if (currentPlan && currentPlan.indexOf(planName) !== -1) {
       return "Current Plan";
     }
@@ -178,16 +178,16 @@ export function PlansComparisonTable() {
     return "Get " + planName;
   };
 
-  // Verificar si el botón debe estar deshabilitado
+  // Check if the button should be disabled
   const isButtonDisabled = (planName: string): boolean => {
-    if (!user) return false; // Si no está logueado, no deshabilitar botones
+    if (!user) return false; // If not logged in, don't disable buttons
 
-    // Plan Free - deshabilitado si el usuario tiene un plan de pago
+    // Free Plan - disabled if the user has a paid plan
     if (planName === "Free" && currentPlan && currentPlan !== "Free") {
       return true;
     }
 
-    // Si ya tiene este plan, deshabilitar el botón
+    // If they already have this plan, disable the button
     if (currentPlan && currentPlan.indexOf(planName) !== -1) {
       return true;
     }
@@ -195,18 +195,18 @@ export function PlansComparisonTable() {
     return false;
   };
 
-  // Función para obtener url correcta para usuarios no logueados
+  // Function to get the correct URL for non-logged in users
   const getPlanUrl = (planName: string): string => {
-    // Detectar si estamos en la página de dashboard/pricing
+    // Detect if we are on the dashboard/pricing page
     const isDashboardPricing =
       window.location.pathname.includes("/dashboard/pricing");
 
     if (!user) {
-      // No logueado - dirigir a inicio de sesión
+      // Not logged in - direct to sign in
       return `/sign-in?redirect=${isDashboardPricing ? "/dashboard/pricing" : "/"}`;
     }
 
-    // Usuario logueado - ir a la sección de precios según la página actual
+    // Logged in user - go to pricing section based on current page
     return isDashboardPricing ? "/dashboard/pricing/#prices" : "/#prices";
   };
 

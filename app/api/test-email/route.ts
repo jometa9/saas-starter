@@ -5,7 +5,7 @@ import { sendSubscriptionChangeEmail, sendWelcomeEmail } from '@/lib/email';
 
 export async function GET(request: NextRequest) {
   try {
-    // Verificar si es un administrador
+    // Check if user is an administrator
     const user = await getUser();
     if (!user || user.role !== 'admin') {
       return NextResponse.json(
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Probar la configuración de email
+    // Test email configuration
     const configResult = await testEmailConfiguration();
     
     return NextResponse.json({ 
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Verificar si es un administrador
+    // Check if user is an administrator
     const user = await getUser();
     if (!user || user.role !== 'admin') {
       return NextResponse.json(
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
     const { type, email } = data;
     
-    // Usar el email proporcionado o el del usuario actual
+    // Use provided email or current user's email
     const targetEmail = email || user.email;
     
     if (!targetEmail) {
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
     
     let result;
-    // Enviar diferentes tipos de emails de prueba
+    // Send different types of test emails
     switch (type) {
       case 'welcome':
         result = await sendWelcomeEmail({
@@ -67,22 +67,22 @@ export async function POST(request: NextRequest) {
         result = await sendSubscriptionChangeEmail({
           email: targetEmail,
           name: user.name || targetEmail.split('@')[0],
-          planName: 'Plan de Prueba',
+          planName: 'Test Plan',
           status: 'active',
           expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         });
         break;
       default:
-        // Email genérico de prueba
+        // Generic test email
         result = await sendEmail({
           to: targetEmail,
-          subject: 'Prueba de Email desde IPTRADE',
+          subject: 'Test Email from IPTRADE',
           html: `
-            <h1>¡Prueba exitosa!</h1>
-            <p>Si estás viendo este email, la configuración de email está funcionando correctamente.</p>
-            <p>Fecha y hora de la prueba: ${new Date().toLocaleString()}</p>
+            <h1>Successful Test!</h1>
+            <p>If you are seeing this email, the email configuration is working correctly.</p>
+            <p>Test date and time: ${new Date().toLocaleString()}</p>
           `,
-          text: `¡Prueba exitosa! Si estás viendo este email, la configuración de email está funcionando correctamente. Fecha y hora de la prueba: ${new Date().toLocaleString()}`,
+          text: `Successful Test! If you are seeing this email, the email configuration is working correctly. Test date and time: ${new Date().toLocaleString()}`,
         });
     }
     

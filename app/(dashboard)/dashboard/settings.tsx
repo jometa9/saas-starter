@@ -90,137 +90,137 @@ export function Settings({
 
   useEffect(() => {
     if (errorParam) {
-      let errorMessage = "Ha ocurrido un error inesperado";
+      let errorMessage = "An error occurred unexpectedly";
 
       // Mapear códigos de error a mensajes más descriptivos
       switch (errorParam) {
         case "payment-error":
           errorMessage =
-            "Ha ocurrido un error al procesar el pago. Por favor intenta de nuevo más tarde.";
+            "An error occurred while processing the payment. Please try again later.";
           break;
         case "stripe-api-key":
           errorMessage =
-            "La clave API de Stripe no es válida. Por favor configura una clave de prueba válida en el archivo .env.local.";
+            "The Stripe API key is not valid. Please configure a valid test key in your .env.local file.";
           break;
         case "invalid-price":
           errorMessage =
-            "El precio seleccionado no es válido o no existe en Stripe. Por favor configura productos y precios en tu cuenta de Stripe.";
+            "The selected price is not valid or does not exist in Stripe. Please configure products and prices in your Stripe account.";
           break;
         case "missing-price":
           errorMessage =
-            "No se ha especificado un precio para la suscripción. Por favor selecciona un plan.";
+            "No price has been specified for the subscription. Please select a plan.";
           break;
         case "customer-error":
           errorMessage =
-            "No se pudo crear o actualizar tu perfil de cliente en el sistema de pagos. Por favor intenta de nuevo.";
+            "Your customer profile could not be created or updated in the payment system. Please try again.";
           break;
         case "update-error":
           errorMessage =
-            "No se pudo actualizar tu información de usuario. Por favor intenta de nuevo más tarde.";
+            "Your user information could not be updated. Please try again later.";
           break;
         case "profile-setup-error":
           errorMessage =
-            "No se pudo configurar tu perfil de cliente. Por favor contacta a soporte técnico.";
+            "Your customer profile could not be set up. Please contact technical support.";
           break;
         case "user-data-error":
           errorMessage =
-            "Tu sesión de usuario no tiene datos suficientes. Por favor cierra sesión, vuelve a iniciar sesión e intenta de nuevo.";
+            "Your user session does not have sufficient data. Please log out, log back in, and try again.";
           break;
         case "checkout-error":
           errorMessage =
-            "Error en el proceso de pago. Por favor intenta de nuevo o contacta a soporte si el problema persiste.";
+            "Error in the payment process. Please try again or contact support if the problem persists.";
           break;
         case "portal-access":
           errorMessage =
-            "No se pudo acceder al portal de gestión de suscripciones. Verifica tu conexión a internet o inténtalo más tarde.";
+            "Could not access the subscription management portal. Check your internet connection or try again later.";
           break;
         case "no-customer-id":
           errorMessage =
-            "No tienes una suscripción activa. Por favor suscríbete primero para acceder al portal de facturación.";
+            "You don't have an active subscription. Please subscribe first to access the billing portal.";
           break;
         case "no-product-id":
           errorMessage =
-            "No hay un producto asociado a tu cuenta. Por favor contacta a soporte.";
+            "There is no product associated with your account. Please contact support.";
           break;
         case "invalid-customer":
           errorMessage =
-            "Tu información de cliente no es válida en nuestro sistema de pagos. Por favor contacta a soporte.";
+            "Your customer information is not valid in our payment system. Please contact support.";
           break;
         case "portal-config":
           errorMessage =
-            "El portal de facturación no está correctamente configurado. Por favor contacta a soporte.";
+            "The billing portal is not properly configured. Please contact support.";
           break;
         case "setup-failed":
           errorMessage =
-            "No se pudo configurar tu perfil de pago. Por favor intenta de nuevo o contacta a soporte.";
+            "Your payment profile could not be set up. Please try again or contact support.";
           break;
         case "invalid-customer-id":
           errorMessage =
-            "Tu ID de cliente no es válido en el sistema de pagos. Por favor contacta a soporte.";
+            "Your customer ID is not valid in the payment system. Please contact support.";
           break;
         case "invalid-price-id":
           errorMessage =
-            "El plan seleccionado no es válido. Por favor selecciona otro plan.";
+            "The selected plan is not valid. Please select another plan.";
           break;
         case "stripe-config":
           errorMessage =
-            "Error en la configuración del sistema de pagos. Por favor contacta a soporte.";
+            "Error in the payment system configuration. Please contact support.";
           break;
         case "price-error":
           errorMessage =
-            "Error con el precio seleccionado. Por favor elige otro plan.";
+            "Error with the selected price. Please choose another plan.";
           break;
         case "stripe-create-customer":
           errorMessage =
-            "No se pudo crear tu perfil de cliente en Stripe. Verifica que la configuración de Stripe es correcta o contacta a soporte.";
+            "Could not create your customer profile in Stripe. Verify that the Stripe configuration is correct or contact support.";
           break;
         case "invalid-api-key":
           errorMessage =
-            "La clave API de Stripe no es válida o no está configurada correctamente. Por favor contacta con el administrador.";
+            "The Stripe API key is not valid or is not configured correctly. Please contact the administrator.";
           break;
         case "invalid-price-format":
           errorMessage =
-            "El formato del ID de precio seleccionado no es válido. Debe comenzar con 'price_'.";
+            "The format of the selected price ID is not valid. It must start with 'price_'.";
           break;
         case "stripe-verification":
           errorMessage =
-            "No se pudo verificar la información de tu cuenta en Stripe. Por favor intenta más tarde.";
+            "Could not verify your account information in Stripe. Please try again later.";
           break;
         case "network-error":
           errorMessage =
-            "Error de conexión al procesar el pago. Verifica tu conexión a internet e intenta nuevamente.";
+            "Connection error while processing the payment. Check your internet connection and try again.";
           break;
         case "session-error":
           errorMessage =
-            "Error al crear la sesión de pago. Por favor intenta nuevamente o contacta a soporte.";
+            "Error creating the payment session. Please try again or contact support.";
           break;
         case "no-active-subscription":
           errorMessage =
-            "No tienes una suscripción activa o en período de prueba. Debes suscribirte primero.";
+            "You don't have an active subscription or trial period. You must subscribe first.";
           break;
         case "subscription-exists":
           errorMessage =
-            "Ya tienes una suscripción activa. Puedes gestionar tu suscripción desde tu dashboard.";
+            "You already have an active subscription. You can manage your subscription from your dashboard.";
           break;
         case "invalid-redirect-url":
           errorMessage =
-            "Error con las URLs de redirección en el proceso de pago. Por favor contacta al administrador.";
+            "Error with redirect URLs in the payment process. Please contact the administrator.";
           break;
         case "url-error":
           errorMessage =
-            "Error en las URLs del proceso de pago. Por favor contacta al administrador.";
+            "Error in the payment process URLs. Please contact the administrator.";
           break;
         case "missing-customer":
           errorMessage =
-            "No se pudo encontrar la información de cliente en la sesión de pago.";
+            "Could not find customer information in the payment session.";
           break;
         case "missing-subscription":
           errorMessage =
-            "No se pudo encontrar la información de suscripción en la sesión de pago.";
+            "Could not find subscription information in the payment session.";
           break;
         case "missing-price-data":
           errorMessage =
-            "No se pudo encontrar la información de precio en la suscripción creada.";
+            "Could not find price information in the created subscription.";
           break;
       }
 
@@ -242,7 +242,7 @@ export function Settings({
     // Mostrar mensaje de éxito si hay uno
     const successParam = searchParams.get("success");
     if (successParam) {
-      let successMessage = "Operación completada correctamente";
+      let successMessage = "Operation completed successfully";
 
       // Mapear códigos de éxito a mensajes más descriptivos
       switch (successParam) {
@@ -258,7 +258,7 @@ export function Settings({
 
       // Mostrar toast de éxito
       toast({
-        title: "¡Éxito!",
+        title: "Success!",
         description: successMessage,
         variant: "default",
       });
@@ -315,7 +315,7 @@ export function Settings({
       }
     } catch (error) {
       
-      setActionState({ error: "Error al actualizar la versión" });
+      setActionState({ error: "Error updating version" });
     } finally {
       setIsPending(false);
     }
@@ -357,7 +357,7 @@ export function Settings({
       }
     } catch (error) {
       
-      setPasswordState({ error: "Error al actualizar la contraseña" });
+      setPasswordState({ error: "Error updating password" });
     } finally {
       setIsPasswordPending(false);
     }
@@ -398,20 +398,18 @@ export function Settings({
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {user.subscriptionStatus === "active"
-                    ? "Suscripción activa"
+                    ? "Active Subscription"
                     : user.subscriptionStatus === "trialing"
-                      ? "Período de prueba"
+                      ? "Trial Period"
                       : user.subscriptionStatus === "canceled"
-                        ? "Suscripción cancelada"
+                        ? "Subscription Canceled"
                         : user.subscriptionStatus === "past_due"
-                          ? "Pago pendiente"
-                          : user.subscriptionStatus === "unpaid"
-                            ? "Suscripción impaga"
-                            : user.subscriptionStatus === "incomplete"
-                              ? "Suscripción incompleta"
-                              : user.stripeSubscriptionId
-                                ? `Estado: ${user.subscriptionStatus || "desconocido"}`
-                                : "No hay suscripción activa"}
+                          ? "Unpaid Subscription"
+                          : user.subscriptionStatus === "incomplete"
+                            ? "Incomplete Subscription"
+                            : user.stripeSubscriptionId
+                              ? `Status: ${user.subscriptionStatus || "unknown"}`
+                              : "No active subscription"}
                 </p>
               </div>
 
@@ -423,8 +421,8 @@ export function Settings({
                     try {
                       // Mostrar mensaje de espera mientras se procesa
                       toast({
-                        title: "Procesando...",
-                        description: "Preparando el portal de gestión...",
+                        title: "Processing...",
+                        description: "Preparing management portal...",
                       });
 
                       // Intentar acceder al portal de cliente
@@ -434,33 +432,33 @@ export function Settings({
                         // Si hay un error, mostrar el mensaje adecuado
                         
                         let errorMessage =
-                          "No se pudo acceder al portal de gestión.";
+                          "Could not access management portal.";
 
                         // Mapear códigos de error a mensajes más descriptivos
                         switch (result.error) {
                           case "no-customer-id":
                             errorMessage =
-                              "No tienes un perfil de cliente configurado. Contacta con soporte.";
+                              "No customer profile configured. Contact support.";
                             break;
                           case "no-active-subscription":
                             errorMessage =
-                              "No tienes una suscripción activa o en período de prueba. Debes suscribirte primero.";
+                              "You don't have an active or trial subscription. You must subscribe first.";
                             break;
                           case "no-product-id":
                             errorMessage =
-                              "Tu suscripción no tiene un producto asignado. Contacta con soporte.";
+                              "Your subscription does not have an assigned product. Contact support.";
                             break;
                           case "stripe-api-key":
                             errorMessage =
-                              "Error de configuración de Stripe. Contacta con el administrador.";
+                              "Stripe configuration error. Contact the administrator.";
                             break;
                           case "portal-config":
                             errorMessage =
-                              "Error en la configuración del portal. Contacta con soporte.";
+                              "Error in portal configuration. Contact support.";
                             break;
                           case "invalid-customer":
                             errorMessage =
-                              "Tu perfil de cliente no es válido. Contacta con soporte.";
+                              "Your customer profile is not valid. Contact support.";
                             break;
                         }
 
@@ -477,9 +475,9 @@ export function Settings({
                         ) {
                           setTimeout(() => {
                             toast({
-                              title: "Modo de demostración",
+                              title: "Demo Mode",
                               description:
-                                "¿Quieres ver una simulación del portal?",
+                                "Would you like to see a portal simulation?",
                               action: (
                                 <div className="flex space-x-2">
                                   <Button
@@ -490,7 +488,7 @@ export function Settings({
                                         "/dashboard?success=portal-simulated")
                                     }
                                   >
-                                    Sí, simular
+                                    Yes, simulate
                                   </Button>
                                 </div>
                               ),
@@ -507,9 +505,9 @@ export function Settings({
                       } else {
                         // Si no hay redirección pero tampoco error, usar modo de simulación
                         toast({
-                          title: "Simulación",
+                          title: "Simulation",
                           description:
-                            "Redirigiendo a modo simulado debido a limitaciones del entorno.",
+                            "Redirigiendo a demo mode due to environment limitations.",
                         });
                         setTimeout(() => {
                           window.location.href =
@@ -520,9 +518,9 @@ export function Settings({
                       
                       // Mostrar mensaje de error más descriptivo
                       toast({
-                        title: "No se pudo acceder al portal",
+                        title: "No access to portal",
                         description:
-                          "Se ha producido un error al intentar acceder al portal de gestión. Tu suscripción sigue activa.",
+                          "An error occurred while trying to access the management portal. Your subscription is still active.",
                         variant: "destructive",
                       });
                     }
@@ -728,7 +726,7 @@ export function Settings({
                         onChange={(e) => setDownloadUrl(e.target.value)}
                       />
                       <p className="text-xs text-muted-foreground mt-1">
-                        URL donde los usuarios pueden descargar esta versión
+                        URL where users can download this version
                       </p>
                     </div>
 
@@ -768,13 +766,13 @@ export function Settings({
                     <Textarea
                       id="releaseNotes"
                       name="releaseNotes"
-                      placeholder="Describe los cambios en esta versión..."
+                      placeholder="Describe the changes in this version..."
                       value={releaseNotes}
                       onChange={(e) => setReleaseNotes(e.target.value)}
                       className="min-h-[120px]"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Estos cambios se enviarán a los usuarios por email
+                      These changes will be sent to users by email
                     </p>
                   </div>
                 </div>
@@ -820,10 +818,10 @@ export function Settings({
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div>
               <h3 className="text-lg font-medium">
-                Administrador - Herramientas
+                Administrator - Tools
               </h3>
               <p className="text-sm text-gray-500">
-                Herramientas para administradores del sistema
+                Tools for system administrators
               </p>
             </div>
 
@@ -842,29 +840,29 @@ export function Settings({
 
                     if (result.success) {
                       toast({
-                        title: "Configuración correcta",
-                        description: `Email configurado correctamente. Modo: ${result.emailMode}`,
+                        title: "Correct Configuration",
+                        description: `Email configured correctly. Mode: ${result.emailMode}`,
                       });
                     } else {
                       toast({
-                        title: "Error en configuración",
+                        title: "Configuration Error",
                         description:
                           result.message ||
-                          "La configuración de email no es correcta",
+                          "Email configuration is not correct",
                         variant: "destructive",
                       });
                     }
                   } catch (error) {
                     toast({
-                      title: "Error al verificar",
+                      title: "Error verifying",
                       description:
-                        "No se pudo verificar la configuración de email",
+                        "Could not verify email configuration",
                       variant: "destructive",
                     });
                   }
                 }}
               >
-                Probar email
+                Test Email
               </Button>
 
               {/* Botón para diagnosticar configuración de Stripe */}
@@ -874,9 +872,9 @@ export function Settings({
                 onClick={async () => {
                   try {
                     toast({
-                      title: "Verificando Stripe...",
+                      title: "Checking Stripe...",
                       description:
-                        "Comprobando configuración de Stripe y acceso a la API...",
+                        "Checking Stripe configuration and API access...",
                     });
 
                     const response = await fetch("/api/debug/payment", {
@@ -887,7 +885,7 @@ export function Settings({
 
                     if (response.ok) {
                       // Determinar estado general del sistema de pagos
-                      let statusTitle = "Estado del sistema de pagos";
+                      let statusTitle = "Status of payment system";
                       let statusDescription = "";
                       let statusVariant: "default" | "destructive" = "default";
 
@@ -896,32 +894,32 @@ export function Settings({
                         result.stripe.status === "no-key" ||
                         result.stripe.status === "invalid-key"
                       ) {
-                        statusTitle = "⚠️ Configuración de Stripe inválida";
+                        statusTitle = "⚠️ Invalid Stripe Configuration";
                         statusDescription =
                           result.stripe.message +
-                          ". No se pueden procesar pagos.";
+                          ". Payments cannot be processed.";
                         statusVariant = "destructive";
                       } else if (result.pricesError) {
-                        statusTitle = "⚠️ Error al conectar con Stripe";
+                        statusTitle = "⚠️ Stripe Connection Error";
                         statusDescription =
-                          "La clave API parece válida, pero no se pudo obtener la lista de precios: " +
+                          "The API key seems valid, but the price list could not be obtained: " +
                           result.pricesError;
                         statusVariant = "destructive";
                       } else if (!result.prices || result.prices.length === 0) {
-                        statusTitle = "⚠️ No hay precios configurados";
+                        statusTitle = "⚠️ No Prices Configured";
                         statusDescription =
-                          "Stripe está configurado, pero no hay productos o precios definidos. Configúralos en tu dashboard de Stripe.";
+                          "Stripe is configured, but there are no products or prices defined. Configure them in your Stripe dashboard.";
                         statusVariant = "destructive";
                       } else if (
                         result.customerError &&
                         result.user.stripeCustomerId
                       ) {
-                        statusTitle = "⚠️ Error de cliente en Stripe";
-                        statusDescription = `El ID de cliente almacenado (${result.user.stripeCustomerId}) no es válido en Stripe: ${result.customerError}`;
+                        statusTitle = "⚠️ Customer Error in Stripe";
+                        statusDescription = `Stored customer ID (${result.user.stripeCustomerId}) is not valid in Stripe: ${result.customerError}`;
                         statusVariant = "destructive";
                       } else {
-                        statusTitle = "✅ Configuración de Stripe correcta";
-                        statusDescription = `Modo: ${result.stripe.status}. Se encontraron ${result.prices?.length || 0} precios.`;
+                        statusTitle = "✅ Correct Stripe Configuration";
+                        statusDescription = `Mode: ${result.stripe.status}. Found ${result.prices?.length || 0} prices.`;
                       }
 
                       toast({
@@ -931,24 +929,24 @@ export function Settings({
                       });
                     } else {
                       toast({
-                        title: "Error en diagnóstico",
+                        title: "Diagnostic Error",
                         description:
                           result.error ||
-                          "No se pudo realizar el diagnóstico de Stripe",
+                          "Could not perform Stripe diagnostic",
                         variant: "destructive",
                       });
                     }
                   } catch (error) {
                     toast({
-                      title: "Error al verificar",
+                      title: "Error verifying",
                       description:
-                        "No se pudo contactar con el servidor para diagnosticar Stripe",
+                        "Could not contact server to diagnose Stripe",
                       variant: "destructive",
                     });
                   }
                 }}
               >
-                Diagnosticar Stripe
+                Diagnose Stripe
               </Button>
             </div>
           </div>

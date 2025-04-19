@@ -1,32 +1,32 @@
 import nodemailer from 'nodemailer';
 import { Resend } from 'resend';
 
-// Configuración de Resend (servicio de email moderno)
+// Resend configuration (modern email service)
 export const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Configuración de Nodemailer como alternativa
-// En desarrollo, usa ethereal.email (servicio de prueba)
+// Nodemailer configuration as alternative
+// In development, uses ethereal.email (test service)
 let transporter: nodemailer.Transporter;
 
-// Función para verificar si estamos en modo producción
+// Function to verify if we are in production mode
 const isProduction = (): boolean => {
-  // Primero verificamos nuestra propia variable, si existe
+  // First we check our own variable, if it exists
   if (process.env.NEXT_PUBLIC_EMAIL_MODE) {
     return process.env.NEXT_PUBLIC_EMAIL_MODE === 'production';
   }
-  // Como respaldo, verificamos NODE_ENV (aunque Next.js podría ignorar cambios en .env.local)
+  // As a fallback, we check NODE_ENV (although Next.js might ignore changes in .env.local)
   return process.env.NODE_ENV === 'production';
 };
 
-// Inicializa el transporter de Nodemailer
+// Initialize the Nodemailer transporter
 export async function initializeEmailTransporter() {
-  // Si ya existe un transporter, regrésalo
+  // If a transporter already exists, return it
   if (transporter) return transporter;
 
-  // Si estamos en desarrollo, usa ethereal.email
+  // If we're in development, use ethereal.email
   if (!isProduction()) {
     try {
-      // Crear una cuenta de prueba en ethereal.email
+      // Create a test account in ethereal.email
       const testAccount = await nodemailer.createTestAccount();
       
       transporter = nodemailer.createTransport({
@@ -43,7 +43,7 @@ export async function initializeEmailTransporter() {
       throw new Error('Failed to configure email transport');
     }
   } else {
-    // En producción, usa SMTP configurado o un servicio externo
+    // In production, use configured SMTP or an external service
     if (!process.env.SMTP_HOST && !process.env.RESEND_API_KEY) {
       
     }
@@ -64,8 +64,8 @@ export async function initializeEmailTransporter() {
         throw new Error('Failed to configure email transport');
       }
     } else {
-      // Si no hay SMTP configurado, creamos un transporter "dummy" que lanza errores
-      // Esto evita errores innecesarios en la aplicación, pero el envío fallará
+      // If no SMTP is configured, we create a "dummy" transporter that throws errors
+      // This avoids unnecessary errors in the application, but sending will fail
       
       transporter = nodemailer.createTransport({
         name: 'no-reply',
@@ -82,11 +82,11 @@ export async function initializeEmailTransporter() {
 }
 
 /**
- * Verifica si una dirección de email es válida para pruebas con Resend
- * En modo de prueba, Resend solo permite enviar a dominios verificados o @resend.dev
+ * Verifies if an email address is valid for testing with Resend
+ * In test mode, Resend only allows sending to verified domains or @resend.dev
  */
 const isValidResendTestAddress = (email: string): boolean => {
-  // En producción, Resend rechaza dominios de prueba comunes
+  // In production, Resend rejects common test domains
   const invalidTestDomains = [
     '@test.com',
     '@example.com',
@@ -94,12 +94,12 @@ const isValidResendTestAddress = (email: string): boolean => {
     '@sample.com'
   ];
   
-  // Si es un dominio de prueba conocido, no es válido en producción
+  // If it's a known test domain, it's not valid in production
   if (invalidTestDomains.some(domain => email.toLowerCase().endsWith(domain))) {
     return false;
   }
   
-  // Dominios válidos para pruebas en Resend
+  // Valid domains for testing in Resend
   const validTestDomains = [
     '@resend.dev',
     '@gmail.com',
@@ -110,18 +110,18 @@ const isValidResendTestAddress = (email: string): boolean => {
     '@aol.com',
     '@protonmail.com',
     '@iptradecopier.com'
-    // Puedes añadir más dominios según sea necesario
+    // You can add more domains as needed
   ];
   
   return validTestDomains.some(domain => email.toLowerCase().endsWith(domain));
 };
 
 /**
- * Asegura que la dirección de email sea válida para Resend
- * Si no lo es, la reemplaza por una dirección segura para pruebas
+ * Ensures that the email address is valid for Resend
+ * If not, replaces it with a safe address for testing
  */
 const getSafeResendEmail = (email: string): string => {
-  // En producción, siempre rechaza los dominios de prueba comunes
+  // In production, always reject common test domains
   const invalidTestDomains = [
     '@test.com',
     '@example.com',
@@ -133,16 +133,16 @@ const getSafeResendEmail = (email: string): string => {
     email.toLowerCase().endsWith(domain)
   );
   
-  // En modo producción, permitimos todos los dominios excepto los de prueba conocidos
+  // In production mode, we allow all domains except known test domains
   if (isProduction()) {
     if (isInvalidTestDomain) {
       
       return process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev';
     }
-    return email; // En producción, devolvemos el email tal cual si no es un dominio de prueba
+    return email; // In production, we return the email as is if it's not a test domain
   }
   
-  // En desarrollo, solo permitimos dominios verificados
+  // In development, only allow verified domains
   if (!isValidResendTestAddress(email)) {
     
     return process.env.RESEND_TEST_EMAIL || 'onboarding@resend.dev';
@@ -151,7 +151,7 @@ const getSafeResendEmail = (email: string): string => {
   return email;
 };
 
-// Función para enviar emails usando Resend (preferido) o Nodemailer (fallback)
+// Function to send emails using Resend (preferred) or Nodemailer (fallback)
 export async function sendEmail({
   to,
   subject,
@@ -166,9 +166,9 @@ export async function sendEmail({
   from?: string;
 }) {
   try {
-    // Intenta enviar con Resend primero
+    // Try sending with Resend first
     if (process.env.RESEND_API_KEY) {
-      // Asegurar que la dirección sea válida para Resend en cualquier modo
+      // Ensure the address is valid for Resend in any mode
       let safeRecipient = getSafeResendEmail(to);
       
       try {
@@ -188,7 +188,7 @@ export async function sendEmail({
         return { id: data?.id, provider: 'resend', originalRecipient: to, actualRecipient: safeRecipient };
       } catch (resendError) {
         
-        throw resendError; // Lanzamos el error para pasar al fallback
+        throw resendError; // Throw the error to pass to the fallback
       }
     }
     
@@ -209,35 +209,35 @@ export async function sendEmail({
   }
 }
 
-// Función para verificar la configuración de email
+// Function to verify email configuration
 export async function testEmailConfiguration() {
   try {
     let resendConfigured = false;
     let nodemailerConfigured = false;
     
-    // Probar si Resend está configurado
+    // Test if Resend is configured
     if (process.env.RESEND_API_KEY) {
       try {
         const domains = await resend.domains.list();
         resendConfigured = true;
       } catch (error) {
         
-        // No lanzamos error aquí, dejamos que Nodemailer sea la alternativa
+        // We don't throw an error here, we let Nodemailer be the alternative
       }
     }
     
-    // Probar Nodemailer solo si hay configuración SMTP o estamos en desarrollo
+    // Test Nodemailer only if there's an SMTP configuration or we're in development
     const hasSmtpConfig = !!process.env.SMTP_HOST && !!process.env.SMTP_PORT;
     
     if (hasSmtpConfig || !isProduction()) {
       try {
         const transport = await initializeEmailTransporter();
         
-        // Verificar la conexión
+        // Verify the connection
         await transport.verify();
         nodemailerConfigured = true;
         
-        // Si estamos en desarrollo, enviar un email de prueba
+        // If we're in development, send a test email
         if (!isProduction()) {
           const info = await transport.sendMail({
             from: process.env.EMAIL_FROM || 'test@example.com',

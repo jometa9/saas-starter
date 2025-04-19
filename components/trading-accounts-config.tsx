@@ -113,7 +113,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     connectedToMaster: "none",
   });
 
-  // Comprobar si el usuario es administrador
+  // Check if user is administrator
   const isAdmin = user.role === "admin" || user.role === "superadmin";
 
   // Platform options
@@ -174,12 +174,12 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     }
   };
 
-  // Nueva función para manejar cambios de plataforma
+  // New function to handle platform changes
   const handlePlatformChange = (value: string) => {
     setFormState({
       ...formState,
       platform: value,
-      serverIp: "", // Reset server cuando cambia la plataforma
+      serverIp: "", // Reset server when platform changes
     });
   };
 
@@ -210,7 +210,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       accountNumber: account.accountNumber,
       platform: account.platform,
       serverIp: account.server,
-      password: "", // No mostramos la contraseña existente
+      password: "", // We don't show the existing password
       accountType: account.accountType,
       status: account.status,
       lotCoefficient: account.lotCoefficient || 1,
@@ -221,7 +221,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         : "none",
     });
 
-    // Scroll hacia el formulario después de un pequeño retraso para permitir que el DOM se actualice
+    // Scroll to the form after a short delay to allow the DOM to update
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
@@ -380,7 +380,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           let errorMessage = "Failed to update trading account";
           try {
             if (data && typeof data === "object") {
-              // Manejar específicamente errores de validación de Zod
+              // Specifically handle Zod validation errors
               if (
                 data._errors ||
                 (data.error &&
@@ -391,7 +391,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 if (Array.isArray(zodErrors) && zodErrors.length > 0) {
                   errorMessage = zodErrors.join(", ");
                 } else {
-                  // Revisar errores de campo específicos
+                  // Check for specific field errors
                   const fieldErrors = [];
                   for (const [field, value] of Object.entries(data)) {
                     if (
@@ -410,7 +410,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 if (typeof data.error === "string") {
                   errorMessage = data.error;
                 } else if (typeof data.error === "object") {
-                  // Intentar extraer un mensaje más significativo o convertir a JSON
+                  // Try to extract a more meaningful message or convert to JSON
                   errorMessage =
                     data.error.message || JSON.stringify(data.error);
                 }
@@ -477,7 +477,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           let errorMessage = "Failed to create trading account";
           try {
             if (data && typeof data === "object") {
-              // Manejar específicamente errores de validación de Zod
+              // Specifically handle Zod validation errors
               if (
                 data._errors ||
                 (data.error &&
@@ -488,7 +488,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 if (Array.isArray(zodErrors) && zodErrors.length > 0) {
                   errorMessage = zodErrors.join(", ");
                 } else {
-                  // Revisar errores de campo específicos
+                  // Check for specific field errors
                   const fieldErrors = [];
                   for (const [field, value] of Object.entries(data)) {
                     if (
@@ -507,7 +507,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 if (typeof data.error === "string") {
                   errorMessage = data.error;
                 } else if (typeof data.error === "object") {
-                  // Intentar extraer un mensaje más significativo o convertir a JSON
+                  // Try to extract a more meaningful message or convert to JSON
                   errorMessage =
                     data.error.message || JSON.stringify(data.error);
                 }
@@ -596,7 +596,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   };
 
   const getServerStatus = () => {
-    // Calcular el número de cuentas en cada estado
+    // Calculate the number of accounts in each status
     const synchronizedCount = accounts.filter(
       (acc) => acc.status === "synchronized"
     ).length;
@@ -608,7 +608,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     ).length;
     const totalAccounts = accounts.length;
 
-    // Determinar el estado del servidor según las reglas
+    // Determine server status based on rules
     if (totalAccounts === 0) {
       return "none"; // Sin cuentas
     } else if (synchronizedCount === totalAccounts) {
@@ -617,14 +617,14 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       pendingCount >= errorCount &&
       pendingCount >= synchronizedCount
     ) {
-      return "pending"; // Mayoría pendientes - AZUL
+      return "pending"; // Majority pending - BLUE
     } else if (errorCount >= pendingCount && errorCount >= synchronizedCount) {
-      return "error"; // Mayoría con error - ROJO
+      return "error"; // Majority with error - RED
     } else if (
       synchronizedCount > pendingCount &&
       synchronizedCount > errorCount
     ) {
-      return "warning"; // Mayoría sincronizadas pero hay pendientes o errores - AMARILLO
+      return "warning"; // Majority synchronized but there are pending or errors - YELLOW
     } else {
       return "operational"; // Estado por defecto
     }
@@ -643,12 +643,12 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     }
   }, [formState.platform]);
 
-  // Nuevo estado para rastrear qué cuentas master están colapsadas
+  // New state to track which master accounts are collapsed
   const [collapsedMasters, setCollapsedMasters] = useState<
     Record<string, boolean>
   >({});
 
-  // Función para alternar el estado colapsado de una cuenta master
+  // Function to toggle the collapsed state of a master account
   const toggleMasterCollapse = (masterId: string) => {
     setCollapsedMasters((prev) => ({
       ...prev,
@@ -1230,7 +1230,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                         <tr
                           className="bg-blue-50 hover:bg-blue-100 cursor-pointer"
                           onClick={(e) => {
-                            // Evitar activación si se hace clic en los botones de acción
+                            // Avoid activation if clicked on action buttons
                             if (
                               !(e.target as HTMLElement).closest(
                                 ".actions-column"
@@ -1455,7 +1455,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                         );
                                       }
 
-                                      // Limitar número de etiquetas visibles
+                                      // Limit number of visible tags
                                       const maxLabels = 2;
                                       const visibleLabels = configLabels.slice(
                                         0,
@@ -1634,7 +1634,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                                 );
                               }
 
-                              // Limitar número de etiquetas visibles
+                              // Limit number of visible tags
                               const maxLabels = 2;
                               const visibleLabels = configLabels.slice(
                                 0,

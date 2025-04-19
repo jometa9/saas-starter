@@ -50,7 +50,7 @@ export async function PATCH(
 
     if (isNaN(accountId)) {
       return NextResponse.json(
-        { error: "ID de cuenta inválido" },
+        { error: "Invalid account ID" },
         { status: 400 }
       );
     }
@@ -62,7 +62,7 @@ export async function PATCH(
       .where(eq(tradingAccounts.id, accountId));
 
     return NextResponse.json(
-      { message: "Estado de cuenta actualizado correctamente", status },
+      { message: "Account status updated successfully", status },
       { status: 200 }
     );
   } catch (error) {

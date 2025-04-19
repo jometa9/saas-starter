@@ -24,13 +24,13 @@ export function getStripe(): Stripe {
           return new Proxy({}, {
             get: () => {
               return () => {
-                throw new Error('Stripe no está configurado correctamente. Añade una clave válida de Stripe en tu archivo .env.local');
+                throw new Error('Stripe is not configured correctly. Add a valid Stripe key in your .env.local file');
               };
             }
           });
         }
         return () => {
-          throw new Error('Stripe no está configurado correctamente. Añade una clave válida de Stripe en tu archivo .env.local');
+          throw new Error('Stripe is not configured correctly. Add a valid Stripe key in your .env.local file');
         };
       }
     });
@@ -89,7 +89,7 @@ export async function createCheckoutSession({
       throw new Error('invalid-price');
     }
 
-    // Construir URLs absolutas para success y cancel
+    // Build absolute URLs for success and cancel
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000';
     const successUrl = `${baseUrl}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${baseUrl}/dashboard`;
@@ -136,7 +136,7 @@ async function updateUserById(userId: number, data: Partial<User>) {
     });
     
     if (!response.ok) {
-      throw new Error(`Error actualizando usuario: ${response.status}`);
+      throw new Error(`Error updating user: ${response.status}`);
     }
   } catch (error) {
     
@@ -161,14 +161,14 @@ export async function createCustomerPortalSession(user: User): Promise<{ url: st
   }
 
   try {
-    // Buscar configuración existente o crear una nueva
+    // Look for existing configuration or create a new one
     let configuration: Stripe.BillingPortal.Configuration;
     const configurations = await stripe.billingPortal.configurations.list();
 
     if (configurations.data.length > 0) {
       configuration = configurations.data[0];
     } else {
-      // Verificar que el producto existe antes de crear la configuración
+      // Verify that the product exists before creating the configuration
       try {
         const product = await stripe.products.retrieve(user.stripeProductId);
         if (!product.active) {
@@ -187,7 +187,7 @@ export async function createCustomerPortalSession(user: User): Promise<{ url: st
           throw new Error("No active prices found for the user's product");
         }
 
-        // Crear nueva configuración
+        // Create new configuration
         configuration = await stripe.billingPortal.configurations.create({
           business_profile: {
             headline: 'Manage your subscription'
@@ -272,7 +272,7 @@ export async function handleSubscriptionChange(
   let planName = null;
   const plan = subscription.items.data[0]?.plan;
   
-  // Obtener el nombre del plan y otros datos para el email
+  // Get plan name and other data for the email
   if (plan && typeof plan.product === 'string') {
     try {
       const product = await stripe.products.retrieve(plan.product);
