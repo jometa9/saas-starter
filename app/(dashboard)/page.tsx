@@ -267,6 +267,19 @@ export default function HomePage() {
               </div>
               <h3 className="mt-4 text-xl font-semibold">MetaTrader 5</h3>
             </div>
+            <div className="flex flex-col items-center bg-gray-100 rounded-xl border-2 border-gray-200 py-4 px-6 pt-6 shadow-2xl relative opacity-60 grayscale pointer-events-none">
+              <div className="absolute -top-3 center bg-yellow-500 text-[10px] font-bold px-2 py-1 border-1 border-yellow-200 rounded-full text-white shadow shadow-xl">
+                COMING SOON
+              </div>
+              <div className="h-20 w-20 rounded-xl overflow-hidden mx-auto shadow-xl">
+                <img
+                  src="/assets/ctrader.png"
+                  alt="cTrader Platform"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h3 className="mt-4 text-xl font-semibold">cTrader</h3>
+            </div>
           </div>
         </div>
 
@@ -468,16 +481,33 @@ export default function HomePage() {
             <div className="max-w-5xl mx-auto">
               <div className="flex items-center justify-center">
                 {/* MT5 Master */}
-                <div className="text-center z-10">
-                  <div className="w-24 h-24 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center mx-auto shadow-xl">
-                    <img
-                      src="/assets/mt5.png"
-                      alt="MetaTrader 5 Icon"
-                      className="w-16 h-16 object-contain rounded-xl shadow-lg"
-                    />
+                <div className="text-center gap-4 z-10">
+                  <div className="text-center flex bg-gray-100 rounded-xl border-2 border-gray-200 shadow-xl">
+                  <div className="w-24 h-24 flex justify-center items-center">
+                      <img
+                        src="/assets/ctrader.png"
+                        alt="cTrader Icon"
+                        className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                      />
+                    </div>
+                    
+                    <div className="w-24 h-24 flex justify-center items-center">
+                      <img
+                        src="/assets/mt5.png"
+                        alt="MetaTrader 5 Icon"
+                        className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                      />
+                    </div>
+                    <div className="w-24 h-24 flex justify-center items-center">
+                      <img
+                        src="/assets/mt4.png"
+                        alt="MetaTrader 4 Icon"
+                        className="w-16 h-16 object-contain rounded-xl shadow-lg"
+                      />
+                    </div>
                   </div>
                   <h3 className="mt-2 mb-2 font-semibold text-gray-500">
-                    Master
+                    Masters
                   </h3>
                 </div>
 
@@ -518,8 +548,8 @@ export default function HomePage() {
                     </div>
                     <div className="w-24 h-24 flex justify-center items-center">
                       <img
-                        src="/assets/mt4.png"
-                        alt="MetaTrader 4 Icon"
+                        src="/assets/ctrader.png"
+                        alt="cTrader Icon"
                         className="w-16 h-16 object-contain rounded-xl shadow-lg"
                       />
                     </div>
