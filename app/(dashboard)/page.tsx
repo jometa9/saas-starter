@@ -41,16 +41,13 @@ export default function HomePage() {
 
     fetchUserData();
 
-    // Check if billing period is stored in body data attribute
     const billingPeriod = document.body.getAttribute("data-billing-period");
     setIsAnnual(billingPeriod === "annual" || billingPeriod === null);
 
-    // Initialize billing period if not set
     if (!billingPeriod) {
       document.body.setAttribute("data-billing-period", "annual");
     }
 
-    // Crear un observer para detectar cambios en el atributo data-billing-period
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (
@@ -246,8 +243,8 @@ export default function HomePage() {
           <p className="text-3xl text-center text-gray-500 mb-8">
             Our Supported Platforms
           </p>
-          <div className="flex items-center gap-4 justify-center">
-            <div className="flex flex-col items-center bg-gray-100 rounded-xl border-2 border-gray-200 py-4 px-6 pt-6 shadow-2xl">
+          <div className="flex items-center justify-center flex-wrap gap-8 max-w-4xl mx-auto px-4">
+            <div className="flex flex-col items-center bg-gray-100 rounded-xl border-2 border-gray-200 py-4 px-6 pt-6 shadow-2xl w-full max-w-[190px] mx-auto">
               <div className="h-20 w-20 rounded-xl overflow-hidden shadow-xl mx-auto ">
                 <img
                   src="/assets/mt4.png"
@@ -257,7 +254,7 @@ export default function HomePage() {
               </div>
               <h3 className="mt-4 text-xl font-semibold">MetaTrader 4</h3>
             </div>
-            <div className="flex flex-col items-center bg-gray-100 rounded-xl border-2 border-gray-200 py-4 px-6 pt-6 shadow-2xl">
+            <div className="flex flex-col items-center bg-gray-100 rounded-xl border-2 border-gray-200 py-4 px-6 pt-6 shadow-2xl w-full max-w-[190px] mx-auto">
               <div className="h-20 w-20 rounded-xl overflow-hidden mx-auto shadow-xl">
                 <img
                   src="/assets/mt5.png"
@@ -267,7 +264,7 @@ export default function HomePage() {
               </div>
               <h3 className="mt-4 text-xl font-semibold">MetaTrader 5</h3>
             </div>
-            <div className="flex flex-col items-center bg-gray-100 rounded-xl border-2 border-gray-200 py-4 px-6 pt-6 shadow-2xl relative opacity-60 grayscale pointer-events-none">
+            <div className="flex flex-col items-center bg-gray-100 rounded-xl border-2 border-gray-200 py-4 px-6 pt-6 shadow-2xl relative opacity-60 grayscale pointer-events-none sm:col-span-2 lg:col-span-1 w-full max-w-[190px] mx-auto">
               <div className="absolute -top-3 center bg-yellow-500 text-[10px] font-bold px-2 py-1 border-1 border-yellow-200 rounded-full text-white shadow shadow-xl">
                 COMING SOON
               </div>
@@ -912,7 +909,7 @@ export default function HomePage() {
                   <img
                     src="/assets/tradersconnect.png"
                     alt="Traders Connect Icon"
-                    className="w-12 h-12 object-contain"
+                    className="w-8 h-8 object-contain"
                   />
                   <h3 className="ml-4 text-2xl font-bold">Traders Connect</h3>
                 </div>

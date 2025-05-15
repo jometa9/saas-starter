@@ -59,19 +59,20 @@
 
 .gradient-container {
   position: absolute;
-  width: 100vw;
-  height: 200vh;
-  overflow: hidden;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
   z-index: -100;
   pointer-events: none;
-  display: none; /* Hidden by default */
+  display: block;
 }
 
 /* Add this to remove any default margins */
 html, body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
   width: 100%;
 }
 
@@ -137,30 +138,41 @@ html, body {
 
 @media (max-width: 600px) {
   .gradient-container {
-    height: 200vh;
+    min-height: 100%;
     opacity: 0.8;
+    display: block;
+    width: 100%;
+    left: 0;
+    right: 0;
   }
   
   .gradient {
-    --size: 200vw;
-    filter: blur(calc(var(--size) / 8));
+    --size: 100vw;
+    filter: blur(calc(var(--size) / 4));
+    max-width: 100vw;
   }
   
   .gradient-1 {
     top: 10%;
-    width: 200vw;
+    width: 100vw;
+    left: 50%;
+    transform: translateX(-50%);
   }
   
   .gradient-2 {
-    --size: 250vw;
+    --size: 120vw;
     top: 0;
-    width: 250vw;
+    width: 120vw;
+    left: 50%;
+    transform: translateX(-50%);
   }
   
   .gradient-3 {
-    --size: 300vw;
+    --size: 140vw;
     top: 30%;
-    width: 300vw;
+    width: 140vw;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 

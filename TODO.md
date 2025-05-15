@@ -1,23 +1,22 @@
-- que ande bien lo de dar de alta subscripciones gratis
+que todas las pantallas del lado del usuario esten cubiertas con todo lo necesario (sin tener en cuenta el contenido en texto)
+boton al lado de delete accont que sea para reset password
+licence key que lo muestre siempre
 
-- boton al lado de delete accont que sea para reset password
-- licence key que lo muestre siempre
-- panel de usuario que tiene el self managed
-
-- corregir el template del email
-
-
-- seccion / pagina o pdf directamente con terminos y condiciones y politica de privacidad
+de lado del administrador dejar todo listo pensando en el self managed y todo lo que puedo y necesito hacer
+corregir los template de email
+acomodar el start del docker
 
 
-SOLO ES CODIGO
 --------------
+VIERNES
+--------------
+boilerplate de app electron pero con react y con lo necesario para que los estilos dean iguales a lo de la version web
+diagrama de bien que es lo que necesito y como lo hare (esto de app debo terminarlo para este mes con la app ya andando bien y funcional)
+
+----------------
+NICE-TO-HAVE----
+----------------
 quitar los comentarios
 quitar los emojis de los logs
 todo el proyecto en ingles
 unificar los readme del proyecto y hacerlo en ingles
-
-- cerrar con landing para largar un mvp
-- cerrar con dashboard para largar un mbp
-
-acomodar el start del docker
