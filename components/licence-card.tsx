@@ -125,7 +125,7 @@ export const LicenseCard: React.FC<LicenseCardProps> = ({
                   className={
                     user.subscriptionStatus === "expired"
                       ? "text-purple-500 font-medium"
-                      : "text-red-500 font-medium"
+                      : "font-medium font-bold"
                   }
                 >
                   {user.subscriptionStatus === "expired"

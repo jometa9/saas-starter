@@ -25,7 +25,7 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 
 export function Dashboard({ user }: { user: User; currentVersion: string }) {
   const router = useRouter();
-  const [showLicense, setShowLicense] = useState(false);
+  const [showLicense, setShowLicense] = useState(true);
   const [isMainLicenseCopied, setIsMainLicenseCopied] = useState(false);
   const isAdmin = user?.role === "admin";
 

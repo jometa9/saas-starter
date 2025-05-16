@@ -1,9 +1,6 @@
-arreglar el login google
 que todas las pantallas del lado del usuario esten cubiertas con todo lo necesario (sin tener en cuenta el contenido en texto)
 
 boton al lado de delete accont que sea para reset password
-licence key que lo muestre siempre
-
 
 ---------------------------
 WEEK

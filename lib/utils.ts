@@ -9,9 +9,9 @@ export function cn(...inputs: ClassValue[]) {
 
 export function generateApiKey(): string {
   // Crear una clave de 32 bytes (256 bits)
-  const randomBytes = crypto.randomBytes(32)
+  const randomBytes = crypto.randomBytes(10)
   // Convertir a string hexadecimal y añadir prefijo para identificar
-  return `sk_${randomBytes.toString("hex")}`
+  return `iptrade_${randomBytes.toString("hex")}`
 }
 
 export function generateResetToken(): string {

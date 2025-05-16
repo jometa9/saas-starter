@@ -1,9 +1,10 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/lib/db/drizzle";
 import { user, accounts, sessions, verificationTokens } from "@/lib/db/schema";
-import type { Adapter } from "next-auth/adapters";
+import type { Adapter, AdapterAccount } from "next-auth/adapters";
 import { and, eq } from "drizzle-orm";
 import { sendWelcomeEmail } from "@/lib/email/services";
+import { generateApiKey } from "@/lib/utils";
 
 export function CustomDrizzleAdapter(): Adapter {
   return {
@@ -38,14 +39,23 @@ export function CustomDrizzleAdapter(): Adapter {
       console.log('✅ User found:', result[0].user.email);
       return result[0].user;
     },
-    async createUser(data) {
+    async createUser(data: any) {
       console.log('👤 createUser called with data:', { 
         email: data.email,
         name: data.name,
         hasPassword: !!data.passwordHash
       });
       
-      const [newUser] = await db.insert(user).values(data).returning();
+      // Generate API key for all users
+      const apiKey = generateApiKey();
+      
+      const [newUser] = await db.insert(user).values({
+        ...data,
+        apiKey,
+        role: 'owner',
+        passwordHash: data.passwordHash || null // Ensure passwordHash is null if not provided
+      }).returning();
+      
       console.log('✅ User created in database:', newUser.email);
       
       // Enviar email de bienvenida
@@ -73,15 +83,15 @@ export function CustomDrizzleAdapter(): Adapter {
       
       return newUser;
     },
-    async createAccount(data) {
+    async createAccount(data: AdapterAccount) {
       console.log('🔑 createAccount called for provider:', data.provider);
-      const account = await db.insert(accounts).values(data).returning()[0];
+      const [account] = await db.insert(accounts).values(data).returning();
       console.log('✅ Account created for user:', account.userId);
       return account;
     },
-    async updateAccount(data) {
+    async updateAccount(data: AdapterAccount) {
       console.log('🔄 updateAccount called for provider:', data.provider);
-      const account = await db
+      const [account] = await db
         .update(accounts)
         .set(data)
         .where(
@@ -90,11 +100,11 @@ export function CustomDrizzleAdapter(): Adapter {
             eq(accounts.providerAccountId, data.providerAccountId)
           )
         )
-        .returning()[0];
+        .returning();
       console.log('✅ Account updated for user:', account.userId);
       return account;
     },
-    async linkAccount(account) {
+    async linkAccount(account: AdapterAccount) {
       console.log('🔗 linkAccount called for provider:', account.provider);
       console.log('Account data:', account);
       
@@ -116,9 +126,9 @@ export function CustomDrizzleAdapter(): Adapter {
         throw error;
       }
     },
-    async unlinkAccount({ provider, providerAccountId }) {
+    async unlinkAccount({ provider, providerAccountId }: { provider: string; providerAccountId: string }) {
       console.log('🔓 unlinkAccount called for provider:', provider);
-      const unlinkedAccount = await db
+      const [unlinkedAccount] = await db
         .delete(accounts)
         .where(
           and(
@@ -126,13 +136,13 @@ export function CustomDrizzleAdapter(): Adapter {
             eq(accounts.providerAccountId, providerAccountId)
           )
         )
-        .returning()[0];
+        .returning();
       console.log('✅ Account unlinked for user:', unlinkedAccount.userId);
       return unlinkedAccount;
     },
-    async deleteAccount({ provider, providerAccountId }) {
+    async deleteAccount({ provider, providerAccountId }: { provider: string; providerAccountId: string }) {
       console.log('🗑️ deleteAccount called for provider:', provider);
-      const deletedAccount = await db
+      const [deletedAccount] = await db
         .delete(accounts)
         .where(
           and(
@@ -140,7 +150,7 @@ export function CustomDrizzleAdapter(): Adapter {
             eq(accounts.providerAccountId, providerAccountId)
           )
         )
-        .returning()[0];
+        .returning();
       console.log('✅ Account deleted for user:', deletedAccount.userId);
       return deletedAccount;
     },
