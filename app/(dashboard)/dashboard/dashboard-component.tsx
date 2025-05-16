@@ -22,12 +22,14 @@ import DownloadCard from "@/components/downloads-card";
 import SupportCards from "@/components/support-cards";
 import { TradingAccountsConfig } from "@/components/trading-accounts-config";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
+import { forgotPassword } from "@/app/(login)/actions";
 
 export function Dashboard({ user }: { user: User; currentVersion: string }) {
   const router = useRouter();
   const [showLicense, setShowLicense] = useState(true);
   const [isMainLicenseCopied, setIsMainLicenseCopied] = useState(false);
   const isAdmin = user?.role === "admin";
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   const goToPricing = () => {
     router.push("/dashboard/pricing");
@@ -186,12 +188,44 @@ export function Dashboard({ user }: { user: User; currentVersion: string }) {
 
       <SupportCards />
 
-      <Button
-        variant="ghost"
-        className="text-gray-400 hover:bg-red-50 hover:text-red-600 mb-0 cursor-pointer"
-      >
-        Delete Account
-      </Button>
+      <div className="flex space-x-4">
+        <Button
+          variant="ghost"
+          className="text-gray-400 hover:bg-blue-50 hover:text-blue-600 mb-0 cursor-pointer"
+          disabled={isResettingPassword}
+          onClick={async () => {
+            setIsResettingPassword(true);
+            try {
+              const formData = new FormData();
+              formData.append('email', user.email);
+              const result = await forgotPassword({ email: user.email }, formData);
+              
+              if (result?.success) {
+                toast({
+                  title: "Reset Password",
+                  description: "We sent you a link to reset your password to your email.",
+                });
+              }
+            } catch (error) {
+              toast({
+                title: "Error",
+                description: "Failed to send reset password email. Please try again.",
+                variant: "destructive",
+              });
+            } finally {
+              setIsResettingPassword(false);
+            }
+          }}
+        >
+          Reset Password
+        </Button>
+        <Button
+          variant="ghost"
+          className="text-gray-400 hover:bg-red-50 hover:text-red-600 mb-0 cursor-pointer"
+        >
+          Delete Account
+        </Button>
+      </div>
 
       {isAdmin && (
         <div className="pt-4 px-0">
