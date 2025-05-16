@@ -1,14 +1,14 @@
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/lib/db/drizzle";
-import { users } from "@/lib/db/schema";
+import { user } from "@/lib/db/schema";
 import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { CustomDrizzleAdapter } from "./custom-drizzle-adapter";
 
 export const authOptions: NextAuthOptions = {
-  adapter: DrizzleAdapter(db),
+  adapter: CustomDrizzleAdapter(),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -22,47 +22,61 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log('AUTHORIZE CALLED', credentials);
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
-        const user = await db
+        const userResult = await db
           .select()
-          .from(users)
-          .where(eq(users.email, credentials.email))
+          .from(user)
+          .where(eq(user.email, credentials.email))
           .limit(1);
 
-        if (!user[0]) {
+        console.log('AUTHORIZE USER RESULT', userResult);
+
+        if (!userResult[0]) {
           return null;
         }
 
         const passwordMatch = await compare(
           credentials.password,
-          user[0].passwordHash || ""
+          userResult[0].passwordHash || ""
         );
+
+        console.log('AUTHORIZE PASSWORD MATCH', passwordMatch);
 
         if (!passwordMatch) {
           return null;
         }
 
-        return {
-          id: user[0].id.toString(),
-          email: user[0].email,
-          name: user[0].name,
+        const userObj = {
+          id: userResult[0].id.toString(),
+          email: userResult[0].email,
+          name: userResult[0].name,
+          role: userResult[0].role,
         };
+        console.log('AUTHORIZE RETURNING USER', userObj);
+        return userObj;
       },
     }),
   ],
   callbacks: {
-    async session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    async session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.name = token.name;
+        session.user.role = token.role;
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.role = user.role;
       }
       return token;
     },

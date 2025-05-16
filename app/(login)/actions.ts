@@ -5,7 +5,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { db } from '@/lib/db/drizzle';
 import {
   User,
-  users,
+  user,
   type NewUser,
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
@@ -30,8 +30,8 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
 
   const foundUser = await db
     .select()
-    .from(users)
-    .where(eq(users.email, email))
+    .from(user)
+    .where(eq(user.email, email))
     .limit(1);
 
   if (foundUser.length === 0) {
@@ -42,11 +42,19 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
     };
   }
 
-  const user = foundUser[0];
+  const foundUserData = foundUser[0];
+
+  if (!foundUserData.passwordHash || typeof foundUserData.passwordHash !== 'string') {
+    return {
+      error: 'This email was registered with Google. Please sign in with Google, or <a href="/forgot-password" class="underline text-primary">reset your password</a> to enable login with password. After resetting, you can log in with both Google and your new password.',
+      email,
+      password,
+    };
+  }
 
   const isPasswordValid = await comparePasswords(
     password,
-    user.passwordHash,
+    foundUserData.passwordHash,
   );
 
   if (!isPasswordValid) {
@@ -57,13 +65,13 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
     };
   }
 
-  await setSession(user);
+  await setSession(foundUserData);
 
   const redirectTo = formData.get('redirect') as string | null;
   if (redirectTo === 'checkout') {
     try {
       const priceId = formData.get('priceId') as string;
-      return createCheckoutSession({ user, priceId });
+      return createCheckoutSession({ user: foundUserData, priceId });
     } catch (error) {
       
       return {
@@ -91,8 +99,8 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 
   const existingUser = await db
     .select()
-    .from(users)
-    .where(eq(users.email, email))
+    .from(user)
+    .where(eq(user.email, email))
     .limit(1);
 
   if (existingUser.length > 0) {
@@ -133,7 +141,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     stripeCustomerId, // Añadir el ID del cliente de Stripe (puede ser null si falló)
   };
 
-  const [createdUser] = await db.insert(users).values(newUser).returning();
+  const [createdUser] = await db.insert(user).values(newUser).returning();
 
   if (!createdUser) {
     return {
@@ -215,9 +223,9 @@ export const updatePassword = validatedActionWithUser(
     const newPasswordHash = await hashPassword(newPassword);
 
     await db
-      .update(users)
+      .update(user)
       .set({ passwordHash: newPasswordHash })
-      .where(eq(users.id, user.id));
+      .where(eq(user.id, user.id));
 
     return { success: 'Password updated successfully.' };
   },
@@ -239,12 +247,12 @@ export const deleteAccount = validatedActionWithUser(
 
     // Soft delete
     await db
-      .update(users)
+      .update(user)
       .set({
         deletedAt: sql`CURRENT_TIMESTAMP`,
         email: sql`CONCAT(email, '-', id, '-deleted')`, // Ensure email uniqueness
       })
-      .where(eq(users.id, user.id));
+      .where(eq(user.id, user.id));
 
     (await cookies()).delete('session');
     redirect('/sign-in');
@@ -261,7 +269,7 @@ export const updateAccount = validatedActionWithUser(
   async (data, _, user) => {
     const { name, email } = data;
 
-    await db.update(users).set({ name, email }).where(eq(users.id, user.id));
+    await db.update(user).set({ name, email }).where(eq(user.id, user.id));
 
     return { success: 'Account updated successfully.' };
   },
@@ -324,9 +332,9 @@ export const resetPasswordAction = validatedAction(
     const { token, password } = data;
 
     // Validar el token
-    const user = await validateResetToken(token);
+    const dbUser = await validateResetToken(token);
 
-    if (!user) {
+    if (!dbUser) {
       return { error: 'Invalid or expired token. Please request a new password reset.' };
     }
 
@@ -334,14 +342,14 @@ export const resetPasswordAction = validatedAction(
     const passwordHash = await hashPassword(password);
 
     await db
-      .update(users)
+      .update(user)
       .set({
         passwordHash,
         resetToken: null,
         resetTokenExpiry: null,
         updatedAt: new Date(),
       })
-      .where(eq(users.id, user.id));
+      .where(eq(user.id, dbUser.id));
 
     return { success: 'Password updated successfully. Please sign in with your new password.' };
   }

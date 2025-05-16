@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getUserByApiKey, updateUserSubscription } from "@/lib/db/queries";
 import { stripe } from "@/lib/payments/stripe";
 import { db } from "@/lib/db/drizzle";
-import { users } from "@/lib/db/schema";
+import { user} from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {

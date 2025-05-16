@@ -3,7 +3,7 @@ import { getUserAuth } from '@/lib/auth/utils';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db/drizzle';
 import { eq, and, isNull } from 'drizzle-orm';
-import { users, tradingAccounts } from '@/lib/db/schema';
+import { user, tradingAccounts } from '@/lib/db/schema';
 import { AdminTradingAccountsView } from './admin-trading-accounts-view';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 

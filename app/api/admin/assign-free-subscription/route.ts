@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAdminRequest } from '@/lib/auth/utils';
 import { db } from '@/lib/db/drizzle';
 import { eq } from 'drizzle-orm';
-import { users } from '@/lib/db/schema';
+import { user} from '@/lib/db/schema';
 import { sendSubscriptionChangeEmail } from '@/lib/email';
 
 export async function POST(req: NextRequest) {

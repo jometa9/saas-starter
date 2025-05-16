@@ -19,7 +19,7 @@ const tradingAccountUpdateSchema = z.object({
 });
 
 // Helper function to check if user can access the trading account
-async function canUserAccessAccount(userId: number, accountId: number) {
+async function canUserAccessAccount(userId: string, accountId: number) {
   const account = await getTradingAccountById(accountId);
   
   if (!account) {

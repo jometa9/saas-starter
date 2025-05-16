@@ -5,7 +5,7 @@ import { isAdminRequest } from '@/lib/auth/utils';
 import { updateAppVersion, getAppVersion } from '@/lib/db/queries';
 import { getUser } from '@/lib/db/queries';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema';
+import { user} from '@/lib/db/schema';
 import { isNull } from 'drizzle-orm';
 
 export async function GET(req: NextRequest) {

@@ -4,7 +4,7 @@ import { getUser, updateAppVersion, getAppVersion } from '@/lib/db/queries';
 import { revalidatePath } from 'next/cache';
 import { sendVersionUpdateEmail, sendBroadcastEmail } from '@/lib/email';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema';
+import { user} from '@/lib/db/schema';
 import { ne, isNull } from 'drizzle-orm';
 import { NewTradingAccount, tradingAccounts } from './schema';
 import { eq } from 'drizzle-orm';

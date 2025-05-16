@@ -16,6 +16,8 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
   const searchParams = useSearchParams();
@@ -26,6 +28,9 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
     mode === "signin" ? signIn : signUp,
     { error: "" }
   );
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [loginError, setLoginError] = React.useState<string>("");
 
   const handleGoogleSignIn = async () => {
     await nextAuthSignIn("google", { 
@@ -33,6 +38,38 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
       callbackUrl: redirect || "/dashboard" 
     });
   };
+
+  const handleCredentialsSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoginError("");
+    const form = e.currentTarget;
+    const email = (form.elements.namedItem("email") as HTMLInputElement)?.value;
+    const password = (form.elements.namedItem("password") as HTMLInputElement)?.value;
+    const res = await nextAuthSignIn("credentials", {
+      redirect: false,
+      email,
+      password,
+      callbackUrl: redirect || "/dashboard"
+    });
+    if (res?.error) {
+      let message = "";
+      if (res.error === "CredentialsSignin") {
+        message =
+          "Invalid email or password, or this account was registered with Google. Please sign in with Google or reset your password to enable email login.";
+      } else {
+        message = res.error;
+      }
+      setLoginError(message);
+    } else if (res?.ok) {
+      router.replace(res.url || "/dashboard");
+    }
+  };
+
+  React.useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/dashboard");
+    }
+  }, [status, router]);
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -80,7 +117,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
               </div>
             </div>
 
-            <form className="space-y-4" action={formAction}>
+            <form className="space-y-4" action={mode === "signin" ? undefined : formAction} onSubmit={mode === "signin" ? handleCredentialsSignIn : undefined}>
               <input type="hidden" name="redirect" value={redirect || ""} />
               <input type="hidden" name="priceId" value={priceId || ""} />
               <input type="hidden" name="inviteId" value={inviteId || ""} />
@@ -132,9 +169,20 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                 </p>
               </div>
 
-              {state?.error && (
+              {mode === "signin" && loginError && (
                 <Alert variant="destructive">
-                  <AlertDescription>{state.error}</AlertDescription>
+                  <AlertDescription>{loginError}</AlertDescription>
+                </Alert>
+              )}
+              {mode !== "signin" && state?.error && (
+                <Alert variant="destructive">
+                  {typeof state.error === "string" && state.error.includes("<a") ? (
+                    <AlertDescription>
+                      <span dangerouslySetInnerHTML={{ __html: state.error }} />
+                    </AlertDescription>
+                  ) : (
+                    <AlertDescription>{state.error}</AlertDescription>
+                  )}
                 </Alert>
               )}
 

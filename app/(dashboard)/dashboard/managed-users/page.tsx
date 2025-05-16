@@ -4,7 +4,7 @@ import { getUserAuth } from '@/lib/auth/utils';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db/drizzle';
 import { eq } from 'drizzle-orm';
-import { users } from '@/lib/db/schema';
+import { user} from '@/lib/db/schema';
 import { ManagedUsersComponent } from './managed-users-component';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 

@@ -9,6 +9,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
+    "db:create": "docker cp lib/db/migrations/0000_manual_init.sql next_saas_starter_postgres:/tmp/init_schema.sql && docker exec -it next_saas_starter_postgres psql -U postgres -d postgres -f /tmp/init_schema.sql",
     "make-admin": "npx tsx scripts/make-admin.ts",
     "db:migrate:subscription-expiry": "psql $DATABASE_URL -f lib/db/migrations/add_subscription_expiry.sql",
     "db:migrate:trading-accounts": "psql $DATABASE_URL -f lib/db/migrations/add_trading_accounts.sql"

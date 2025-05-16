@@ -1,46 +1,20 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { signToken, verifyToken } from '@/lib/auth/session';
 
 const protectedRoutes = '/dashboard';
 
-export async function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
-  const sessionCookie = request.cookies.get('session');
+  const sessionCookie =
+    request.cookies.get('next-auth.session-token') ||
+    request.cookies.get('__Secure-next-auth.session-token');
   const isProtectedRoute = pathname.startsWith(protectedRoutes);
 
   if (isProtectedRoute && !sessionCookie) {
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
-  let res = NextResponse.next();
-
-  if (sessionCookie && request.method === "GET") {
-    try {
-      const parsed = await verifyToken(sessionCookie.value);
-      const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-      res.cookies.set({
-        name: 'session',
-        value: await signToken({
-          ...parsed,
-          expires: expiresInOneDay.toISOString(),
-        }),
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
-        expires: expiresInOneDay,
-      });
-    } catch (error) {
-      
-      res.cookies.delete('session');
-      if (isProtectedRoute) {
-        return NextResponse.redirect(new URL('/sign-in', request.url));
-      }
-    }
-  }
-
-  return res;
+  return NextResponse.next();
 }
 
 export const config = {

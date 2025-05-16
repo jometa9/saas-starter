@@ -5,23 +5,24 @@ import Link from "next/link";
 import { use, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Home, LogOut } from "lucide-react";
-import { useUser } from "@/lib/auth";
-import { signOut } from "@/app/(login)/actions";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Tooltip } from "@/components/ui/tooltip";
 
 function UserMenu() {
-  const { userPromise } = useUser();
-  const user = use(userPromise);
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   async function handleSignOut() {
-    await signOut();
+    await signOut({ callbackUrl: "/" });
     router.refresh();
-    router.push("/");
   }
 
-  if (!user) {
+  if (status === "loading") {
+    return <div className="h-9" />;
+  }
+
+  if (!session?.user) {
     return (
       <div className="flex items-center space-x-3">
         <Button
@@ -53,14 +54,13 @@ function UserMenu() {
       </Tooltip>
 
       <Tooltip tip="Sign out">
-        <form action={handleSignOut}>
-          <button
-            type="submit"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900 flex items-center cursor-pointer"
-          >
-            <LogOut className="h-4 w-4" />
-          </button>
-        </form>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="text-sm font-medium text-gray-700 hover:text-gray-900 flex items-center cursor-pointer"
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
       </Tooltip>
     </div>
   );

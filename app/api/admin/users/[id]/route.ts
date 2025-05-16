@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserAuth } from '@/lib/auth/utils';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { user } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function PATCH(
@@ -48,12 +48,12 @@ export async function PATCH(
 
     try {
       // Realizar una sola actualización
-      const result = await db.update(users)
+      const result = await db.update(user)
         .set({
           serverIP: body.serverIP, // Corregido para usar el mismo nombre de propiedad que envía el cliente
           updatedAt: new Date(),
         })
-        .where(eq(users.id, userId));
+        .where(eq(user.id, userId));
 
       
 

@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminRequest } from '@/lib/auth/utils';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema';
+import { user } from '@/lib/db/schema';
 import { isNull } from 'drizzle-orm';
 
 export async function POST(req: NextRequest) {
@@ -31,8 +31,8 @@ export async function POST(req: NextRequest) {
     // Consulta simple para obtener todos los usuarios activos
     const usersList = await db
       .select()
-      .from(users)
-      .where(isNull(users.deletedAt));
+      .from(user)
+      .where(isNull(user.deletedAt));
 
     if (usersList.length === 0) {
       return NextResponse.json({ 

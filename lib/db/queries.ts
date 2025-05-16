@@ -1,6 +1,6 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { users, appSettings, tradingAccounts } from './schema';
+import { user, appSettings, tradingAccounts } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 import { generateResetToken, getResetTokenExpiry } from '@/lib/utils';
@@ -15,7 +15,7 @@ export async function getUser() {
   if (
     !sessionData ||
     !sessionData.user ||
-    typeof sessionData.user.id !== 'number'
+    typeof sessionData.user.id !== 'string'
   ) {
     return null;
   }
@@ -24,31 +24,31 @@ export async function getUser() {
     return null;
   }
 
-  const user = await db
+  const userResult = await db
     .select()
-    .from(users)
-    .where(and(eq(users.id, sessionData.user.id), isNull(users.deletedAt)))
+    .from(user)
+    .where(and(eq(user.id, sessionData.user.id), isNull(user.deletedAt)))
     .limit(1);
 
-  if (user.length === 0) {
+  if (userResult.length === 0) {
     return null;
   }
 
-  return user[0];
+  return userResult[0];
 }
 
 export async function getUserByStripeCustomerId(customerId: string) {
   const result = await db
     .select()
-    .from(users)
-    .where(eq(users.stripeCustomerId, customerId))
+    .from(user)
+    .where(eq(user.stripeCustomerId, customerId))
     .limit(1);
 
   return result.length > 0 ? result[0] : null;
 }
 
 export async function updateUserSubscription(
-  userId: number,
+  userId: string,
   subscriptionData: {
     stripeSubscriptionId: string | null;
     stripeProductId: string | null;
@@ -57,32 +57,32 @@ export async function updateUserSubscription(
   }
 ) {
   await db
-    .update(users)
+    .update(user)
     .set({
       ...subscriptionData,
       updatedAt: new Date(),
     })
-    .where(eq(users.id, userId));
+    .where(eq(user.id, userId));
 }
 
 export async function getUserByApiKey(apiKey: string) {
   const result = await db
     .select()
-    .from(users)
-    .where(and(eq(users.apiKey, apiKey), isNull(users.deletedAt)))
+    .from(user)
+    .where(and(eq(user.apiKey, apiKey), isNull(user.deletedAt)))
     .limit(1);
 
   return result.length > 0 ? result[0] : null;
 }
 
 export async function createPasswordResetToken(email: string) {
-  const user = await db
+  const userResult = await db
     .select()
-    .from(users)
-    .where(and(eq(users.email, email), isNull(users.deletedAt)))
+    .from(user)
+    .where(and(eq(user.email, email), isNull(user.deletedAt)))
     .limit(1);
 
-  if (user.length === 0) {
+  if (userResult.length === 0) {
     return null;
   }
 
@@ -90,16 +90,16 @@ export async function createPasswordResetToken(email: string) {
   const resetTokenExpiry = getResetTokenExpiry();
 
   await db
-    .update(users)
+    .update(user)
     .set({
       resetToken,
       resetTokenExpiry,
       updatedAt: new Date(),
     })
-    .where(eq(users.id, user[0].id));
+    .where(eq(user.id, userResult[0].id));
 
   return {
-    user: user[0],
+    user: userResult[0],
     resetToken,
   };
 }
@@ -109,12 +109,12 @@ export async function validateResetToken(token: string) {
   
   const result = await db
     .select()
-    .from(users)
+    .from(user)
     .where(
       and(
-        eq(users.resetToken, token),
-        gt(users.resetTokenExpiry!, now),
-        isNull(users.deletedAt)
+        eq(user.resetToken, token),
+        gt(user.resetTokenExpiry!, now),
+        isNull(user.deletedAt)
       )
     )
     .limit(1);
@@ -123,16 +123,16 @@ export async function validateResetToken(token: string) {
 }
 
 export async function resetPassword(token: string, newPassword: string) {
-  const user = await validateResetToken(token);
+  const currentUser = await validateResetToken(token);
   
-  if (!user) {
+  if (!currentUser) {
     return null;
   }
   
   // Esta función será implementada en el archivo actions.ts
   // usando la función hashPassword
   
-  return user;
+  return currentUser;
 }
 
 // Funciones para la gestión de versión de la aplicación
@@ -159,7 +159,7 @@ export async function getAppVersion() {
   return settings[0].appVersion;
 }
 
-export async function updateAppVersion(version: string, userId: number) {
+export async function updateAppVersion(version: string, userId: string) {
   const settings = await db
     .select()
     .from(appSettings)
@@ -211,7 +211,7 @@ export async function updateAppVersion(version: string, userId: number) {
 
 // Nueva función para actualizar datos de usuario por ID
 export async function updateUserById(
-  userId: number,
+  userId: string,
   userData: Partial<{
     stripeCustomerId: string | null;
     stripeSubscriptionId: string | null;
@@ -227,15 +227,20 @@ export async function updateUserById(
   }>
 ) {
   try {
+    // Convert null values to undefined since drizzle doesn't accept null for existing fields
+    const processedData = Object.fromEntries(
+      Object.entries(userData).map(([key, value]) => [key, value === null ? undefined : value])
+    );
+
     const dataToUpdate = {
-      ...userData,
+      ...processedData,
       updatedAt: new Date(),
     };
     
     const result = await db
-      .update(users)
+      .update(user)
       .set(dataToUpdate)
-      .where(eq(users.id, userId))
+      .where(eq(user.id, userId))
       .returning();
     
     if (result.length === 0) {
@@ -249,7 +254,7 @@ export async function updateUserById(
 }
 
 // Trading Accounts Management
-export async function getUserTradingAccounts(userId: number) {
+export async function getUserTradingAccounts(userId: string) {
   const result = await db
     .select()
     .from(tradingAccounts)
@@ -274,6 +279,16 @@ export async function getTradingAccountById(id: number) {
         isNull(tradingAccounts.deletedAt)
       )
     )
+    .limit(1);
+
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function getUserById(userId: string) {
+  const result = await db
+    .select()
+    .from(user)
+    .where(and(eq(user.id, userId), isNull(user.deletedAt)))
     .limit(1);
 
   return result.length > 0 ? result[0] : null;
