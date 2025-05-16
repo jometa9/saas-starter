@@ -1,6 +1,6 @@
 {
-  "id": "fa211403-c010-4a8f-a258-18f9f7c6f85f",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "a1fccdf9-e4e4-46ba-bf7c-7eedee8dbf9c",
+  "prevId": "fa211403-c010-4a8f-a258-18f9f7c6f85f",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -16,7 +16,7 @@
         },
         "userId": {
           "name": "userId",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -129,7 +129,7 @@
         },
         "updatedBy": {
           "name": "updatedBy",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         }
@@ -174,7 +174,7 @@
         },
         "userId": {
           "name": "userId",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -227,7 +227,7 @@
         },
         "userId": {
           "name": "userId",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
