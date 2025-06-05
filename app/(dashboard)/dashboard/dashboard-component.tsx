@@ -115,7 +115,7 @@ export function Dashboard({ user }: { user: User}) {
           });
         })
         .catch((err) => {
-          
+          console.error(err);
           toast({
             title: "Error",
             description: "Could not copy to clipboard",
@@ -206,6 +206,7 @@ export function Dashboard({ user }: { user: User}) {
                 });
               }
             } catch (error) {
+              console.error(error);
               toast({
                 title: "Error",
                 description: "Failed to send reset password email. Please try again.",
