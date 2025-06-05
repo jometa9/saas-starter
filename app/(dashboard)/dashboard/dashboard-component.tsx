@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "@/lib/db/schema";
 import {
-  Link as LinkIcon,
   AlertCircle,
   CheckCircle,
   Clock,
@@ -24,7 +23,7 @@ import { TradingAccountsConfig } from "@/components/trading-accounts-config";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { forgotPassword } from "@/app/(login)/actions";
 
-export function Dashboard({ user }: { user: User; currentVersion: string }) {
+export function Dashboard({ user }: { user: User}) {
   const router = useRouter();
   const [showLicense, setShowLicense] = useState(true);
   const [isMainLicenseCopied, setIsMainLicenseCopied] = useState(false);
