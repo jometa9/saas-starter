@@ -4,7 +4,8 @@ import { User } from '@/lib/db/schema';
 import {
   getUserByStripeCustomerId,
   getUser,
-  updateUserSubscription
+  updateUserSubscription,
+  updateUserById
 } from '@/lib/db/queries';
 import { sendSubscriptionChangeEmail } from '@/lib/email';
 
@@ -59,10 +60,13 @@ export async function createCheckoutSession({
   metadata?: Record<string, string>;
 }) {
   try {
+    console.log('🔧 Getting Stripe instance...');
     const stripe = getStripe();
+    console.log('✅ Stripe instance ready');
     let customerIdToUse = customerId;
 
     if (!customerIdToUse) {
+      console.log('🏗️ Creating new Stripe customer for:', email);
       try {
         const customer = await stripe.customers.create({
           email: email,
@@ -71,13 +75,17 @@ export async function createCheckoutSession({
           }
         });
         
+        console.log('✅ Stripe customer created:', customer.id);
         customerIdToUse = customer.id;
         
-        await updateUserById(userId, {
+        console.log('💾 Updating user in DB with stripeCustomerId...');
+        await updateUserById(userId.toString(), {
           stripeCustomerId: customer.id
         });
+        console.log('✅ User updated successfully');
       } catch (createError) {
-        
+        console.error('❌ Failed to create Stripe customer:', createError);
+        console.error('❌ Error details:', createError instanceof Error ? createError.message : createError);
         throw new Error('customer-error');
       }
     }
@@ -127,22 +135,7 @@ export async function createCheckoutSession({
   }
 }
 
-async function updateUserById(userId: number, data: Partial<User>) {
-  try {
-    const response = await fetch(`/api/users/${userId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Error updating user: ${response.status}`);
-    }
-  } catch (error) {
-    
-    throw error;
-  }
-}
+
 
 export async function createCustomerPortalSession(user: User): Promise<{ url: string } | { error: string }> {
   if (!user.stripeCustomerId) {

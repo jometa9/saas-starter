@@ -80,7 +80,7 @@ export function AccountInfoCard({
       if (!userData || !userData.id) {
         // Redirect to login page
         setIsLoading(false);
-        window.location.href = "/login?redirect=/dashboard/pricing";
+        window.location.href = "/sign-in?redirect=/dashboard/pricing";
         return;
       }
 

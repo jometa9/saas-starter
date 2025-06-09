@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import { useUser } from "@/lib/auth";
+import { usePathname } from "next/navigation";
 
 interface PlanFeature {
   name: string;
@@ -105,6 +106,7 @@ const planFeatures: PlanFeature[] = [
 
 export function PlansComparisonTable() {
   const { userPromise } = useUser();
+  const pathname = usePathname();
   const [user, setUser] = React.useState<any>(null);
   const [currentPlan, setCurrentPlan] = React.useState<string | null>(null);
   const [isAnnual, setIsAnnual] = React.useState<boolean>(true);
@@ -145,8 +147,7 @@ export function PlansComparisonTable() {
 
   const scrollToPrices = () => {
     // Detect if we are on the dashboard/pricing page
-    const isDashboardPricing =
-      window.location.pathname.includes("/dashboard/pricing");
+    const isDashboardPricing = pathname.includes("/dashboard/pricing");
 
     // Look for element with ID "prices" for smooth scrolling
     const pricesElement = document.getElementById("prices");
@@ -198,8 +199,7 @@ export function PlansComparisonTable() {
   // Function to get the correct URL for non-logged in users
   const getPlanUrl = (planName: string): string => {
     // Detect if we are on the dashboard/pricing page
-    const isDashboardPricing =
-      window.location.pathname.includes("/dashboard/pricing");
+    const isDashboardPricing = pathname.includes("/dashboard/pricing");
 
     if (!user) {
       // Not logged in - direct to sign in

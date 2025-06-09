@@ -4,37 +4,58 @@ import { user, appSettings, tradingAccounts } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 import { generateResetToken, getResetTokenExpiry } from '@/lib/utils';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth/next-auth";
 
 export async function getUser() {
+  // Try custom session first
   const sessionCookie = (await cookies()).get('session');
-  if (!sessionCookie || !sessionCookie.value) {
-    return null;
+  if (sessionCookie && sessionCookie.value) {
+    const sessionData = await verifyToken(sessionCookie.value);
+    if (
+      sessionData &&
+      sessionData.user &&
+      typeof sessionData.user.id === 'string'
+    ) {
+      if (new Date(sessionData.expires) >= new Date()) {
+        const userResult = await db
+          .select()
+          .from(user)
+          .where(and(eq(user.id, sessionData.user.id), isNull(user.deletedAt)))
+          .limit(1);
+
+        if (userResult.length > 0) {
+          return userResult[0];
+        }
+      }
+    }
   }
 
-  const sessionData = await verifyToken(sessionCookie.value);
-  if (
-    !sessionData ||
-    !sessionData.user ||
-    typeof sessionData.user.id !== 'string'
-  ) {
-    return null;
+  // Try NextAuth session using getServerSession
+  try {
+    console.log('🔍 Trying NextAuth getServerSession...');
+    const session = await getServerSession(authOptions);
+    
+    console.log('📋 NextAuth session:', !!session, session?.user?.id);
+    
+    if (session?.user?.id) {
+      const userResult = await db
+        .select()
+        .from(user)
+        .where(and(eq(user.id, session.user.id), isNull(user.deletedAt)))
+        .limit(1);
+
+      console.log('👤 User found in DB:', userResult.length > 0);
+
+      if (userResult.length > 0) {
+        return userResult[0];
+      }
+    }
+  } catch (error) {
+    console.error('NextAuth session verification failed:', error);
   }
 
-  if (new Date(sessionData.expires) < new Date()) {
-    return null;
-  }
-
-  const userResult = await db
-    .select()
-    .from(user)
-    .where(and(eq(user.id, sessionData.user.id), isNull(user.deletedAt)))
-    .limit(1);
-
-  if (userResult.length === 0) {
-    return null;
-  }
-
-  return userResult[0];
+  return null;
 }
 
 export async function getUserByStripeCustomerId(customerId: string) {

@@ -21,7 +21,7 @@ export default async function AdminDashboardPage() {
   const { session, user } = await getUserAuth();
 
   if (!session || !user) {
-    return redirect("/auth/login");
+    return redirect("/sign-in");
   }
 
   if (user.role !== "admin" && user.role !== "superadmin") {

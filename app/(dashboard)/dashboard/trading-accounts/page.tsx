@@ -21,7 +21,7 @@ export default async function UserTradingAccountsPage({
   const { session, user } = await getUserAuth();
   
   if (!session || !user) {
-    return redirect('/auth/login');
+    return redirect('/sign-in');
   }
 
   // Verificar que el usuario es administrador

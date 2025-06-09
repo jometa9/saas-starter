@@ -2,9 +2,6 @@ import React from 'react';
 import { Metadata } from 'next';
 import { getUserAuth } from '@/lib/auth/utils';
 import { redirect } from 'next/navigation';
-import { db } from '@/lib/db/drizzle';
-import { eq } from 'drizzle-orm';
-import { user} from '@/lib/db/schema';
 import { ManagedUsersComponent } from './managed-users-component';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -17,10 +14,9 @@ export default async function ManagedUsersPage() {
   const { session, user } = await getUserAuth();
   
   if (!session || !user) {
-    return redirect('/auth/login');
+    return redirect('/sign-in');
   }
 
-  // Check if the user is an admin
   if (user.role !== 'admin' && user.role !== 'superadmin') {
     return redirect('/dashboard');
   }

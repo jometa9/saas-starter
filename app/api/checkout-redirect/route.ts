@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   
   const user = await getUser();
   if (!user) {
-    return NextResponse.redirect(new URL('/login?redirect=/dashboard/pricing', request.url));
+    return NextResponse.redirect(new URL('/sign-in?redirect=/dashboard/pricing', request.url));
   }
   
   try {
