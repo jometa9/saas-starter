@@ -1,6 +1,8 @@
 import React from "react";
 import { Metadata } from "next";
-import { getUserAuth } from "@/lib/auth/utils";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/next-auth";
+import { getUserById } from "@/lib/db/queries";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -18,9 +20,15 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminDashboardPage() {
-  const { session, user } = await getUserAuth();
+  const session = await getServerSession(authOptions);
 
-  if (!session || !user) {
+  if (!session?.user) {
+    return redirect("/sign-in");
+  }
+
+  // Get the complete user from the database using the session user id (same as dashboard)
+  const user = await getUserById(session.user.id);
+  if (!user) {
     return redirect("/sign-in");
   }
 

@@ -42,8 +42,6 @@ export default function AdminSettingsPage() {
   const [isSendingMassEmail, setIsSendingMassEmail] = useState(false);
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
-  const [emailCtaLabel, setEmailCtaLabel] = useState("View Dashboard");
-  const [emailCtaUrl, setEmailCtaUrl] = useState("");
   const [emailIsImportant, setEmailIsImportant] = useState(false);
 
   const [isAssigningSubscription, setIsAssigningSubscription] = useState(false);
@@ -210,8 +208,6 @@ export default function AdminSettingsPage() {
         body: JSON.stringify({
           subject: emailSubject,
           message: emailMessage,
-          ctaLabel: emailCtaLabel,
-          ctaUrl: emailCtaUrl || `${window.location.origin}/dashboard`,
           isImportant: emailIsImportant
         }),
       });
@@ -236,8 +232,6 @@ export default function AdminSettingsPage() {
         // Resetear el formulario
         setEmailSubject("");
         setEmailMessage("");
-        setEmailCtaLabel("View Dashboard");
-        setEmailCtaUrl("");
         setEmailIsImportant(false);
       }
     } catch (error) {
@@ -471,29 +465,6 @@ export default function AdminSettingsPage() {
                 />
               </div>
 
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="cta-label">Button Label (optional)</Label>
-                <Input
-                  id="cta-label"
-                  placeholder="View Dashboard"
-                  value={emailCtaLabel}
-                  onChange={(e) => setEmailCtaLabel(e.target.value)}
-                />
-              </div>
-
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="cta-url">Button URL (optional)</Label>
-                <Input
-                  id="cta-url"
-                  placeholder="https://your-site.com/dashboard"
-                  value={emailCtaUrl}
-                  onChange={(e) => setEmailCtaUrl(e.target.value)}
-                />
-                <p className="text-sm text-muted-foreground">
-                  Leave empty to use your dashboard URL
-                </p>
-              </div>
-
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="is-important"
@@ -502,7 +473,7 @@ export default function AdminSettingsPage() {
                     setEmailIsImportant(checked === true);
                   }}
                 />
-                <Label htmlFor="is-important">Mark as important</Label>
+                <Label htmlFor="is-important">Mark as important (adds [IMPORTANT] to subject)</Label>
               </div>
             </CardContent>
             <CardFooter>

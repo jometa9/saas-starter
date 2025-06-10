@@ -236,14 +236,29 @@ function getDefaultTemplate(templateName: string): string {
 <html>
 <head>
   <title>{{subject}}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .important { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 20px; margin: 20px 0; }
+    .important-badge { color: #9a3412; font-weight: 600; margin-bottom: 10px; }
+    .message { color: #374151; white-space: pre-line; }
+  </style>
 </head>
 <body>
   <h1>{{subject}}</h1>
   <p>Hello {{name}},</p>
-  <p>{{message}}</p>
-  {{#if ctaUrl}}
-  <a href="{{ctaUrl}}">{{ctaLabel}}</a>
+  
+  {{#if isImportant}}
+  <div class="important">
+    <div class="important-badge">📢 Important Announcement</div>
+    <div class="message">{{message}}</div>
+  </div>
+  {{else}}
+  <div class="message">{{message}}</div>
   {{/if}}
+  
+  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">
+    <p>&copy; {{year}} IPTRADE. All rights reserved.</p>
+  </div>
 </body>
 </html>`,
 
@@ -312,7 +327,14 @@ export function replaceTemplateVariables(
 ): string {
   let result = template;
 
-  // Manejar bloques condicionales {{#if variable}}...{{/if}}
+  // Manejar bloques condicionales con {{else}}: {{#if variable}}...{{else}}...{{/if}}
+  const ifElseRegex = /{{#if\s+([^}]+)}}([\s\S]*?){{else}}([\s\S]*?){{\/if}}/g;
+  result = result.replace(ifElseRegex, (match, condition, trueContent, falseContent) => {
+    const value = condition.split(".").reduce((obj, key) => obj?.[key], data);
+    return value ? trueContent : falseContent;
+  });
+
+  // Manejar bloques condicionales simples {{#if variable}}...{{/if}}
   const ifRegex = /{{#if\s+([^}]+)}}([\s\S]*?){{\/if}}/g;
   result = result.replace(ifRegex, (match, condition, content) => {
     const value = condition.split(".").reduce((obj, key) => obj?.[key], data);

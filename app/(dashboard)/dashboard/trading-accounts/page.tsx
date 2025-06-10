@@ -1,5 +1,7 @@
 import React from 'react';
-import { getUserAuth } from '@/lib/auth/utils';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/next-auth";
+import { getUserById } from "@/lib/db/queries";
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db/drizzle';
 import { eq, and, isNull } from 'drizzle-orm';
@@ -17,30 +19,36 @@ export default async function UserTradingAccountsPage({
 }: {
   searchParams: Record<string, string | string[] | undefined>;
 }) {
-  // Verificar autenticación del usuario
-  const { session, user } = await getUserAuth();
+  // Verify user authentication
+  const session = await getServerSession(authOptions);
   
-  if (!session || !user) {
+  if (!session?.user) {
     return redirect('/sign-in');
   }
 
-  // Verificar que el usuario es administrador
-  if (user.role !== 'admin' && user.role !== 'superadmin') {
+  // Get the complete user from the database using the session user id (same as dashboard)
+  const currentUser = await getUserById(session.user.id);
+  if (!currentUser) {
+    return redirect('/sign-in');
+  }
+
+  // Verify that the user is an administrator
+  if (currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
     return redirect('/dashboard');
   }
 
-  // Obtener el userId de los parámetros de consulta
+  // Get the userId from query parameters
   const userId = searchParams.userId as string;
   
   if (!userId) {
     return redirect('/dashboard/managed-users');
   }
 
-  // Obtener información del usuario
-  const targetUser = await db.query.users.findFirst({
+  // Get target user information
+  const targetUser = await db.query.user.findFirst({
     where: and(
-      eq(users.id, parseInt(userId)),
-      isNull(users.deletedAt)
+      eq(user.id, userId),
+      isNull(user.deletedAt)
     ),
   });
 

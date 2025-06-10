@@ -91,15 +91,21 @@ export async function broadcastEmailTemplate(data: {
   name: string; 
   subject: string;
   message: string;
-  ctaLabel?: string;
-  ctaUrl?: string;
   isImportant?: boolean;
 }) {
   const template = await loadTemplate('broadcast');
+  console.log('DEBUG - Template loaded:', template.substring(0, 200) + '...');
+  console.log('DEBUG - Data for template:', data);
+  
   const html = replaceTemplateVariables(template, {
     ...data,
     year: new Date().getFullYear()
   });
+  
+  console.log('DEBUG - Processed HTML length:', html.length);
+  console.log('DEBUG - HTML contains name:', html.includes(data.name));
+  console.log('DEBUG - HTML contains message:', html.includes(data.message));
+  console.log('DEBUG - HTML sample (500 chars):', html.substring(0, 500) + '...');
   
   return {
     html,

@@ -1,7 +1,9 @@
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { isAdminRequest } from '@/lib/auth/utils';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/next-auth";
+import { getUserById } from "@/lib/db/queries";
 import { db } from '@/lib/db/drizzle';
 import { eq } from 'drizzle-orm';
 import { user} from '@/lib/db/schema';
@@ -9,10 +11,22 @@ import { sendSubscriptionChangeEmail } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
   try {
-    // Verificar si la solicitud proviene de un administrador
-    const isAdmin = await isAdminRequest(req);
-    if (!isAdmin) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    // Verify authentication using the same method as admin pages
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get the complete user from the database
+    const currentUser = await getUserById(session.user.id);
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
+    // Verify admin permissions
+    if (currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Obtener los datos de la solicitud
@@ -92,7 +106,9 @@ export async function POST(req: NextRequest) {
       message: `Free subscription ${plan} assigned to ${email} for ${duration} month(s).`
     });
   } catch (error) {
-    
-    return NextResponse.json({ error: 'Failed to assign free subscription' }, { status: 500 });
+    console.error('Error assigning free subscription:', error);
+    return NextResponse.json({ 
+      error: 'Failed to assign free subscription' 
+    }, { status: 500 });
   }
 }

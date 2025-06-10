@@ -1,40 +1,65 @@
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { isAdminRequest } from '@/lib/auth/utils';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/next-auth";
+import { getUserById } from "@/lib/db/queries";
 import { updateAppVersion, getAppVersion } from '@/lib/db/queries';
-import { getUser } from '@/lib/db/queries';
 import { db } from '@/lib/db/drizzle';
-import { user} from '@/lib/db/schema';
+import { user } from '@/lib/db/schema';
 import { isNull } from 'drizzle-orm';
 
 export async function GET(req: NextRequest) {
   try {
-    // Verificar si la solicitud proviene de un administrador
-    const isAdmin = await isAdminRequest(req);
-    if (!isAdmin) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    // Verify authentication using the same method as admin pages
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Obtener la versión actual de la aplicación
+    // Get the complete user from the database
+    const currentUser = await getUserById(session.user.id);
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
+    // Verify admin permissions
+    if (currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // Get the current app version
     const appVersion = await getAppVersion();
 
     return NextResponse.json({ version: appVersion });
   } catch (error) {
-    
+    console.error('Error getting app version:', error);
     return NextResponse.json({ error: 'Failed to get app version' }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    // Verificar si la solicitud proviene de un administrador
-    const isAdmin = await isAdminRequest(req);
-    if (!isAdmin) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    // Verify authentication using the same method as admin pages
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Obtener los datos de la solicitud
+    // Get the complete user from the database
+    const currentUser = await getUserById(session.user.id);
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
+    // Verify admin permissions
+    if (currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // Get request data
     const data = await req.json();
     const { 
       version, 
@@ -47,22 +72,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Version is required' }, { status: 400 });
     }
 
-    // Validar el formato de la versión (x.y.z)
+    // Validate version format (x.y.z)
     const versionRegex = /^\d+\.\d+\.\d+$/;
     if (!versionRegex.test(version)) {
       return NextResponse.json({ error: 'Invalid version format. Use x.y.z format.' }, { status: 400 });
     }
 
-    // Obtener el usuario administrador
-    const admin = await getUser();
-    if (!admin) {
-      return NextResponse.json({ error: 'Admin user not found' }, { status: 404 });
-    }
-
-    // Importante: Obtener la versión actual ANTES de actualizarla
+    // Get current version BEFORE updating it
     const currentVersion = await getAppVersion();
     
-    // Si la versión nueva es igual a la actual, no tiene sentido enviar notificaciones
+    // If new version equals current version, no need to send notifications
     if (currentVersion === version) {
       return NextResponse.json({ 
         success: false, 
@@ -71,36 +90,36 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Actualizar la versión de la aplicación
-    const updatedVersion = await updateAppVersion(version, admin.id);
+    // Update app version
+    const updatedVersion = await updateAppVersion(version, currentUser.id);
 
-    // Obtener todos los usuarios para enviar notificación
+    // Get all users to send notification
     const usersList = await db
       .select()
-      .from(users)
-      .where(isNull(users.deletedAt));
+      .from(user)
+      .where(isNull(user.deletedAt));
 
-    
+    console.log(`Notifying ${usersList.length} users about version ${version}`);
     let notificationSent = false;
 
     if (usersList.length > 0) {
       try {
-        // Importar dinámicamente el servicio de email
+        // Dynamically import email service
         const { sendVersionUpdateEmail } = await import('@/lib/email');
         
-        // Enviar emails en lotes para no sobrecargar el servidor
+        // Send emails in batches to avoid server overload
         const batchSize = 10;
         for (let i = 0; i < usersList.length; i += batchSize) {
           const batch = usersList.slice(i, i + batchSize);
           
-          // Procesar cada lote en paralelo
+          // Process each batch in parallel
           const results = await Promise.allSettled(
             batch.map(user => {
               return sendVersionUpdateEmail({
                 email: user.email,
                 name: user.name || user.email.split('@')[0],
-                currentVersion: currentVersion, // Usar la versión anterior
-                newVersion: version, // Usar la nueva versión
+                currentVersion: currentVersion, // Use previous version
+                newVersion: version, // Use new version
                 releaseNotes: releaseNotes,
                 downloadUrl: downloadUrl || null,
                 isCritical: isCritical
@@ -108,16 +127,16 @@ export async function POST(req: NextRequest) {
             })
           );
           
-          // Verificar si al menos un email se envió correctamente
+          // Check if at least one email was sent successfully
           if (results.some(result => result.status === 'fulfilled')) {
             notificationSent = true;
           }
         }
         
-        
+        console.log('Email notifications sent successfully');
       } catch (emailError) {
-        
-        // Continuamos con el proceso aunque fallen los emails
+        console.error('Error sending email notifications:', emailError);
+        // Continue with the process even if emails fail
       }
     }
 
@@ -130,7 +149,7 @@ export async function POST(req: NextRequest) {
       usersCount: usersList.length
     });
   } catch (error) {
-    
+    console.error('Error updating app version:', error);
     return NextResponse.json({ error: 'Failed to update app version' }, { status: 500 });
   }
 } 

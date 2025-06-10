@@ -1,36 +1,43 @@
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { isAdminRequest } from '@/lib/auth/utils';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/next-auth";
+import { getUserById } from "@/lib/db/queries";
 import { sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionChangeEmail } from '@/lib/email';
-import { getUser } from '@/lib/db/queries';
 
 export async function POST(req: NextRequest) {
   try {
-    // Verificar si la solicitud proviene de un administrador
-    const isAdmin = await isAdminRequest(req);
-    if (!isAdmin) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    // Verify authentication using the same method as admin pages
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Obtener el usuario administrador
-    const admin = await getUser();
-    if (!admin) {
-      return NextResponse.json({ error: 'Admin user not found' }, { status: 404 });
+    // Get the complete user from the database
+    const currentUser = await getUserById(session.user.id);
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
-    // Enviar los correos de prueba al administrador
-    const adminEmail = admin.email;
-    const adminName = admin.name || adminEmail.split('@')[0];
+    // Verify admin permissions
+    if (currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
-    // Enviar email de bienvenida
+    // Send test emails to the admin user
+    const adminEmail = currentUser.email;
+    const adminName = currentUser.name || adminEmail.split('@')[0];
+
+    // Send welcome email
     await sendWelcomeEmail({
       email: adminEmail,
       name: adminName,
       loginUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     });
 
-    // Enviar email de restablecimiento de contraseña
+    // Send password reset email
     await sendPasswordResetEmail({
       email: adminEmail,
       name: adminName,
@@ -38,7 +45,7 @@ export async function POST(req: NextRequest) {
       resetUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=dummy-token-for-testing`
     });
 
-    // Enviar email de cambio de suscripción
+    // Send subscription change email
     await sendSubscriptionChangeEmail({
       email: adminEmail,
       name: adminName,
@@ -49,7 +56,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Test emails sent successfully' });
   } catch (error) {
-    
+    console.error('Error sending test emails:', error);
     return NextResponse.json({ error: 'Failed to send test emails' }, { status: 500 });
   }
 }

@@ -3,15 +3,24 @@ import { db } from '@/lib/db/drizzle';
 // Making sure we're using the correct imports - users only, no subscriptions
 import { user, tradingAccounts } from '@/lib/db/schema';
 import { eq, and, or, inArray, isNull } from 'drizzle-orm';
-import { getUserAuth } from '@/lib/auth/utils';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/next-auth";
+import { getUserById } from "@/lib/db/queries";
 import { sql } from 'drizzle-orm';
 
 export async function GET() {
   try {
-    // Verify admin access
-    const { session, user: currentUser } = await getUserAuth();
-    if (!session || !currentUser) {
+    // Verify authentication using the same method as admin pages
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get the complete user from the database
+    const currentUser = await getUserById(session.user.id);
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
     // Verify user has admin permissions
@@ -60,9 +69,9 @@ export async function GET() {
 
     return NextResponse.json({ users: usersWithAccountCounts });
   } catch (error) {
-    
+    console.error('Error fetching managed users:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to fetch managed users' },
       { status: 500 }
     );
   }

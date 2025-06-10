@@ -188,24 +188,18 @@ export async function sendBroadcastEmail({
   name,
   subject,
   message,
-  ctaLabel,
-  ctaUrl,
   isImportant = false,
 }: {
   email: string;
   name: string;
   subject: string;
   message: string;
-  ctaLabel?: string;
-  ctaUrl?: string;
   isImportant?: boolean;
 }) {
   const { html, text } = await broadcastEmailTemplate({
     name,
     subject,
     message,
-    ctaLabel,
-    ctaUrl,
     isImportant,
   });
 
