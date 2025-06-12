@@ -30,7 +30,7 @@ export default async function ManagedUsersPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 px-4">
       <Card>
         <CardHeader>
           <CardTitle>Managed Users</CardTitle>

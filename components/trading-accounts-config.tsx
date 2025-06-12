@@ -35,6 +35,7 @@ import {
   XCircle,
   Info,
   ArrowUpRight,
+  RefreshCw,
 } from "lucide-react";
 
 export function TradingAccountsConfig({ user }: { user: User }) {
@@ -58,6 +59,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
   // Add loading state
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Add useEffect to fetch accounts from API
   useEffect(() => {
@@ -115,6 +117,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
   // Check if user is administrator
   const isAdmin = user.role === "admin" || user.role === "superadmin";
+  
+  // Check if user has Managed VPS plan
+  const isManagedVPS = user.planName === "IPTRADE Managed VPS";
 
   // Platform options
   const platformOptions = [
@@ -568,6 +573,46 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     setEditingAccount(null);
   };
 
+  const handleRefreshAccounts = async () => {
+    try {
+      setIsRefreshing(true);
+      const response = await fetch("/api/trading-accounts");
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to fetch trading accounts");
+      }
+
+      const data = await response.json();
+      if (data.accounts && data.accounts.length > 0) {
+        // Convert numeric IDs to strings and ensure copyingTo exists
+        const formattedAccounts = data.accounts.map((account: any) => ({
+          ...account,
+          id: account.id.toString(),
+          password: "••••••••",
+          copyingTo: account.copyingTo || [],
+        }));
+        setAccounts(formattedAccounts);
+      } else {
+        setAccounts([]);
+      }
+
+      toast({
+        title: "Accounts Refreshed",
+        description: "Trading accounts have been updated successfully.",
+      });
+    } catch (error) {
+      console.error("Error refreshing accounts:", error);
+      toast({
+        title: "Error",
+        description: "Failed to refresh trading accounts. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
       case "mt4":
@@ -715,13 +760,22 @@ export function TradingAccountsConfig({ user }: { user: User }) {
               50 accounts)
             </CardDescription>
           </div>
-          <Button
-            onClick={handleAddAccount}
-            className="ml-auto"
-            disabled={accounts.length >= 50}
-          >
-            Add Trading Account
-          </Button>
+          <div className="flex items-center gap-2 ml-auto">
+            <Button
+              onClick={handleRefreshAccounts}
+              variant="outline"
+r              disabled={isRefreshing || isLoading}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+            <Button
+              onClick={handleAddAccount}
+              disabled={accounts.length >= 50}
+            >
+              Add Trading Account
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -951,24 +1005,25 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
                 <div>
                   <Label htmlFor="accountType">Account Type</Label>
-                  <Select
-                    name="accountType"
-                    value={formState.accountType}
-                    onValueChange={(value) =>
-                      handleSelectChange("accountType", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {accountTypeOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <Select
+                      name="accountType"
+                      value={formState.accountType}
+                      onValueChange={(value) =>
+                        handleSelectChange("accountType", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {accountTypeOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
 
                 <div>
