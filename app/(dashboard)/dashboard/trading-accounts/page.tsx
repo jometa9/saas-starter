@@ -17,7 +17,7 @@ export const metadata = {
 export default async function UserTradingAccountsPage({
   searchParams,
 }: {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   // Verify user authentication
   const session = await getServerSession(authOptions);
@@ -37,8 +37,11 @@ export default async function UserTradingAccountsPage({
     return redirect('/dashboard');
   }
 
+  // Await searchParams before using its properties
+  const resolvedSearchParams = await searchParams;
+  
   // Get the userId from query parameters
-  const userId = searchParams.userId as string;
+  const userId = resolvedSearchParams.userId as string;
   
   if (!userId) {
     return redirect('/dashboard/managed-users');
@@ -67,7 +70,7 @@ export default async function UserTradingAccountsPage({
     .orderBy(tradingAccounts.createdAt);
 
   return (
-    <div className="container mx-auto py-6 px-4">
+    <div className="mx-auto py-6 px-4">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">
           Trading Accounts for {targetUser.name || targetUser.email}

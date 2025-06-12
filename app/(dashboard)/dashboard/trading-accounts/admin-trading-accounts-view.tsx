@@ -19,9 +19,10 @@ import {
   EyeOff,
   Copy,
   Check,
+  Mail,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 
 interface AdminTradingAccountsViewProps {
@@ -35,6 +36,7 @@ export function AdminTradingAccountsView({
 }: AdminTradingAccountsViewProps) {
   const [accounts, setAccounts] = useState<TradingAccount[]>(initialAccounts);
   const router = useRouter();
+  const { toast } = useToast();
   const [collapsedMasters, setCollapsedMasters] = useState<
     Record<string, boolean>
   >({});
@@ -53,6 +55,7 @@ export function AdminTradingAccountsView({
   const [recentlyCopied, setRecentlyCopied] = useState<Record<string, boolean>>(
     {}
   );
+  const [isNotifying, setIsNotifying] = useState<boolean>(false);
 
   const getPlatformIcon = (platform: string) => {
     return (
@@ -160,13 +163,18 @@ export function AdminTradingAccountsView({
       }
 
       setServerIP(newIP);
-      toast.success("Server IP updated successfully");
+      toast({
+        title: "Server IP Updated",
+        description: "Server IP updated successfully",
+      });
       setIsEditingIP(false);
     } catch (error) {
       
-      toast.error(
-        error instanceof Error ? error.message : "Error updating server IP"
-      );
+      toast({
+        title: "Error Updating Server IP",
+        description: error instanceof Error ? error.message : "Error updating server IP",
+        variant: "destructive",
+      });
     } finally {
       setSavingIP(false);
     }
@@ -239,12 +247,17 @@ export function AdminTradingAccountsView({
         )
       );
 
-      toast.success(`Account status changed to ${newStatus}`);
+      toast({
+        title: "Account Status Updated",
+        description: `Account status changed to ${newStatus}`,
+      });
     } catch (error) {
       
-      toast.error(
-        error instanceof Error ? error.message : "Error updating account status"
-      );
+      toast({
+        title: "Error Updating Account Status",
+        description: error instanceof Error ? error.message : "Error updating account status",
+        variant: "destructive",
+      });
     } finally {
       // Quitar el estado de carga de esta cuenta
       setLoadingAccounts((prev) => {
@@ -273,7 +286,10 @@ export function AdminTradingAccountsView({
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        toast.success(`${fieldName} copied to clipboard`);
+        toast({
+          title: "Copied to Clipboard",
+          description: `${fieldName} copied to clipboard`,
+        });
 
         // Establecer el estado para mostrar el icono de verificación
         const key = `${id}-${field}`;
@@ -286,13 +302,68 @@ export function AdminTradingAccountsView({
       })
       .catch((err) => {
         
-        toast.error("Failed to copy to clipboard");
+        toast({
+          title: "Copy Failed",
+          description: "Failed to copy to clipboard",
+          variant: "destructive",
+        });
       });
+  };
+
+  // Función para enviar notificación por email al usuario
+  const handleNotifyUser = async () => {
+    try {
+      setIsNotifying(true);
+      console.log('🔔 Iniciando notificación a usuario:', user.name, user.email);
+      
+      const response = await fetch(`/api/admin/notify-user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          accountsData: {
+            totalAccounts: accounts.length,
+            masterAccounts: accounts.filter((acc) => acc.accountType === "master").length,
+            slaveAccounts: accounts.filter((acc) => acc.accountType === "slave").length,
+            synchronizedAccounts: accounts.filter((acc) => acc.status === "synchronized").length,
+            pendingAccounts: accounts.filter((acc) => acc.status === "pending").length,
+            errorAccounts: accounts.filter((acc) => acc.status === "error" || acc.status === "offline").length,
+          },
+          serverStatus: getServerStatus(),
+          serverIP: serverIP
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to send notification");
+      }
+
+      const responseData = await response.json();
+      console.log('✅ Respuesta de la API:', responseData);
+      toast({
+        title: "Notification Sent Successfully",
+        description: `Email sent to ${user.name || user.email}`,
+      });
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      toast({
+        title: "Failed to Send Notification",
+        description: error instanceof Error ? error.message : "Failed to send notification",
+        variant: "destructive",
+      });
+    } finally {
+      setIsNotifying(false);
+    }
   };
 
   return (
     <div>
-      <div className="mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <Button
           variant="outline"
           onClick={handleGoBack}
@@ -300,6 +371,14 @@ export function AdminTradingAccountsView({
         >
           <ChevronLeft className="h-4 w-4" />
           Back to Managed Users
+        </Button>
+        <Button
+          onClick={handleNotifyUser}
+          disabled={isNotifying}
+          className="flex items-center gap-2"
+        >
+          <Mail className={`h-4 w-4 ${isNotifying ? 'animate-pulse' : ''}`} />
+          {isNotifying ? 'Sending...' : 'Notify User'}
         </Button>
       </div>
 

@@ -210,3 +210,100 @@ export async function sendBroadcastEmail({
     text,
   });
 }
+
+// Service to send trading account configuration notification email
+export async function sendTradingAccountNotificationEmail({
+  email,
+  name,
+  accountsData,
+  serverStatus,
+  serverIP,
+}: {
+  email: string;
+  name: string;
+  accountsData: {
+    totalAccounts: number;
+    masterAccounts: number;
+    slaveAccounts: number;
+    synchronizedAccounts: number;
+    pendingAccounts: number;
+    errorAccounts: number;
+  };
+  serverStatus?: string;
+  serverIP?: string;
+}) {
+  const statusMessage = getStatusMessage(serverStatus);
+  const accountsStatusText = getAccountsStatusText(accountsData);
+
+  // Create the message content for the broadcast template
+  const message = `Your administrator has finished configuring your trading accounts in the IPTRADE Managed VPS service. Here's a summary of your current configuration:
+
+ACCOUNT SUMMARY:
+- Total Accounts: ${accountsData.totalAccounts}
+- Master Accounts: ${accountsData.masterAccounts}
+- Slave Accounts: ${accountsData.slaveAccounts}
+- Synchronized: ${accountsData.synchronizedAccounts}
+- Pending: ${accountsData.pendingAccounts}
+- Issues/Offline: ${accountsData.errorAccounts}
+
+SERVER STATUS: ${statusMessage}
+${serverIP ? `Server IP: ${serverIP}` : ''}
+
+${accountsStatusText}
+
+You can view and manage your trading accounts by logging into your IPTRADE dashboard.
+
+If you have any questions or need assistance, please don't hesitate to contact our support team.`;
+
+  // Use the existing broadcast email template
+  return sendBroadcastEmail({
+    email,
+    name,
+    subject: "Trading Account Configuration Update",
+    message,
+    isImportant: true
+  });
+}
+
+// Helper functions for trading account notifications
+function getStatusMessage(serverStatus?: string): string {
+  switch (serverStatus) {
+    case "optimal":
+      return "All Synchronized - Your setup is working perfectly!";
+    case "warning": 
+      return "Mostly Synchronized - Most accounts are working correctly";
+    case "pending":
+      return "Mostly Pending - Accounts are being configured";
+    case "error":
+      return "Issues Detected - Some accounts need attention";
+    default:
+      return "Configuration Complete";
+  }
+}
+
+function getStatusColor(serverStatus?: string): string {
+  switch (serverStatus) {
+    case "optimal":
+      return "#dcfce7"; // green-100
+    case "warning":
+      return "#fef3c7"; // yellow-100  
+    case "pending":
+      return "#dbeafe"; // blue-100
+    case "error":
+      return "#fee2e2"; // red-100
+    default:
+      return "#f8fafc"; // gray-50
+  }
+}
+
+function getAccountsStatusText(accountsData: any): string {
+  if (accountsData.synchronizedAccounts === accountsData.totalAccounts) {
+    return "All your accounts are synchronized and ready for trading!";
+  } else if (accountsData.pendingAccounts > 0) {
+    return "Some accounts are still being configured. They will be ready shortly.";
+  } else if (accountsData.errorAccounts > 0) {
+    return "Some accounts may require your attention. Please check your dashboard for more details.";
+  } else {
+    return "Your trading account configuration has been updated.";
+  }
+}
