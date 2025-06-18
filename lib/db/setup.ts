@@ -1,10 +1,10 @@
-import { exec } from 'node:child_process';
-import { promises as fs } from 'node:fs';
-import { promisify } from 'node:util';
-import readline from 'node:readline';
-import crypto from 'node:crypto';
-import path from 'node:path';
-import os from 'node:os';
+import { exec } from "node:child_process";
+import { promises as fs } from "node:fs";
+import { promisify } from "node:util";
+import readline from "node:readline";
+import crypto from "node:crypto";
+import path from "node:path";
+import os from "node:os";
 
 const execAsync = promisify(exec);
 
@@ -23,74 +23,52 @@ function question(query: string): Promise<string> {
 }
 
 async function checkStripeCLI() {
-  
   try {
-    await execAsync('stripe --version');
-    
+    await execAsync("stripe --version");
 
     // Check if Stripe CLI is authenticated
     try {
-      await execAsync('stripe config --list');
-      
+      await execAsync("stripe config --list");
     } catch (error) {
-      
-      
       const answer = await question(
-        'Have you completed the authentication? (y/n): '
+        "Have you completed the authentication? (y/n): "
       );
-      if (answer.toLowerCase() !== 'y') {
-        
+      if (answer.toLowerCase() !== "y") {
         process.exit(1);
       }
 
       // Verify authentication after user confirms login
       try {
-        await execAsync('stripe config --list');
-        
+        await execAsync("stripe config --list");
       } catch (error) {
-        
         process.exit(1);
       }
     }
   } catch (error) {
-    
-    
-    
-    
-    
-    
     process.exit(1);
   }
 }
 
 async function getPostgresURL(): Promise<string> {
-  
   const dbChoice = await question(
-    'Do you want to use a local Postgres instance with Docker (L) or a remote Postgres instance (R)? (L/R): '
+    "Do you want to use a local Postgres instance with Docker (L) or a remote Postgres instance (R)? (L/R): "
   );
 
-  if (dbChoice.toLowerCase() === 'l') {
-    
+  if (dbChoice.toLowerCase() === "l") {
     await setupLocalPostgres();
-    return 'postgres://postgres:postgres@localhost:54322/postgres';
+    return "postgres://postgres:postgres@localhost:54322/postgres";
   } else {
-    
-    return await question('Enter your POSTGRES_URL: ');
+    return await question("Enter your POSTGRES_URL: ");
   }
 }
 
 async function setupLocalPostgres() {
-  
   try {
-    await execAsync('docker --version');
-    
+    await execAsync("docker --version");
   } catch (error) {
-    
-    
     process.exit(1);
   }
 
-  
   const dockerComposeContent = `
 services:
   postgres:
@@ -110,59 +88,47 @@ volumes:
 `;
 
   await fs.writeFile(
-    path.join(process.cwd(), 'docker-compose.yml'),
+    path.join(process.cwd(), "docker-compose.yml"),
     dockerComposeContent
   );
-  
 
-  
   try {
-    await execAsync('docker compose up -d');
-    
+    await execAsync("docker compose up -d");
   } catch (error) {
-    
     process.exit(1);
   }
 }
 
 async function getStripeSecretKey(): Promise<string> {
-  
-  
-  return await question('Enter your Stripe Secret Key: ');
+  return await question("Enter your Stripe Secret Key: ");
 }
 
 async function createStripeWebhook(): Promise<string> {
-  
   try {
-    const { stdout } = await execAsync('stripe listen --print-secret');
+    const { stdout } = await execAsync("stripe listen --print-secret");
     const match = stdout.match(/whsec_[a-zA-Z0-9]+/);
     if (!match) {
-      throw new Error('Failed to extract Stripe webhook secret');
+      throw new Error("Failed to extract Stripe webhook secret");
     }
-    
+
     return match[0];
   } catch (error) {
-    
-    if (os.platform() === 'win32') {
-      
+    if (os.platform() === "win32") {
     }
     throw error;
   }
 }
 
 function generateAuthSecret(): string {
-  
-  return crypto.randomBytes(32).toString('hex');
+  return crypto.randomBytes(32).toString("hex");
 }
 
 async function writeEnvFile(envVars: Record<string, string>) {
-  
   const envContent = Object.entries(envVars)
     .map(([key, value]) => `${key}=${value}`)
-    .join('\n');
+    .join("\n");
 
-  await fs.writeFile(path.join(process.cwd(), '.env'), envContent);
-  
+  await fs.writeFile(path.join(process.cwd(), ".env"), envContent);
 }
 
 async function main() {
@@ -172,7 +138,7 @@ async function main() {
   const STRIPE_SECRET_KEY = await getStripeSecretKey();
   const STRIPE_WEBHOOK_SECRET = await createStripeWebhook();
   const AUTH_SECRET = generateAuthSecret();
-  const BASE_URL = 'http://localhost:3000';
+  const BASE_URL = "http://localhost:3000";
 
   await writeEnvFile({
     POSTGRES_URL,
@@ -182,18 +148,13 @@ async function main() {
     AUTH_SECRET,
   });
 
-  
-  
   // Importar y ejecutar la migración de app_settings
   try {
-    const { migrateAppSettings } = await import('./migrations/add_app_settings_table');
+    const { migrateAppSettings } = await import(
+      "./migrations/add_app_settings_table"
+    );
     await migrateAppSettings();
-    
-  } catch (error) {
-    
-  }
-
-  
+  } catch (error) {}
 }
 
 main().catch(console.error);

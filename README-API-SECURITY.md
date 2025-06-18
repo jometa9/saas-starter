@@ -3,15 +3,18 @@
 ## Implemented Changes
 
 1. **Request Origin Verification**:
+
 - A system has been added that verifies the origin of HTTP requests through the `origin` headers.
 - Only requests from authorized domains, defined in the `ALLOWED_ORIGINS` environment variable, are allowed.
 
 2. **Stripe Synchronization**:
+
 - The endpoint now verifies the current subscription status directly with Stripe before responding.
 - If it detects discrepancies between the status stored in the database and the status in Stripe, it automatically updates the database.
 - This solves possible desynchronizations when the database was inaccessible during subscription updates.
 
 3. **Support for Electron Applications**:
+
 - A special parameter `clientType` has been added to identify desktop applications.
 - Electron applications can bypass origin verification using this parameter.
 
@@ -39,9 +42,11 @@ If `ALLOWED_ORIGINS` is empty or not defined, origin verification will be disabl
 ```javascript
 // Example of how to consume this API from an authorized client
 async function checkSubscription(apiKey) {
-  const response = await fetch('https://tudominio.com/api/validate-subscription?apiKey=' + apiKey);
+  const response = await fetch(
+    "https://tudominio.com/api/validate-subscription?apiKey=" + apiKey
+  );
   if (!response.ok) {
-    throw new Error('Error de validación: ' + response.statusText);
+    throw new Error("Error de validación: " + response.statusText);
   }
   return await response.json();
 }
@@ -52,10 +57,14 @@ async function checkSubscription(apiKey) {
 ```javascript
 // Example of how to consume this API from an Electron application
 async function checkSubscriptionFromElectron(apiKey) {
-  const response = await fetch('https://tudominio.com/api/validate-subscription?apiKey=' + apiKey + '&clientType=electron');
+  const response = await fetch(
+    "https://tudominio.com/api/validate-subscription?apiKey=" +
+      apiKey +
+      "&clientType=electron"
+  );
   if (!response.ok) {
-    throw new Error('Error de validación: ' + response.statusText);
+    throw new Error("Error de validación: " + response.statusText);
   }
   return await response.json();
 }
-``` 
+```

@@ -21,15 +21,19 @@ const tradingAccountUpdateSchema = z.object({
 // Helper function to check if user can access the trading account
 async function canUserAccessAccount(userId: string, accountId: number) {
   const account = await getTradingAccountById(accountId);
-  
+
   if (!account) {
     return { allowed: false, error: "Trading account not found", status: 404 };
   }
-  
+
   if (account.userId !== userId) {
-    return { allowed: false, error: "Unauthorized access to trading account", status: 403 };
+    return {
+      allowed: false,
+      error: "Unauthorized access to trading account",
+      status: 403,
+    };
   }
-  
+
   return { allowed: true, account };
 }
 
@@ -58,7 +62,6 @@ export async function GET(
 
     return NextResponse.json({ account: accessCheck.account });
   } catch (error) {
-    
     return NextResponse.json(
       { error: "Failed to get trading account" },
       { status: 500 }
@@ -90,7 +93,7 @@ export async function PUT(
     }
 
     const body = await req.json();
-    
+
     // Validate request body
     const validation = tradingAccountUpdateSchema.safeParse(body);
     if (!validation.success) {
@@ -103,15 +106,11 @@ export async function PUT(
     const result = await updateTradingAccount(accountId, validation.data);
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
     return NextResponse.json({ account: result.account });
   } catch (error) {
-    
     return NextResponse.json(
       { error: "Failed to update trading account" },
       { status: 500 }
@@ -145,20 +144,17 @@ export async function DELETE(
     const result = await deleteTradingAccount(accountId);
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
-    return NextResponse.json(
-      { success: true, message: "Trading account deleted successfully" }
-    );
+    return NextResponse.json({
+      success: true,
+      message: "Trading account deleted successfully",
+    });
   } catch (error) {
-    
     return NextResponse.json(
       { error: "Failed to delete trading account" },
       { status: 500 }
     );
   }
-} 
+}

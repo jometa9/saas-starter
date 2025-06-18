@@ -37,7 +37,9 @@ export const user = pgTable("user", {
 
 export const tradingAccounts = pgTable("tradingAccounts", {
   id: serial("id").primaryKey(),
-  userId: uuid("userId").notNull().references(() => user.id),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => user.id),
   accountNumber: varchar("accountNumber", { length: 50 }).notNull(),
   platform: varchar("platform", { length: 20 }).notNull(),
   server: varchar("server", { length: 100 }).notNull(),
@@ -62,7 +64,9 @@ export const appSettings = pgTable("appSettings", {
 
 export const accounts = pgTable("account", {
   id: serial("id").primaryKey(),
-  userId: uuid("userId").notNull().references(() => user.id),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => user.id),
   type: varchar("type", { length: 255 }).notNull(),
   provider: varchar("provider", { length: 255 }).notNull(),
   providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
@@ -78,29 +82,38 @@ export const accounts = pgTable("account", {
 export const sessions = pgTable("session", {
   id: serial("id").primaryKey(),
   sessionToken: varchar("sessionToken", { length: 255 }).notNull().unique(),
-  userId: uuid("userId").notNull().references(() => user.id),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => user.id),
   expires: timestamp("expires").notNull(),
 });
 
-export const verificationTokens = pgTable("verificationToken", {
-  identifier: varchar("identifier", { length: 255 }).notNull(),
-  token: varchar("token", { length: 255 }).notNull(),
-  expires: timestamp("expires").notNull(),
-}, (vt) => ({
-  compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-}));
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: varchar("identifier", { length: 255 }).notNull(),
+    token: varchar("token", { length: 255 }).notNull(),
+    expires: timestamp("expires").notNull(),
+  },
+  (vt) => ({
+    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
+  })
+);
 
 // Define relations
 export const userRelations = relations(user, ({ many }) => ({
   tradingAccounts: many(tradingAccounts),
 }));
 
-export const tradingAccountsRelations = relations(tradingAccounts, ({ one }) => ({
-  user: one(user, {
-    fields: [tradingAccounts.userId],
-    references: [user.id],
-  }),
-}));
+export const tradingAccountsRelations = relations(
+  tradingAccounts,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [tradingAccounts.userId],
+      references: [user.id],
+    }),
+  })
+);
 
 // Type definitions
 export type User = typeof user.$inferSelect;

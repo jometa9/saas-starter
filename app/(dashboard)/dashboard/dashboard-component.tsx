@@ -23,7 +23,7 @@ import { TradingAccountsConfig } from "@/components/trading-accounts-config";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { forgotPassword } from "@/app/(login)/actions";
 
-export function Dashboard({ user }: { user: User}) {
+export function Dashboard({ user }: { user: User }) {
   const router = useRouter();
   const [showLicense, setShowLicense] = useState(true);
   const [isMainLicenseCopied, setIsMainLicenseCopied] = useState(false);
@@ -196,20 +196,25 @@ export function Dashboard({ user }: { user: User}) {
             setIsResettingPassword(true);
             try {
               const formData = new FormData();
-              formData.append('email', user.email);
-              const result = await forgotPassword({ email: user.email }, formData);
-              
+              formData.append("email", user.email);
+              const result = await forgotPassword(
+                { email: user.email },
+                formData
+              );
+
               if (result?.success) {
                 toast({
                   title: "Reset Password",
-                  description: "We sent you a link to reset your password to your email.",
+                  description:
+                    "We sent you a link to reset your password to your email.",
                 });
               }
             } catch (error) {
               console.error(error);
               toast({
                 title: "Error",
-                description: "Failed to send reset password email. Please try again.",
+                description:
+                  "Failed to send reset password email. Please try again.",
                 variant: "destructive",
               });
             } finally {

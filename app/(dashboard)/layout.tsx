@@ -6,9 +6,5 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <section className="flex flex-col">
-      {children}
-    </section>
-  );
-} 
+  return <section className="flex flex-col">{children}</section>;
+}

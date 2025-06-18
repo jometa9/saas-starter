@@ -269,7 +269,9 @@ export function GuideContent() {
       <section className="py-12">
         <div className="px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Advanced Features</h2>
+            <h2 className="text-3xl font-bold text-gray-900">
+              Advanced Features
+            </h2>
             <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
               Discover the powerful capabilities that make IPTRADE the leading
               solution for prop firm traders.
@@ -331,7 +333,9 @@ export function GuideContent() {
                 <li className="flex items-start">
                   <CheckCircle2 className="h-5 w-5 mr-3 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-base">Multi-Broker Support</p>
+                    <p className="font-medium text-base">
+                      Multi-Broker Support
+                    </p>
                     <p className="text-gray-500 text-base">
                       Copy trades between different brokers with automatic
                       symbol mapping.

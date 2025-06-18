@@ -1,13 +1,12 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import { use, Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { Home, LogOut } from "lucide-react";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Tooltip } from "@/components/ui/tooltip";
+import { Home, LogOut } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 
 function UserMenu() {
   const { data: session, status } = useSession();
@@ -74,6 +73,10 @@ export function Header() {
     { href: "/faqs", label: "FAQS" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
+    {
+      href: "/dashboard/support",
+      label: "AI Assistant",
+    },
   ];
 
   return (
@@ -89,7 +92,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-gray-700 hover:text-gray-900"
+              className="text-sm font-medium text-gray-700 hover:text-gray-900 flex items-center gap-2"
             >
               {link.label}
             </Link>

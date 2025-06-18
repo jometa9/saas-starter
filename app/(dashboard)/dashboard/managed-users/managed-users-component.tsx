@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -9,10 +9,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Loader2 } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Loader2 } from "lucide-react";
 
 type ManagedUser = {
   id: string;
@@ -34,17 +34,16 @@ export function ManagedUsersComponent() {
     const fetchManagedUsers = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/admin/managed-users');
-        
+        const response = await fetch("/api/admin/managed-users");
+
         if (!response.ok) {
-          throw new Error('Failed to fetch managed users');
+          throw new Error("Failed to fetch managed users");
         }
-        
+
         const data = await response.json();
         setUsers(data.users);
       } catch (err) {
-        setError('Error loading managed users. Please try again later.');
-        
+        setError("Error loading managed users. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -59,8 +58,8 @@ export function ManagedUsersComponent() {
 
   // Helper function to format dates
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
-    
+    if (!dateString) return "N/A";
+
     const date = new Date(dateString);
     const now = new Date();
     const diffInMilliseconds = now.getTime() - date.getTime();
@@ -69,33 +68,33 @@ export function ManagedUsersComponent() {
     const diffInDays = Math.floor(diffInHours / 24);
     const diffInMonths = Math.floor(diffInDays / 30);
     const diffInYears = Math.floor(diffInMonths / 12);
-    
+
     if (diffInMinutes < 5) {
-      return 'just now';
+      return "just now";
     } else if (diffInMinutes < 60) {
       return `${diffInMinutes} minutes ago`;
     } else if (diffInHours < 24) {
-      return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
+      return `${diffInHours} ${diffInHours === 1 ? "hour" : "hours"} ago`;
     } else if (diffInDays < 30) {
-      return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
+      return `${diffInDays} ${diffInDays === 1 ? "day" : "days"} ago`;
     } else if (diffInMonths < 12) {
-      return `${diffInMonths} ${diffInMonths === 1 ? 'month' : 'months'} ago`;
+      return `${diffInMonths} ${diffInMonths === 1 ? "month" : "months"} ago`;
     } else {
-      return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`;
+      return `${diffInYears} ${diffInYears === 1 ? "year" : "years"} ago`;
     }
   };
 
   // Get appropriate badge variant for subscription status
   const getStatusVariant = (status: string | null) => {
     switch (status) {
-      case 'active':
-        return 'success';
-      case 'admin_assigned':
-        return 'secondary';
-      case 'trialing':
-        return 'warning';
+      case "active":
+        return "success";
+      case "admin_assigned":
+        return "secondary";
+      case "trialing":
+        return "warning";
       default:
-        return 'outline';
+        return "outline";
     }
   };
 
@@ -133,21 +132,21 @@ export function ManagedUsersComponent() {
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id}>
-              <TableCell className="font-medium">{user.name || 'N/A'}</TableCell>
+              <TableCell className="font-medium">
+                {user.name || "N/A"}
+              </TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>
-                <Badge variant="default">
-                  Managed VPS
-                </Badge>
+                <Badge variant="default">Managed VPS</Badge>
               </TableCell>
               <TableCell>
                 <Badge variant={getStatusVariant(user.status)}>
-                  {user.status || 'unknown'}
+                  {user.status || "unknown"}
                 </Badge>
               </TableCell>
               <TableCell>{user.tradingAccountsCount}</TableCell>
               <TableCell>
-                {user.createdAt ? formatDate(user.createdAt) : 'N/A'}
+                {user.createdAt ? formatDate(user.createdAt) : "N/A"}
               </TableCell>
               <TableCell className="text-right">
                 <Button size="sm" onClick={() => handleViewUser(user.id)}>
@@ -160,4 +159,4 @@ export function ManagedUsersComponent() {
       </Table>
     </div>
   );
-} 
+}

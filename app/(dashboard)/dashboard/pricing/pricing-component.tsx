@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, Zap } from "lucide-react";
-import { PricingToggle } from "@/components/pricing-toggle";
-import { toast } from "@/components/ui/use-toast";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { User } from "@/lib/db/schema";
 import { PlansComparisonTable } from "@/components/plans-comparison-table";
+import { PricingToggle } from "@/components/pricing-toggle";
 import SupportCards from "@/components/support-cards";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import { User } from "@/lib/db/schema";
+import { Check, Zap } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface PricingComponentProps {
   user: User | null;
@@ -20,9 +19,12 @@ export default function PricingComponent({ user }: PricingComponentProps) {
   const [isAnnual, setIsAnnual] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
-  const [currentPlan, setCurrentPlan] = useState<string | null>(user?.planName || null);
+  const [currentPlan, setCurrentPlan] = useState<string | null>(
+    user?.planName || null
+  );
   const [hasActiveSubscription, setHasActiveSubscription] = useState(
-    user?.subscriptionStatus === "active" || user?.subscriptionStatus === "trialing"
+    user?.subscriptionStatus === "active" ||
+      user?.subscriptionStatus === "trialing"
   );
 
   // Update state when user prop changes
@@ -30,7 +32,8 @@ export default function PricingComponent({ user }: PricingComponentProps) {
     if (user) {
       setCurrentPlan(user.planName || null);
       setHasActiveSubscription(
-        user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing"
+        user.subscriptionStatus === "active" ||
+          user.subscriptionStatus === "trialing"
       );
     }
   }, [user]);
@@ -135,13 +138,13 @@ export default function PricingComponent({ user }: PricingComponentProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        
+
         // If authentication is required, redirect to sign-in
         if (response.status === 401 && data.redirect) {
           window.location.href = data.redirect;
           return;
         }
-        
+
         throw new Error(data.error || "Failed to start checkout process");
       }
 
@@ -158,7 +161,8 @@ export default function PricingComponent({ user }: PricingComponentProps) {
           window.location.href = data.redirect;
           return;
         }
-      } catch (e) {
+      } catch (error) {
+        console.error(error);
         // Response might not be JSON, check if we got redirected
         const responseUrl = response.url;
         if (responseUrl && responseUrl !== window.location.href) {
@@ -169,7 +173,6 @@ export default function PricingComponent({ user }: PricingComponentProps) {
 
       throw new Error("No redirect URL received from checkout");
     } catch (error) {
-      
       toast({
         title: "Checkout Error",
         description:

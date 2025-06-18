@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getUserByApiKey, updateUserSubscription } from "@/lib/db/queries";
 import { stripe } from "@/lib/payments/stripe";
 import { db } from "@/lib/db/drizzle";
-import { user} from "@/lib/db/schema";
+import { user } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
@@ -67,7 +67,6 @@ export async function GET(request: NextRequest) {
           user.subscriptionStatus = subscription.status;
         }
       } catch (stripeError) {
-        
         if (
           user.subscriptionExpiryDate &&
           user.subscriptionExpiryDate < now &&
@@ -110,7 +109,6 @@ export async function GET(request: NextRequest) {
       !user.subscriptionExpiryDate &&
       !user.stripeSubscriptionId
     ) {
-      
     }
 
     const isSubscriptionActive =
@@ -150,7 +148,6 @@ export async function GET(request: NextRequest) {
             : "none",
     });
   } catch (error) {
-    
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

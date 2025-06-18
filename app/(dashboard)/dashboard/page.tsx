@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { getAppVersion, getUserById } from "@/lib/db/queries";
 import { Dashboard } from "./dashboard-component";
 // Indicar que la página no debe ser cacheada
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function DashboardPage() {

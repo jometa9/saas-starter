@@ -1,7 +1,7 @@
 import { Download, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
-const DownloadCard = ({ compactMode = false } : { compactMode?: boolean }) => {
+const DownloadCard = ({ compactMode = false }: { compactMode?: boolean }) => {
   return (
     <section
       id="download"

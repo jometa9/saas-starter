@@ -1,4 +1,4 @@
-import DashboardLayout from '../(dashboard)/layout';
+import DashboardLayout from "../(dashboard)/layout";
 
 export default function DocsLayout({
   children,
@@ -6,4 +6,4 @@ export default function DocsLayout({
   children: React.ReactNode;
 }) {
   return <DashboardLayout>{children}</DashboardLayout>;
-} 
+}

@@ -18,7 +18,6 @@ async function withRetry<T>(
     return await operation();
   } catch (error) {
     if (retries <= 0) {
-      
       throw error;
     }
 
@@ -110,7 +109,6 @@ export async function sendSubscriptionChangeEmail({
       `Subscription email to ${email}`
     );
   } catch (error) {
-    
     throw error;
   }
 }
@@ -247,7 +245,7 @@ ACCOUNT SUMMARY:
 - Issues/Offline: ${accountsData.errorAccounts}
 
 SERVER STATUS: ${statusMessage}
-${serverIP ? `Server IP: ${serverIP}` : ''}
+${serverIP ? `Server IP: ${serverIP}` : ""}
 
 ${accountsStatusText}
 
@@ -261,7 +259,7 @@ If you have any questions or need assistance, please don't hesitate to contact o
     name,
     subject: "Trading Account Configuration Update",
     message,
-    isImportant: true
+    isImportant: true,
   });
 }
 
@@ -270,7 +268,7 @@ function getStatusMessage(serverStatus?: string): string {
   switch (serverStatus) {
     case "optimal":
       return "All Synchronized - Your setup is working perfectly!";
-    case "warning": 
+    case "warning":
       return "Mostly Synchronized - Most accounts are working correctly";
     case "pending":
       return "Mostly Pending - Accounts are being configured";
@@ -286,7 +284,7 @@ function getStatusColor(serverStatus?: string): string {
     case "optimal":
       return "#dcfce7"; // green-100
     case "warning":
-      return "#fef3c7"; // yellow-100  
+      return "#fef3c7"; // yellow-100
     case "pending":
       return "#dbeafe"; // blue-100
     case "error":

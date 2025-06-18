@@ -1,21 +1,21 @@
-import { and, eq, gt, isNull } from 'drizzle-orm';
-import { db } from './drizzle';
-import { user, appSettings, tradingAccounts } from './schema';
-import { cookies } from 'next/headers';
-import { verifyToken } from '@/lib/auth/session';
-import { generateResetToken, getResetTokenExpiry } from '@/lib/utils';
+import { and, eq, gt, isNull } from "drizzle-orm";
+import { db } from "./drizzle";
+import { user, appSettings, tradingAccounts } from "./schema";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth/session";
+import { generateResetToken, getResetTokenExpiry } from "@/lib/utils";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/next-auth";
 
 export async function getUser() {
   // Try custom session first
-  const sessionCookie = (await cookies()).get('session');
+  const sessionCookie = (await cookies()).get("session");
   if (sessionCookie && sessionCookie.value) {
     const sessionData = await verifyToken(sessionCookie.value);
     if (
       sessionData &&
       sessionData.user &&
-      typeof sessionData.user.id === 'string'
+      typeof sessionData.user.id === "string"
     ) {
       if (new Date(sessionData.expires) >= new Date()) {
         const userResult = await db
@@ -33,11 +33,11 @@ export async function getUser() {
 
   // Try NextAuth session using getServerSession
   try {
-    console.log('🔍 Trying NextAuth getServerSession...');
+    console.log("🔍 Trying NextAuth getServerSession...");
     const session = await getServerSession(authOptions);
-    
-    console.log('📋 NextAuth session:', !!session, session?.user?.id);
-    
+
+    console.log("📋 NextAuth session:", !!session, session?.user?.id);
+
     if (session?.user?.id) {
       const userResult = await db
         .select()
@@ -45,14 +45,14 @@ export async function getUser() {
         .where(and(eq(user.id, session.user.id), isNull(user.deletedAt)))
         .limit(1);
 
-      console.log('👤 User found in DB:', userResult.length > 0);
+      console.log("👤 User found in DB:", userResult.length > 0);
 
       if (userResult.length > 0) {
         return userResult[0];
       }
     }
   } catch (error) {
-    console.error('NextAuth session verification failed:', error);
+    console.error("NextAuth session verification failed:", error);
   }
 
   return null;
@@ -127,7 +127,7 @@ export async function createPasswordResetToken(email: string) {
 
 export async function validateResetToken(token: string) {
   const now = new Date();
-  
+
   const result = await db
     .select()
     .from(user)
@@ -145,14 +145,14 @@ export async function validateResetToken(token: string) {
 
 export async function resetPassword(token: string, newPassword: string) {
   const currentUser = await validateResetToken(token);
-  
+
   if (!currentUser) {
     return null;
   }
-  
+
   // Esta función será implementada en el archivo actions.ts
   // usando la función hashPassword
-  
+
   return currentUser;
 }
 
@@ -169,11 +169,11 @@ export async function getAppVersion() {
     const defaultSettings = await db
       .insert(appSettings)
       .values({
-        appVersion: '1.0.0',
+        appVersion: "1.0.0",
         updatedAt: new Date(),
       })
       .returning();
-    
+
     return defaultSettings[0].appVersion;
   }
 
@@ -198,7 +198,7 @@ export async function updateAppVersion(version: string, userId: string) {
           updatedBy: userId,
         })
         .returning();
-      
+
       return result[0].appVersion;
     } else {
       // Si existe, actualizar
@@ -211,7 +211,7 @@ export async function updateAppVersion(version: string, userId: string) {
         })
         .where(eq(appSettings.id, settings[0].id))
         .returning();
-      
+
       if (result.length > 0) {
         return result[0].appVersion;
       } else {
@@ -221,7 +221,7 @@ export async function updateAppVersion(version: string, userId: string) {
           .from(appSettings)
           .where(eq(appSettings.id, settings[0].id))
           .limit(1);
-          
+
         return currentSettings[0].appVersion;
       }
     }
@@ -250,24 +250,27 @@ export async function updateUserById(
   try {
     // Convert null values to undefined since drizzle doesn't accept null for existing fields
     const processedData = Object.fromEntries(
-      Object.entries(userData).map(([key, value]) => [key, value === null ? undefined : value])
+      Object.entries(userData).map(([key, value]) => [
+        key,
+        value === null ? undefined : value,
+      ])
     );
 
     const dataToUpdate = {
       ...processedData,
       updatedAt: new Date(),
     };
-    
+
     const result = await db
       .update(user)
       .set(dataToUpdate)
       .where(eq(user.id, userId))
       .returning();
-    
+
     if (result.length === 0) {
       throw new Error(`Usuario con ID ${userId} no encontrado`);
     }
-    
+
     return result[0];
   } catch (error) {
     throw error;
@@ -280,10 +283,7 @@ export async function getUserTradingAccounts(userId: string) {
     .select()
     .from(tradingAccounts)
     .where(
-      and(
-        eq(tradingAccounts.userId, userId),
-        isNull(tradingAccounts.deletedAt)
-      )
+      and(eq(tradingAccounts.userId, userId), isNull(tradingAccounts.deletedAt))
     )
     .orderBy(tradingAccounts.createdAt);
 
@@ -294,12 +294,7 @@ export async function getTradingAccountById(id: number) {
   const result = await db
     .select()
     .from(tradingAccounts)
-    .where(
-      and(
-        eq(tradingAccounts.id, id),
-        isNull(tradingAccounts.deletedAt)
-      )
-    )
+    .where(and(eq(tradingAccounts.id, id), isNull(tradingAccounts.deletedAt)))
     .limit(1);
 
   return result.length > 0 ? result[0] : null;

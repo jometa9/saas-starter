@@ -66,7 +66,6 @@ export async function PATCH(
       { status: 200 }
     );
   } catch (error) {
-    
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

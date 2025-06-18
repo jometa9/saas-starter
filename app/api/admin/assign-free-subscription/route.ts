@@ -1,32 +1,32 @@
-'use server';
+"use server";
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/next-auth";
 import { getUserById } from "@/lib/db/queries";
-import { db } from '@/lib/db/drizzle';
-import { eq } from 'drizzle-orm';
-import { user} from '@/lib/db/schema';
-import { sendSubscriptionChangeEmail } from '@/lib/email';
+import { db } from "@/lib/db/drizzle";
+import { eq } from "drizzle-orm";
+import { user } from "@/lib/db/schema";
+import { sendSubscriptionChangeEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
     // Verify authentication using the same method as admin pages
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get the complete user from the database
     const currentUser = await getUserById(session.user.id);
     if (!currentUser) {
-      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+      return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
     // Verify admin permissions
-    if (currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (currentUser.role !== "admin" && currentUser.role !== "superadmin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Obtener los datos de la solicitud
@@ -34,7 +34,10 @@ export async function POST(req: NextRequest) {
     const { email, plan, duration, force = false } = data;
 
     if (!email || !plan || !duration) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
     // Buscar al usuario por email
@@ -45,7 +48,7 @@ export async function POST(req: NextRequest) {
       .limit(1);
 
     if (userResult.length === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const user = userResult[0];
@@ -53,19 +56,20 @@ export async function POST(req: NextRequest) {
     // Verificar si el usuario ya tiene una suscripción activa
     if (
       !force &&
-      user.subscriptionStatus === 'active' && 
+      user.subscriptionStatus === "active" &&
       user.stripeSubscriptionId
     ) {
       // Si ya tiene una suscripción activa y no se está forzando el cambio, retornar advertencia
       return NextResponse.json(
         {
           warning: true,
-          message: 'User already has an active subscription. Use force=true to override.',
+          message:
+            "User already has an active subscription. Use force=true to override.",
           existingSubscription: {
-            planName: user.planName || 'Unknown',
+            planName: user.planName || "Unknown",
             status: user.subscriptionStatus,
-            isPaid: !!user.stripeSubscriptionId
-          }
+            isPaid: !!user.stripeSubscriptionId,
+          },
         },
         { status: 409 }
       );
@@ -74,16 +78,16 @@ export async function POST(req: NextRequest) {
     // Calcular la fecha de expiración basada en la duración (en meses)
     const expiryDate = new Date();
     expiryDate.setMonth(expiryDate.getMonth() + duration);
-    const expiryDateString = expiryDate.toISOString().split('T')[0];
+    const expiryDateString = expiryDate.toISOString().split("T")[0];
 
     // Actualizar la suscripción del usuario
     await db
       .update(users)
       .set({
         planName: plan,
-        subscriptionStatus: 'active',
+        subscriptionStatus: "active",
         stripeSubscriptionId: null, // Es una suscripción gratuita, no tiene ID de Stripe
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
       .where(eq(users.id, user.id));
 
@@ -91,24 +95,26 @@ export async function POST(req: NextRequest) {
     try {
       await sendSubscriptionChangeEmail({
         email: user.email,
-        name: user.name || user.email.split('@')[0],
+        name: user.name || user.email.split("@")[0],
         planName: plan,
-        status: 'active',
-        expiryDate: expiryDateString
+        status: "active",
+        expiryDate: expiryDateString,
       });
     } catch (emailError) {
-      
       // No bloqueamos el flujo principal si falla el envío de email
     }
 
     return NextResponse.json({
       success: true,
-      message: `Free subscription ${plan} assigned to ${email} for ${duration} month(s).`
+      message: `Free subscription ${plan} assigned to ${email} for ${duration} month(s).`,
     });
   } catch (error) {
-    console.error('Error assigning free subscription:', error);
-    return NextResponse.json({ 
-      error: 'Failed to assign free subscription' 
-    }, { status: 500 });
+    console.error("Error assigning free subscription:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to assign free subscription",
+      },
+      { status: 500 }
+    );
   }
 }

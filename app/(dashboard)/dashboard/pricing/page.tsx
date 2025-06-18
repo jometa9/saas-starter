@@ -19,5 +19,3 @@ export default async function PricingPage() {
 
   return <PricingComponent user={user} />;
 }
-
-

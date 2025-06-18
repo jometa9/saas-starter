@@ -61,7 +61,7 @@ export default function AdminSettingsPage() {
   const availablePlans = [
     { value: "IPTRADE Premium", label: "Premium" },
     { value: "IPTRADE Unlimited", label: "Unlimited" },
-    { value: "IPTRADE Managed VPS", label: "Managed VPS" }
+    { value: "IPTRADE Managed VPS", label: "Managed VPS" },
   ];
 
   const { toast } = useToast();
@@ -74,9 +74,7 @@ export default function AdminSettingsPage() {
           const data = await response.json();
           setCurrentVersion(data.version);
         }
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     };
 
     fetchCurrentVersion();
@@ -101,7 +99,6 @@ export default function AdminSettingsPage() {
         description: "Test emails sent successfully! Check your inbox.",
       });
     } catch (error) {
-      
       toast({
         variant: "destructive",
         title: "Error",
@@ -176,7 +173,6 @@ export default function AdminSettingsPage() {
       setDownloadUrl("");
       setIsCritical(false);
     } catch (error) {
-      
       toast({
         variant: "destructive",
         title: "Error",
@@ -194,11 +190,11 @@ export default function AdminSettingsPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Subject and message are required"
+          description: "Subject and message are required",
         });
         return;
       }
-      
+
       setIsSendingMassEmail(true);
       const response = await fetch("/api/admin/mass-email", {
         method: "POST",
@@ -208,7 +204,7 @@ export default function AdminSettingsPage() {
         body: JSON.stringify({
           subject: emailSubject,
           message: emailMessage,
-          isImportant: emailIsImportant
+          isImportant: emailIsImportant,
         }),
       });
 
@@ -222,12 +218,12 @@ export default function AdminSettingsPage() {
         toast({
           variant: "warning",
           title: "Warning",
-          description: data.message
+          description: data.message,
         });
       } else {
         toast({
           title: "Success",
-          description: data.message || "Mass email sent successfully!"
+          description: data.message || "Mass email sent successfully!",
         });
         // Resetear el formulario
         setEmailSubject("");
@@ -235,11 +231,10 @@ export default function AdminSettingsPage() {
         setEmailIsImportant(false);
       }
     } catch (error) {
-      
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to send mass email. Please try again."
+        description: "Failed to send mass email. Please try again.",
       });
     } finally {
       setIsSendingMassEmail(false);
@@ -256,7 +251,7 @@ export default function AdminSettingsPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Please fill in all fields"
+          description: "Please fill in all fields",
         });
         return;
       }
@@ -294,7 +289,9 @@ export default function AdminSettingsPage() {
 
       toast({
         title: "Success",
-        description: data.message || `Free ${subscriptionPlan} subscription assigned successfully!`
+        description:
+          data.message ||
+          `Free ${subscriptionPlan} subscription assigned successfully!`,
       });
 
       // Resetear el formulario solo en caso de éxito
@@ -303,11 +300,10 @@ export default function AdminSettingsPage() {
       setSubscriptionDuration("1");
       setForceAssign(false);
     } catch (error) {
-      
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to assign free subscription. Please try again."
+        description: "Failed to assign free subscription. Please try again.",
       });
     } finally {
       setIsAssigningSubscription(false);
@@ -473,7 +469,9 @@ export default function AdminSettingsPage() {
                     setEmailIsImportant(checked === true);
                   }}
                 />
-                <Label htmlFor="is-important">Mark as important (adds [IMPORTANT] to subject)</Label>
+                <Label htmlFor="is-important">
+                  Mark as important (adds [IMPORTANT] to subject)
+                </Label>
               </div>
             </CardContent>
             <CardFooter>
@@ -501,7 +499,8 @@ export default function AdminSettingsPage() {
                 <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded mb-4">
                   <p className="font-medium">{subscriptionWarning.message}</p>
                   <p className="text-sm">
-                    Current plan: {subscriptionWarning.existingSubscription.planName}
+                    Current plan:{" "}
+                    {subscriptionWarning.existingSubscription.planName}
                     <br />
                     Status: {subscriptionWarning.existingSubscription.status}
                     <br />

@@ -314,7 +314,6 @@ export function Settings({
         setIsCritical(false);
       }
     } catch (error) {
-      
       setActionState({ error: "Error updating version" });
     } finally {
       setIsPending(false);
@@ -333,9 +332,7 @@ export function Settings({
           setIsCopied(true);
           setTimeout(() => setIsCopied(false), 2000);
         })
-        .catch((err) => {
-          
-        });
+        .catch((err) => {});
     }
   };
 
@@ -356,7 +353,6 @@ export function Settings({
         (event.target as HTMLFormElement).reset();
       }
     } catch (error) {
-      
       setPasswordState({ error: "Error updating password" });
     } finally {
       setIsPasswordPending(false);
@@ -430,7 +426,7 @@ export function Settings({
 
                       if (result?.error) {
                         // Si hay un error, mostrar el mensaje adecuado
-                        
+
                         let errorMessage =
                           "Could not access management portal.";
 
@@ -515,7 +511,6 @@ export function Settings({
                         }, 1500);
                       }
                     } catch (error) {
-                      
                       // Mostrar mensaje de error más descriptivo
                       toast({
                         title: "No access to portal",
@@ -817,9 +812,7 @@ export function Settings({
         <div className="space-y-4 p-4 pt-8 border-t">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div>
-              <h3 className="text-lg font-medium">
-                Administrator - Tools
-              </h3>
+              <h3 className="text-lg font-medium">Administrator - Tools</h3>
               <p className="text-sm text-gray-500">
                 Tools for system administrators
               </p>
@@ -855,8 +848,7 @@ export function Settings({
                   } catch (error) {
                     toast({
                       title: "Error verifying",
-                      description:
-                        "Could not verify email configuration",
+                      description: "Could not verify email configuration",
                       variant: "destructive",
                     });
                   }
@@ -931,8 +923,7 @@ export function Settings({
                       toast({
                         title: "Diagnostic Error",
                         description:
-                          result.error ||
-                          "Could not perform Stripe diagnostic",
+                          result.error || "Could not perform Stripe diagnostic",
                         variant: "destructive",
                       });
                     }

@@ -17,9 +17,7 @@ import {
 export function Documents({ user }: { user: User }) {
   return (
     <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium mb-6">
-        IPTRADE Guide
-      </h1>
+      <h1 className="text-lg lg:text-2xl font-medium mb-6">IPTRADE Guide</h1>
 
       <div className="grid grid-cols-1 gap-6">
         <Card>

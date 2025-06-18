@@ -1,24 +1,24 @@
-'use server';
+"use server";
 
-import { z } from 'zod';
-import { and, eq, sql } from 'drizzle-orm';
-import { db } from '@/lib/db/drizzle';
+import { z } from "zod";
+import { and, eq, sql } from "drizzle-orm";
+import { db } from "@/lib/db/drizzle";
+import { User, user, type NewUser } from "@/lib/db/schema";
+import { comparePasswords, hashPassword, setSession } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { createCheckoutSession } from "@/lib/payments/stripe";
 import {
-  User,
-  user,
-  type NewUser,
-} from '@/lib/db/schema';
-import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
-import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import { createCheckoutSession } from '@/lib/payments/stripe';
-import { getUser, createPasswordResetToken, validateResetToken } from '@/lib/db/queries';
+  getUser,
+  createPasswordResetToken,
+  validateResetToken,
+} from "@/lib/db/queries";
 import {
   validatedAction,
   validatedActionWithUser,
-} from '@/lib/auth/middleware';
-import { generateApiKey } from '@/lib/utils';
-import { sendWelcomeEmail, sendPasswordResetEmail } from '@/lib/email';
+} from "@/lib/auth/middleware";
+import { generateApiKey } from "@/lib/utils";
+import { sendWelcomeEmail, sendPasswordResetEmail } from "@/lib/email";
 
 const signInSchema = z.object({
   email: z.string().email().min(3).max(255),
@@ -36,7 +36,7 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
 
   if (foundUser.length === 0) {
     return {
-      error: 'Invalid email or password. Please try again.',
+      error: "Invalid email or password. Please try again.",
       email,
       password,
     };
@@ -44,9 +44,13 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
 
   const foundUserData = foundUser[0];
 
-  if (!foundUserData.passwordHash || typeof foundUserData.passwordHash !== 'string') {
+  if (
+    !foundUserData.passwordHash ||
+    typeof foundUserData.passwordHash !== "string"
+  ) {
     return {
-      error: 'This email was registered with Google. Please sign in with Google, or <a href="/forgot-password" class="underline text-primary">reset your password</a> to enable login with password. After resetting, you can log in with both Google and your new password.',
+      error:
+        'This email was registered with Google. Please sign in with Google, or <a href="/forgot-password" class="underline text-primary">reset your password</a> to enable login with password. After resetting, you can log in with both Google and your new password.',
       email,
       password,
     };
@@ -54,12 +58,12 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
 
   const isPasswordValid = await comparePasswords(
     password,
-    foundUserData.passwordHash,
+    foundUserData.passwordHash
   );
 
   if (!isPasswordValid) {
     return {
-      error: 'Invalid email or password. Please try again.',
+      error: "Invalid email or password. Please try again.",
       email,
       password,
     };
@@ -67,26 +71,26 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
 
   await setSession(foundUserData);
 
-  const redirectTo = formData.get('redirect') as string | null;
-  if (redirectTo === 'checkout') {
+  const redirectTo = formData.get("redirect") as string | null;
+  if (redirectTo === "checkout") {
     try {
-      const priceId = formData.get('priceId') as string;
+      const priceId = formData.get("priceId") as string;
       return createCheckoutSession({ user: foundUserData, priceId });
     } catch (error) {
-      
       return {
-        error: 'Error al conectar con el servicio de pagos. Por favor intenta de nuevo más tarde.',
+        error:
+          "Error al conectar con el servicio de pagos. Por favor intenta de nuevo más tarde.",
       };
     }
   }
 
   // Si hay un redirectTo específico, redirigir allí
-  if (redirectTo && redirectTo.startsWith('/')) {
+  if (redirectTo && redirectTo.startsWith("/")) {
     redirect(redirectTo);
   }
 
   // De lo contrario, ir al dashboard
-  redirect('/dashboard');
+  redirect("/dashboard");
 });
 
 const signUpSchema = z.object({
@@ -105,7 +109,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 
   if (existingUser.length > 0) {
     return {
-      error: 'Email already in use. Please try a different one.',
+      error: "Email already in use. Please try a different one.",
       email,
       password,
     };
@@ -117,18 +121,17 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   // Crear un customer en Stripe primero
   let stripeCustomerId = null;
   try {
-    const { stripe } = await import('@/lib/payments/stripe');
-    
+    const { stripe } = await import("@/lib/payments/stripe");
+
     const customer = await stripe.customers.create({
       email,
       metadata: {
-        source: 'signup_flow'
-      }
+        source: "signup_flow",
+      },
     });
-    
+
     stripeCustomerId = customer.id;
   } catch (stripeError) {
-    
     // No bloqueamos el registro si falla la creación en Stripe
     // Lo intentaremos más tarde cuando se suscriba
   }
@@ -137,7 +140,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     email,
     passwordHash,
     apiKey,
-    role: 'owner',
+    role: "owner",
     stripeCustomerId, // Añadir el ID del cliente de Stripe (puede ser null si falló)
   };
 
@@ -145,7 +148,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 
   if (!createdUser) {
     return {
-      error: 'Failed to create user. Please try again.',
+      error: "Failed to create user. Please try again.",
       email,
       password,
     };
@@ -155,38 +158,38 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   try {
     await sendWelcomeEmail({
       email: createdUser.email,
-      name: createdUser.name || createdUser.email.split('@')[0],
-      loginUrl: process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:3000'
+      name: createdUser.name || createdUser.email.split("@")[0],
+      loginUrl:
+        process.env.NEXT_PUBLIC_APP_URL ||
+        process.env.BASE_URL ||
+        "http://localhost:3000",
     });
-  } catch (error) {
-    
-  }
+  } catch (error) {}
 
   await setSession(createdUser);
 
-  const redirectTo = formData.get('redirect') as string | null;
-  if (redirectTo === 'checkout') {
+  const redirectTo = formData.get("redirect") as string | null;
+  if (redirectTo === "checkout") {
     try {
-      const priceId = formData.get('priceId') as string;
+      const priceId = formData.get("priceId") as string;
       return createCheckoutSession({ user: createdUser, priceId });
     } catch (error) {
-      
-      redirect('/dashboard?error=payment-setup');
+      redirect("/dashboard?error=payment-setup");
     }
   }
 
   // Si hay un redirectTo específico, redirigir allí
-  if (redirectTo && redirectTo.startsWith('/')) {
+  if (redirectTo && redirectTo.startsWith("/")) {
     redirect(redirectTo);
   }
 
   // De lo contrario, ir al dashboard
-  redirect('/dashboard');
+  redirect("/dashboard");
 });
 
 export async function signOut() {
-  (await cookies()).delete('session');
-  redirect('/sign-in');
+  (await cookies()).delete("session");
+  redirect("/sign-in");
 }
 
 const updatePasswordSchema = z
@@ -197,7 +200,7 @@ const updatePasswordSchema = z
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords don't match",
-    path: ['confirmPassword'],
+    path: ["confirmPassword"],
   });
 
 export const updatePassword = validatedActionWithUser(
@@ -207,16 +210,16 @@ export const updatePassword = validatedActionWithUser(
 
     const isPasswordValid = await comparePasswords(
       currentPassword,
-      user.passwordHash,
+      user.passwordHash
     );
 
     if (!isPasswordValid) {
-      return { error: 'Current password is incorrect.' };
+      return { error: "Current password is incorrect." };
     }
 
     if (currentPassword === newPassword) {
       return {
-        error: 'New password must be different from the current password.',
+        error: "New password must be different from the current password.",
       };
     }
 
@@ -227,8 +230,8 @@ export const updatePassword = validatedActionWithUser(
       .set({ passwordHash: newPasswordHash })
       .where(eq(user.id, user.id));
 
-    return { success: 'Password updated successfully.' };
-  },
+    return { success: "Password updated successfully." };
+  }
 );
 
 const deleteAccountSchema = z.object({
@@ -242,7 +245,7 @@ export const deleteAccount = validatedActionWithUser(
 
     const isPasswordValid = await comparePasswords(password, user.passwordHash);
     if (!isPasswordValid) {
-      return { error: 'Incorrect password. Account deletion failed.' };
+      return { error: "Incorrect password. Account deletion failed." };
     }
 
     // Soft delete
@@ -254,14 +257,14 @@ export const deleteAccount = validatedActionWithUser(
       })
       .where(eq(user.id, user.id));
 
-    (await cookies()).delete('session');
-    redirect('/sign-in');
-  },
+    (await cookies()).delete("session");
+    redirect("/sign-in");
+  }
 );
 
 const updateAccountSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100),
-  email: z.string().email('Invalid email address'),
+  name: z.string().min(1, "Name is required").max(100),
+  email: z.string().email("Invalid email address"),
 });
 
 export const updateAccount = validatedActionWithUser(
@@ -271,12 +274,12 @@ export const updateAccount = validatedActionWithUser(
 
     await db.update(user).set({ name, email }).where(eq(user.id, user.id));
 
-    return { success: 'Account updated successfully.' };
-  },
+    return { success: "Account updated successfully." };
+  }
 );
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.string().email("Invalid email address"),
 });
 
 export const forgotPassword = validatedAction(
@@ -289,42 +292,47 @@ export const forgotPassword = validatedAction(
 
     if (!result) {
       // Para evitar enumerar usuarios, siempre devolvemos éxito, incluso si el correo no existe
-      return { success: 'If an account exists with that email, a password reset link has been sent.' };
+      return {
+        success:
+          "If an account exists with that email, a password reset link has been sent.",
+      };
     }
 
     // Enviar email con el token de recuperación
     try {
       await sendPasswordResetEmail({
         email,
-        name: result.user.name || email.split('@')[0],
+        name: result.user.name || email.split("@")[0],
         token: result.resetToken,
         expiryMinutes: 60, // 1 hora de validez
       });
     } catch (error) {
-      
       // Aun en caso de error al enviar el email, seguimos devolviendo success
       // para evitar enumerar usuarios
     }
 
-    return { 
-      success: 'If an account exists with that email, a password reset link has been sent.',
+    return {
+      success:
+        "If an account exists with that email, a password reset link has been sent.",
       // Solo para desarrollo/debugging, NO incluir en producción:
-      ...(process.env.NEXT_PUBLIC_EMAIL_MODE === 'development' && { 
+      ...(process.env.NEXT_PUBLIC_EMAIL_MODE === "development" && {
         resetLink: `/reset-password?token=${result.resetToken}`,
-        message: "Email enviado a una dirección de prueba (modo desarrollo)"
-      })
+        message: "Email enviado a una dirección de prueba (modo desarrollo)",
+      }),
     };
   }
 );
 
-const resetPasswordSchema = z.object({
-  token: z.string().min(1, 'Token is required'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string().min(8, 'Please confirm your password'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
-});
+const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1, "Token is required"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(8, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export const resetPasswordAction = validatedAction(
   resetPasswordSchema,
@@ -335,7 +343,9 @@ export const resetPasswordAction = validatedAction(
     const dbUser = await validateResetToken(token);
 
     if (!dbUser) {
-      return { error: 'Invalid or expired token. Please request a new password reset.' };
+      return {
+        error: "Invalid or expired token. Please request a new password reset.",
+      };
     }
 
     // Actualizar la contraseña
@@ -351,6 +361,9 @@ export const resetPasswordAction = validatedAction(
       })
       .where(eq(user.id, dbUser.id));
 
-    return { success: 'Password updated successfully. Please sign in with your new password.' };
+    return {
+      success:
+        "Password updated successfully. Please sign in with your new password.",
+    };
   }
 );

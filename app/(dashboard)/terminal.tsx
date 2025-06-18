@@ -218,46 +218,75 @@ export function Terminal() {
             className="p-3 pb-2 h-80 text-[10px] text-gray-700 font-mono overflow-hidden"
           >
             {logs.map((log, index) => {
-              const orderTypeMatch = log.match(/BUY|SELL|BUY LIMIT|SELL LIMIT|BUY STOP|SELL STOP/);
-              const orderType = orderTypeMatch ? orderTypeMatch[0] : '';
-              
+              const orderTypeMatch = log.match(
+                /BUY|SELL|BUY LIMIT|SELL LIMIT|BUY STOP|SELL STOP/
+              );
+              const orderType = orderTypeMatch ? orderTypeMatch[0] : "";
+
               const forexPairMatch = log.match(/[A-Z]{6}/);
-              const forexPair = forexPairMatch ? forexPairMatch[0] : '';
+              const forexPair = forexPairMatch ? forexPairMatch[0] : "";
 
               const ipMatch = log.match(/\[IP 192\.168\.0\.\d+\]/);
-              const ipAddress = ipMatch ? ipMatch[0] : '';
+              const ipAddress = ipMatch ? ipMatch[0] : "";
 
               const uptimeMatch = log.match(/\[UPTIME \d+H \d+M \d+S\]/);
-              const uptime = uptimeMatch ? uptimeMatch[0] : '';
+              const uptime = uptimeMatch ? uptimeMatch[0] : "";
 
               return (
                 <div key={index}>
-                  {log.split(' ').map((word, wordIndex) => {
+                  {log.split(" ").map((word, wordIndex) => {
                     if (word === forexPair) {
-                      return <span key={wordIndex} className="text-black">{word} </span>;
+                      return (
+                        <span key={wordIndex} className="text-black">
+                          {word}{" "}
+                        </span>
+                      );
                     }
                     if (ipAddress.includes(word)) {
-                      return <span key={wordIndex} className="text-red-700">{word} </span>;
+                      return (
+                        <span key={wordIndex} className="text-red-700">
+                          {word}{" "}
+                        </span>
+                      );
                     }
-                    if (word === 'LISTENING...') {
-                      return <span key={wordIndex} className="text-green-700">{word} </span>;
+                    if (word === "LISTENING...") {
+                      return (
+                        <span key={wordIndex} className="text-green-700">
+                          {word}{" "}
+                        </span>
+                      );
                     }
-                    if (word === 'UPTIME' || uptime.includes(word)) {
-                      return <span key={wordIndex} className="text-blue-700">{word} </span>;
+                    if (word === "UPTIME" || uptime.includes(word)) {
+                      return (
+                        <span key={wordIndex} className="text-blue-700">
+                          {word}{" "}
+                        </span>
+                      );
                     }
-                    if (word === 'BUY' || word === 'SELL') {
-                      let orderColor = 'text-gray-700';
-                      if (orderType.includes('LIMIT') || orderType.includes('STOP')) {
-                        orderColor = 'text-blue-700';
-                      } else if (word === 'BUY') {
-                        orderColor = 'text-green-700';
-                      } else if (word === 'SELL') {
-                        orderColor = 'text-red-700';
+                    if (word === "BUY" || word === "SELL") {
+                      let orderColor = "text-gray-700";
+                      if (
+                        orderType.includes("LIMIT") ||
+                        orderType.includes("STOP")
+                      ) {
+                        orderColor = "text-blue-700";
+                      } else if (word === "BUY") {
+                        orderColor = "text-green-700";
+                      } else if (word === "SELL") {
+                        orderColor = "text-red-700";
                       }
-                      return <span key={wordIndex} className={`${orderColor}`}>{word} </span>;
+                      return (
+                        <span key={wordIndex} className={`${orderColor}`}>
+                          {word}{" "}
+                        </span>
+                      );
                     }
-                    if (word === 'LIMIT' || word === 'STOP') {
-                      return <span key={wordIndex} className="text-blue-700">{word} </span>;
+                    if (word === "LIMIT" || word === "STOP") {
+                      return (
+                        <span key={wordIndex} className="text-blue-700">
+                          {word}{" "}
+                        </span>
+                      );
                     }
                     return <span key={wordIndex}>{word} </span>;
                   })}

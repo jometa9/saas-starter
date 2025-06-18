@@ -1,6 +1,6 @@
-import { NextRequest } from 'next/server';
-import { getUser } from '@/lib/db/queries';
-import { getSession } from './session';
+import { NextRequest } from "next/server";
+import { getUser } from "@/lib/db/queries";
+import { getSession } from "./session";
 
 /**
  * Gets the current user session and auth status
@@ -12,7 +12,7 @@ export async function getUserAuth() {
 
   return {
     session,
-    user
+    user,
   };
 }
 
@@ -25,24 +25,23 @@ export async function isAdminRequest(req: NextRequest): Promise<boolean> {
   try {
     // Obtener la sesión actual
     const session = await getSession();
-    
+
     if (!session) {
       return false;
     }
-    
+
     // Obtener el usuario de la base de datos
     const user = await getUser();
-    
+
     if (!user) {
       return false;
     }
-    
+
     // Verificar si el usuario es administrador
-    const isAdmin = user.role === 'admin';
-    
+    const isAdmin = user.role === "admin";
+
     return isAdmin;
   } catch (error) {
-    
     return false;
   }
-} 
+}

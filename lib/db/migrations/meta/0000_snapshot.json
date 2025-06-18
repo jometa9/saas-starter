@@ -87,12 +87,8 @@
           "name": "account_userId_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -140,12 +136,8 @@
           "name": "appSettings_updatedBy_user_id_fk",
           "tableFrom": "appSettings",
           "tableTo": "user",
-          "columnsFrom": [
-            "updatedBy"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -191,12 +183,8 @@
           "name": "session_userId_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -206,9 +194,7 @@
         "session_sessionToken_unique": {
           "name": "session_sessionToken_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "sessionToken"
-          ]
+          "columns": ["sessionToken"]
         }
       },
       "policies": {},
@@ -322,12 +308,8 @@
           "name": "tradingAccounts_userId_user_id_fk",
           "tableFrom": "tradingAccounts",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -474,30 +456,22 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         },
         "user_apiKey_unique": {
           "name": "user_apiKey_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "apiKey"
-          ]
+          "columns": ["apiKey"]
         },
         "user_stripeCustomerId_unique": {
           "name": "user_stripeCustomerId_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "stripeCustomerId"
-          ]
+          "columns": ["stripeCustomerId"]
         },
         "user_stripeSubscriptionId_unique": {
           "name": "user_stripeSubscriptionId_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "stripeSubscriptionId"
-          ]
+          "columns": ["stripeSubscriptionId"]
         }
       },
       "policies": {},
@@ -532,10 +506,7 @@
       "compositePrimaryKeys": {
         "verificationToken_identifier_token_pk": {
           "name": "verificationToken_identifier_token_pk",
-          "columns": [
-            "identifier",
-            "token"
-          ]
+          "columns": ["identifier", "token"]
         }
       },
       "uniqueConstraints": {},

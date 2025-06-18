@@ -34,7 +34,6 @@ export async function loadTemplate(templateName: string): Promise<string> {
     const filePath = path.join(TEMPLATES_DIR, `${templateName}.html`);
 
     if (!fs.existsSync(filePath)) {
-      
       const defaultTemplate = getDefaultTemplate(templateName);
       await saveTemplate(templateName, defaultTemplate);
       return defaultTemplate;
@@ -45,8 +44,6 @@ export async function loadTemplate(templateName: string): Promise<string> {
 
     return templateContent;
   } catch (error) {
-    
-
     return getDefaultTemplate(templateName);
   }
 }
@@ -60,7 +57,6 @@ export async function saveTemplate(
   templateName: string,
   content: string
 ): Promise<void> {
-
   try {
     if (!fs.existsSync(TEMPLATES_DIR)) {
       fs.mkdirSync(TEMPLATES_DIR, { recursive: true });
@@ -72,9 +68,7 @@ export async function saveTemplate(
 
     // Actualizar la caché
     templateCache[templateName] = content;
-
   } catch (error) {
-    
     throw error;
   }
 }
@@ -308,7 +302,6 @@ function getDefaultTemplate(templateName: string): string {
 
   const template = defaultTemplates[templateName];
   if (!template) {
-    
     return "<p>Template not found</p>";
   }
 
@@ -329,10 +322,13 @@ export function replaceTemplateVariables(
 
   // Manejar bloques condicionales con {{else}}: {{#if variable}}...{{else}}...{{/if}}
   const ifElseRegex = /{{#if\s+([^}]+)}}([\s\S]*?){{else}}([\s\S]*?){{\/if}}/g;
-  result = result.replace(ifElseRegex, (match, condition, trueContent, falseContent) => {
-    const value = condition.split(".").reduce((obj, key) => obj?.[key], data);
-    return value ? trueContent : falseContent;
-  });
+  result = result.replace(
+    ifElseRegex,
+    (match, condition, trueContent, falseContent) => {
+      const value = condition.split(".").reduce((obj, key) => obj?.[key], data);
+      return value ? trueContent : falseContent;
+    }
+  );
 
   // Manejar bloques condicionales simples {{#if variable}}...{{/if}}
   const ifRegex = /{{#if\s+([^}]+)}}([\s\S]*?){{\/if}}/g;

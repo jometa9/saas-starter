@@ -77,13 +77,13 @@ const SupportCard = ({
         <div className="flex items-center space-x-4">
           <div
             className={`rounded-full p-2 ${
-              color === "green" 
-                ? "bg-green-100" 
-                : color === "blue" 
-                ? "bg-blue-100" 
-                : color === "orange"
-                ? "bg-orange-100"
-                : "bg-purple-100"
+              color === "green"
+                ? "bg-green-100"
+                : color === "blue"
+                  ? "bg-blue-100"
+                  : color === "orange"
+                    ? "bg-orange-100"
+                    : "bg-purple-100"
             }`}
           >
             {icon}

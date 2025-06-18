@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import { User } from '@/lib/db/schema';
-import { getUser } from '@/lib/db/queries';
-import { redirect } from 'next/navigation';
+import { z } from "zod";
+import { User } from "@/lib/db/schema";
+import { getUser } from "@/lib/db/queries";
+import { redirect } from "next/navigation";
 
 export type ActionState = {
   error?: string;
@@ -11,33 +11,33 @@ export type ActionState = {
 
 type ActionResult<T> = Promise<T>;
 
-type ActionWithFormData<T> = (prevState: unknown, formData: FormData) => ActionResult<T>;
-
-type ActionWithData<T, D> = (
-  data: D,
-  formData: FormData,
+type ActionWithFormData<T> = (
+  prevState: unknown,
+  formData: FormData
 ) => ActionResult<T>;
+
+type ActionWithData<T, D> = (data: D, formData: FormData) => ActionResult<T>;
 
 type ActionWithUserFunction<T, D> = (
   data: D,
   formData: FormData,
-  user: User,
+  user: User
 ) => ActionResult<T>;
 
 export function validatedAction<T, D>(
   schema: z.ZodType<D>,
-  action: ActionWithData<T, D>,
+  action: ActionWithData<T, D>
 ): ActionWithFormData<T> {
   return async (prevState: unknown, formData: FormData) => {
-    if (!formData || typeof formData.entries !== 'function') {
-      return { error: 'Invalid form data' } as T;
+    if (!formData || typeof formData.entries !== "function") {
+      return { error: "Invalid form data" } as T;
     }
 
     const obj = Object.fromEntries(formData.entries());
     const result = schema.safeParse(obj);
 
     if (!result.success) {
-      const error = result.error.errors[0]?.message ?? 'Invalid data';
+      const error = result.error.errors[0]?.message ?? "Invalid data";
       return { error } as T;
     }
 
@@ -47,23 +47,23 @@ export function validatedAction<T, D>(
 
 export function validatedActionWithUser<T, D>(
   schema: z.ZodType<D>,
-  action: ActionWithUserFunction<T, D>,
+  action: ActionWithUserFunction<T, D>
 ): ActionWithFormData<T> {
   return async (prevState: unknown, formData: FormData) => {
-    if (!formData || typeof formData.entries !== 'function') {
-      return { error: 'Invalid form data' } as T;
+    if (!formData || typeof formData.entries !== "function") {
+      return { error: "Invalid form data" } as T;
     }
 
     const user = await getUser();
     if (!user) {
-      redirect('/sign-in');
+      redirect("/sign-in");
     }
 
     const obj = Object.fromEntries(formData.entries());
     const result = schema.safeParse(obj);
 
     if (!result.success) {
-      const error = result.error.errors[0]?.message ?? 'Invalid data';
+      const error = result.error.errors[0]?.message ?? "Invalid data";
       return { error } as T;
     }
 

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "@/lib/db/queries";
 import { getUserTradingAccounts } from "@/lib/db/queries";
-import { createTradingAccount, updateTradingAccount, deleteTradingAccount } from "@/lib/db/actions";
+import {
+  createTradingAccount,
+  updateTradingAccount,
+  deleteTradingAccount,
+} from "@/lib/db/actions";
 import { z } from "zod";
 import { NewTradingAccount } from "@/lib/db/schema";
 
@@ -29,8 +33,8 @@ export async function GET(req: NextRequest) {
     // Check if user has a managed VPS or unlimited plan
     if (
       !(
-        (user.planName === "IPTRADE Unlimited" || 
-        user.planName === "IPTRADE Managed VPS") &&
+        (user.planName === "IPTRADE Unlimited" ||
+          user.planName === "IPTRADE Managed VPS") &&
         (user.subscriptionStatus === "active" ||
           user.subscriptionStatus === "trialing" ||
           user.subscriptionStatus === "admin_assigned")
@@ -45,7 +49,6 @@ export async function GET(req: NextRequest) {
     const accounts = await getUserTradingAccounts(user.id);
     return NextResponse.json({ accounts });
   } catch (error) {
-    
     return NextResponse.json(
       { error: "Failed to get trading accounts" },
       { status: 500 }
@@ -63,8 +66,8 @@ export async function POST(req: NextRequest) {
     // Check if user has a managed VPS or unlimited plan
     if (
       !(
-        (user.planName === "IPTRADE Unlimited" || 
-        user.planName === "IPTRADE Managed VPS") &&
+        (user.planName === "IPTRADE Unlimited" ||
+          user.planName === "IPTRADE Managed VPS") &&
         (user.subscriptionStatus === "active" ||
           user.subscriptionStatus === "trialing" ||
           user.subscriptionStatus === "admin_assigned")
@@ -77,7 +80,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    
+
     // Validate request body
     const validation = tradingAccountSchema.safeParse(body);
     if (!validation.success) {
@@ -96,21 +99,14 @@ export async function POST(req: NextRequest) {
     const result = await createTradingAccount(accountData);
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
-    return NextResponse.json(
-      { account: result.account },
-      { status: 201 }
-    );
+    return NextResponse.json({ account: result.account }, { status: 201 });
   } catch (error) {
-    
     return NextResponse.json(
       { error: "Failed to create trading account" },
       { status: 500 }
     );
   }
-} 
+}

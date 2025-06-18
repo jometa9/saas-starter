@@ -123,9 +123,7 @@ export function PlansComparisonTable() {
             setCurrentPlan(userData.planName);
           }
         }
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     };
 
     fetchUserData();

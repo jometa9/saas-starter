@@ -169,10 +169,10 @@ export function AdminTradingAccountsView({
       });
       setIsEditingIP(false);
     } catch (error) {
-      
       toast({
         title: "Error Updating Server IP",
-        description: error instanceof Error ? error.message : "Error updating server IP",
+        description:
+          error instanceof Error ? error.message : "Error updating server IP",
         variant: "destructive",
       });
     } finally {
@@ -235,9 +235,7 @@ export function AdminTradingAccountsView({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(
-          errorData.error || "Error updating account status"
-        );
+        throw new Error(errorData.error || "Error updating account status");
       }
 
       // Actualizar el estado local si la llamada fue exitosa
@@ -252,10 +250,12 @@ export function AdminTradingAccountsView({
         description: `Account status changed to ${newStatus}`,
       });
     } catch (error) {
-      
       toast({
         title: "Error Updating Account Status",
-        description: error instanceof Error ? error.message : "Error updating account status",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Error updating account status",
         variant: "destructive",
       });
     } finally {
@@ -301,7 +301,6 @@ export function AdminTradingAccountsView({
         }, 1500);
       })
       .catch((err) => {
-        
         toast({
           title: "Copy Failed",
           description: "Failed to copy to clipboard",
@@ -314,8 +313,12 @@ export function AdminTradingAccountsView({
   const handleNotifyUser = async () => {
     try {
       setIsNotifying(true);
-      console.log('🔔 Iniciando notificación a usuario:', user.name, user.email);
-      
+      console.log(
+        "🔔 Iniciando notificación a usuario:",
+        user.name,
+        user.email
+      );
+
       const response = await fetch(`/api/admin/notify-user`, {
         method: "POST",
         headers: {
@@ -327,14 +330,22 @@ export function AdminTradingAccountsView({
           userEmail: user.email,
           accountsData: {
             totalAccounts: accounts.length,
-            masterAccounts: accounts.filter((acc) => acc.accountType === "master").length,
-            slaveAccounts: accounts.filter((acc) => acc.accountType === "slave").length,
-            synchronizedAccounts: accounts.filter((acc) => acc.status === "synchronized").length,
-            pendingAccounts: accounts.filter((acc) => acc.status === "pending").length,
-            errorAccounts: accounts.filter((acc) => acc.status === "error" || acc.status === "offline").length,
+            masterAccounts: accounts.filter(
+              (acc) => acc.accountType === "master"
+            ).length,
+            slaveAccounts: accounts.filter((acc) => acc.accountType === "slave")
+              .length,
+            synchronizedAccounts: accounts.filter(
+              (acc) => acc.status === "synchronized"
+            ).length,
+            pendingAccounts: accounts.filter((acc) => acc.status === "pending")
+              .length,
+            errorAccounts: accounts.filter(
+              (acc) => acc.status === "error" || acc.status === "offline"
+            ).length,
           },
           serverStatus: getServerStatus(),
-          serverIP: serverIP
+          serverIP: serverIP,
         }),
       });
 
@@ -344,7 +355,7 @@ export function AdminTradingAccountsView({
       }
 
       const responseData = await response.json();
-      console.log('✅ Respuesta de la API:', responseData);
+      console.log("✅ Respuesta de la API:", responseData);
       toast({
         title: "Notification Sent Successfully",
         description: `Email sent to ${user.name || user.email}`,
@@ -353,7 +364,10 @@ export function AdminTradingAccountsView({
       console.error("Error sending notification:", error);
       toast({
         title: "Failed to Send Notification",
-        description: error instanceof Error ? error.message : "Failed to send notification",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to send notification",
         variant: "destructive",
       });
     } finally {
@@ -377,8 +391,8 @@ export function AdminTradingAccountsView({
           disabled={isNotifying}
           className="flex items-center gap-2"
         >
-          <Mail className={`h-4 w-4 ${isNotifying ? 'animate-pulse' : ''}`} />
-          {isNotifying ? 'Sending...' : 'Notify User'}
+          <Mail className={`h-4 w-4 ${isNotifying ? "animate-pulse" : ""}`} />
+          {isNotifying ? "Sending..." : "Notify User"}
         </Button>
       </div>
 

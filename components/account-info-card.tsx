@@ -63,7 +63,7 @@ export function AccountInfoCard({
       }
     } catch (error) {
       setIsPortalLoading(false);
-      
+
       toast({
         title: "Error",
         description: "Could not access subscription management portal",
@@ -92,7 +92,6 @@ export function AccountInfoCard({
         window.location.href = "/dashboard/pricing";
       }
     } catch (error) {
-      
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again later.",
@@ -132,11 +131,11 @@ export function AccountInfoCard({
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-medium text-md">{getUserDisplayName(userData)}</p>
+            <p className="font-medium text-md">
+              {getUserDisplayName(userData)}
+            </p>
             {userData.email && (
-              <p className="text-sm text-muted-foreground">
-                {userData.email}
-              </p>
+              <p className="text-sm text-muted-foreground">{userData.email}</p>
             )}
             <p className="text-sm text-muted-foreground">
               Current Plan: {userData.planName || "Free"}

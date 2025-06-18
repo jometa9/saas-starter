@@ -1,6 +1,6 @@
 /// <reference types="react" />
 
-import React from 'react';
+import React from "react";
 
 declare global {
   namespace React {
@@ -10,4 +10,4 @@ declare global {
   }
 }
 
-export {}; 
+export {};

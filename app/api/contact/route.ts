@@ -40,8 +40,6 @@ ${validatedData.message}
       { status: 200 }
     );
   } catch (error) {
-    
-
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: "Invalid form data", details: error.errors },

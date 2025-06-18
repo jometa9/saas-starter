@@ -1,6 +1,13 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Linkedin, Globe, Instagram, Zap, Youtube } from "lucide-react";
+import {
+  ArrowRight,
+  Linkedin,
+  Globe,
+  Instagram,
+  Zap,
+  Youtube,
+} from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
@@ -18,14 +25,12 @@ export default function AboutPage() {
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
               <h1 className="text-4xl text-center font-bold text-gray-900 tracking-tight sm:text-5xl sm:text-left md:text-6xl">
                 <span className="italic">About</span>
-                <span className="block text-black text-gray-500">
-                  IPTRADE
-                </span>
+                <span className="block text-black text-gray-500">IPTRADE</span>
               </h1>
               <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl text-center sm:text-left">
-                We're building the future of trading technology, making it easier
-                for traders to copy trades between platforms while maintaining
-                IP integrity.
+                We're building the future of trading technology, making it
+                easier for traders to copy trades between platforms while
+                maintaining IP integrity.
               </p>
             </div>
           </div>
@@ -195,10 +200,10 @@ export default function AboutPage() {
                 </h3>
                 <p className="mt-1 text-lg text-gray-500">Founder & CEO</p>
                 <p className="mt-4 text-gray-500">
-                  As a passionate trader and software developer, I created IPTRADE
-                  to solve a critical problem I faced while trading with multiple
-                  prop firms. Our mission is to make trading more accessible and
-                  efficient for everyone.
+                  As a passionate trader and software developer, I created
+                  IPTRADE to solve a critical problem I faced while trading with
+                  multiple prop firms. Our mission is to make trading more
+                  accessible and efficient for everyone.
                 </p>
                 <div className="mt-6 flex space-x-4">
                   <a

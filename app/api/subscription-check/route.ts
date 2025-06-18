@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db/drizzle";
-import { user} from "@/lib/db/schema";
+import { user } from "@/lib/db/schema";
 import { eq, isNotNull, lt, isNull, and } from "drizzle-orm";
 import { isAdminRequest } from "@/lib/auth/utils";
 import { sendSubscriptionChangeEmail } from "@/lib/email/services";
@@ -68,11 +68,8 @@ export async function POST(request: Request) {
             dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/dashboard`,
           });
           results.notifications++;
-        } catch (emailError) {
-          
-        }
+        } catch (emailError) {}
       } catch (error) {
-        
         results.errors++;
       }
     }
@@ -123,14 +120,10 @@ export async function POST(request: Request) {
                   dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/dashboard`,
                 });
                 results.notifications++;
-              } catch (emailError) {
-                
-              }
+              } catch (emailError) {}
             }
           }
         } catch (stripeError) {
-          
-
           if (
             stripeError.message?.includes("No such subscription") ||
             stripeError.message?.includes("resource_missing")
@@ -154,16 +147,13 @@ export async function POST(request: Request) {
                 dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/dashboard`,
               });
               results.notifications++;
-            } catch (emailError) {
-              
-            }
+            } catch (emailError) {}
           }
 
           results.errors++;
         }
       }
     } catch (error) {
-      
       results.errors++;
     }
 
@@ -186,7 +176,6 @@ export async function POST(request: Request) {
       results,
     });
   } catch (error) {
-    
     return NextResponse.json(
       { error: "Error processing subscription check", details: error.message },
       { status: 500 }

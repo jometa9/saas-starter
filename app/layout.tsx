@@ -18,11 +18,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  viewportFit: 'cover'
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -33,19 +33,14 @@ export default function RootLayout({
   const userPromise = getUser();
 
   return (
-    <html 
-      lang="en"
-      className="text-black dark:text-white"
-    >
+    <html lang="en" className="text-black dark:text-white">
       <body className={`${inter.className}`} suppressHydrationWarning={true}>
         <GradientBackground />
         <NextAuthProvider>
           <UserProvider userPromise={userPromise}>
             <div className="flex flex-col relative w-full mx-auto max-w-[1200px]">
               <Header />
-              <main className="flex-1 w-full">
-                {children}
-              </main>
+              <main className="flex-1 w-full">{children}</main>
               <Footer />
             </div>
             <Toaster />

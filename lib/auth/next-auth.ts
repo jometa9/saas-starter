@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log('AUTHORIZE CALLED', credentials);
+        console.log("AUTHORIZE CALLED", credentials);
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
           .where(eq(user.email, credentials.email))
           .limit(1);
 
-        console.log('AUTHORIZE USER RESULT', userResult);
+        console.log("AUTHORIZE USER RESULT", userResult);
 
         if (!userResult[0]) {
           return null;
@@ -44,7 +44,7 @@ export const authOptions: NextAuthOptions = {
           userResult[0].passwordHash || ""
         );
 
-        console.log('AUTHORIZE PASSWORD MATCH', passwordMatch);
+        console.log("AUTHORIZE PASSWORD MATCH", passwordMatch);
 
         if (!passwordMatch) {
           return null;
@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
           name: userResult[0].name,
           role: userResult[0].role,
         };
-        console.log('AUTHORIZE RETURNING USER', userObj);
+        console.log("AUTHORIZE RETURNING USER", userObj);
         return userObj;
       },
     }),
@@ -88,4 +88,4 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-}; 
+};
