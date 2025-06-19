@@ -1,26 +1,14 @@
-import { authOptions } from "@/lib/auth/next-auth";
-import { getUserById } from "@/lib/db/queries";
 import { sendMessageToAssistant } from "@/lib/openai/assistant";
-import { getServerSession } from "next-auth";
+import { nanoid } from "nanoid";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const currentUser = await getUserById(session.user.id);
-    if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 401 });
-    }
-
     const body = await req.json();
-    const { message } = body;
+    const { message, sessionId } = body;
 
-    // Validate message
+    const currentSessionId = sessionId || nanoid(21);
+
     if (
       !message ||
       typeof message !== "string" ||
@@ -36,11 +24,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Message too long" }, { status: 400 });
     }
 
-    // Send message to assistant
     try {
-      console.log(`API: Processing message for user ${currentUser.id}`);
-
-      // Check if OpenAI is configured
       if (!process.env.OPENAI_API_KEY) {
         console.error("OPENAI_API_KEY is not configured");
         return NextResponse.json(
@@ -63,14 +47,20 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      console.log(`API: About to call sendMessageToAssistant`);
+      console.log(
+        `API: About to call sendMessageToAssistant with sessionId: "${currentSessionId}"`
+      );
+
       const response = await sendMessageToAssistant(message.trim());
 
-      console.log(`API: Successfully got response`);
+      console.log(
+        `API: Successfully got response for session ${currentSessionId}`
+      );
 
       return NextResponse.json({
         success: true,
         response: response,
+        sessionId: currentSessionId,
       });
     } catch (assistantError) {
       console.error("Assistant error:", assistantError);
@@ -85,6 +75,7 @@ export async function POST(req: NextRequest) {
               error:
                 "Service temporarily busy. Please try again in a few moments.",
               fallback: true,
+              sessionId: currentSessionId,
             },
             { status: 429 }
           );
@@ -95,6 +86,7 @@ export async function POST(req: NextRequest) {
             {
               error: "Chat session error. Please start a new conversation.",
               fallback: true,
+              sessionId: currentSessionId,
             },
             { status: 500 }
           );
@@ -106,6 +98,7 @@ export async function POST(req: NextRequest) {
               error:
                 "The assistant is not available at this time. Please contact support.",
               fallback: true,
+              sessionId: currentSessionId,
             },
             { status: 503 }
           );
@@ -116,6 +109,7 @@ export async function POST(req: NextRequest) {
             {
               error: "Authentication error. Please contact support.",
               fallback: true,
+              sessionId: currentSessionId,
             },
             { status: 503 }
           );
@@ -126,6 +120,7 @@ export async function POST(req: NextRequest) {
           {
             error: `Assistant error: ${assistantError.message}`,
             fallback: true,
+            sessionId: currentSessionId,
           },
           { status: 500 }
         );
@@ -135,12 +130,13 @@ export async function POST(req: NextRequest) {
         {
           error: "Error processing your query. Please try again.",
           fallback: true,
+          sessionId: currentSessionId,
         },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error("Chat API error:", error);
+    console.error("Public Chat API error:", error);
     return NextResponse.json(
       {
         error: "Internal server error",
@@ -153,27 +149,23 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    // Verify authentication
-    const session = await getServerSession(authOptions);
+    const { searchParams } = new URL(req.url);
+    const sessionId = searchParams.get("sessionId");
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!sessionId) {
+      return NextResponse.json(
+        { error: "Session ID is required" },
+        { status: 400 }
+      );
     }
 
-    const currentUser = await getUserById(session.user.id);
-    if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 401 });
-    }
-
-    // Since we don't maintain threads anymore, always return no active thread
     return NextResponse.json({
-      hasActiveThread: false,
-      threadInfo: null,
+      sessionId: sessionId,
     });
   } catch (error) {
-    console.error("Get thread info error:", error);
+    console.error("Get chat info error:", error);
     return NextResponse.json(
-      { error: "Error getting thread info" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

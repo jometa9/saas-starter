@@ -261,7 +261,6 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           throw new Error(error.error || "Failed to delete trading account");
         }
 
-        // If this was a master account, update any connected slave accounts
         if (isMaster && masterAccountNumber) {
           // Update local state - unlink slaves from the deleted master
           setAccounts(

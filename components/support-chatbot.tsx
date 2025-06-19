@@ -4,8 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import "highlight.js/styles/github.css";
 import { Bot, MessageCircle, RotateCcw, Send, User } from "lucide-react";
 import React, { useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
+import remarkGfm from "remark-gfm";
 
 interface Message {
   id: string;
@@ -83,6 +87,103 @@ const faqs: FAQ[] = [
   },
 ];
 
+// Componente para renderizar markdown con estilos personalizados
+const MarkdownMessage = ({ content }: { content: string }) => {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeHighlight]}
+      components={{
+        // Estilos para diferentes elementos
+        h1: ({ children }) => (
+          <h1 className="text-lg font-bold mb-2 text-foreground">{children}</h1>
+        ),
+        h2: ({ children }) => (
+          <h2 className="text-base font-bold mb-2 text-foreground">
+            {children}
+          </h2>
+        ),
+        h3: ({ children }) => (
+          <h3 className="text-sm font-bold mb-1 text-foreground">{children}</h3>
+        ),
+        p: ({ children }) => (
+          <p className="mb-2 last:mb-0 text-sm leading-relaxed">{children}</p>
+        ),
+        ul: ({ children }) => (
+          <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>
+        ),
+        ol: ({ children }) => (
+          <ol className="list-decimal list-outside ml-4 mb-2 space-y-1">
+            {children}
+          </ol>
+        ),
+        li: ({ children }) => (
+          <li className="text-sm leading-relaxed">{children}</li>
+        ),
+        code: ({ inline, children, ...props }) =>
+          inline ? (
+            <code
+              className="bg-muted/50 text-foreground px-1 py-0.5 rounded text-xs font-mono"
+              {...props}
+            >
+              {children}
+            </code>
+          ) : (
+            <code
+              className="block bg-muted/50 text-foreground p-2 rounded text-xs font-mono overflow-x-auto"
+              {...props}
+            >
+              {children}
+            </code>
+          ),
+        pre: ({ children }) => (
+          <pre className="bg-muted/50 p-2 rounded mb-2 overflow-x-auto">
+            {children}
+          </pre>
+        ),
+        blockquote: ({ children }) => (
+          <blockquote className="border-l-4 border-muted-foreground/20 pl-3 italic mb-2 text-muted-foreground">
+            {children}
+          </blockquote>
+        ),
+        strong: ({ children }) => (
+          <strong className="font-bold text-foreground">{children}</strong>
+        ),
+        em: ({ children }) => <em className="italic">{children}</em>,
+        a: ({ children, href }) => (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            {children}
+          </a>
+        ),
+        table: ({ children }) => (
+          <div className="overflow-x-auto mb-2">
+            <table className="min-w-full border border-muted-foreground/20 text-xs">
+              {children}
+            </table>
+          </div>
+        ),
+        th: ({ children }) => (
+          <th className="border border-muted-foreground/20 px-2 py-1 bg-muted/30 font-semibold text-left">
+            {children}
+          </th>
+        ),
+        td: ({ children }) => (
+          <td className="border border-muted-foreground/20 px-2 py-1">
+            {children}
+          </td>
+        ),
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+};
+
 export function SupportChatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -95,6 +196,22 @@ export function SupportChatbot() {
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    if (scrollAreaRef.current) {
+      // Busca el viewport interno del ScrollArea
+      const viewport = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]"
+      ) as HTMLElement;
+      if (viewport) {
+        viewport.scrollTo({
+          top: viewport.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }
+  };
 
   const sendToOpenAI = async (message: string): Promise<string> => {
     try {
@@ -140,6 +257,9 @@ export function SupportChatbot() {
     setInputMessage("");
     setIsTyping(true);
 
+    // Scroll to bottom after adding user message
+    setTimeout(scrollToBottom, 100);
+
     try {
       // Send to OpenAI
       const response = await sendToOpenAI(text);
@@ -152,6 +272,9 @@ export function SupportChatbot() {
       };
 
       setMessages((prev) => [...prev, botResponse]);
+
+      // Scroll to bottom after adding bot response
+      setTimeout(scrollToBottom, 200);
     } catch (error) {
       console.error("Error getting response:", error);
 
@@ -163,6 +286,9 @@ export function SupportChatbot() {
       };
 
       setMessages((prev) => [...prev, errorResponse]);
+
+      // Scroll to bottom after adding error response
+      setTimeout(scrollToBottom, 200);
     } finally {
       setIsTyping(false);
     }
@@ -204,7 +330,7 @@ export function SupportChatbot() {
   return (
     <div className="px-4 mx-auto space-y-6">
       {/* Chat Interface */}
-      <Card className="min-h-[800px] flex flex-col">
+      <Card className="h-[800px] flex flex-col">
         <CardHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
@@ -224,8 +350,8 @@ export function SupportChatbot() {
           </p>
         </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col p-0">
-          <ScrollArea className="flex-1 p-4">
+        <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+          <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -245,8 +371,14 @@ export function SupportChatbot() {
                         : "bg-primary text-primary-foreground"
                     }`}
                   >
-                    <div className="whitespace-pre-line text-sm">
-                      {message.text}
+                    <div className="text-sm">
+                      {message.isBot ? (
+                        <MarkdownMessage content={message.text} />
+                      ) : (
+                        <div className="whitespace-pre-line">
+                          {message.text}
+                        </div>
+                      )}
                     </div>
                     <div className={`text-xs mt-1 opacity-70`}>
                       {message.timestamp.toLocaleTimeString([], {

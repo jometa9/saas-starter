@@ -15,66 +15,12 @@ if (!ASSISTANT_ID) {
   throw new Error("OPENAI_ASSISTANT_ID is not set in environment variables");
 }
 
-interface ChatThread {
-  threadId: string;
-  userId: string;
-  lastActivity: Date;
-  createdAt: Date;
-}
-
-// In-memory store for threads (use Redis/DB in production)
-const activeThreads = new Map<string, ChatThread>();
-
-// Clean inactive threads every hour
-setInterval(
-  () => {
-    const now = new Date();
-    const TWELVE_HOURS = 12 * 60 * 60 * 1000;
-
-    for (const [userId, thread] of activeThreads.entries()) {
-      if (now.getTime() - thread.lastActivity.getTime() > TWELVE_HOURS) {
-        console.log(`Cleaning up thread for user ${userId}`);
-        // Optional: delete thread in OpenAI as well
-        deleteThread(thread.threadId).catch(console.error);
-        activeThreads.delete(userId);
-      }
-    }
-  },
-  60 * 60 * 1000
-); // Every hour
-
-async function deleteThread(threadId: string) {
+// Función simple para crear un nuevo thread cada vez
+async function createNewThread(): Promise<string> {
   try {
-    await openai.beta.threads.del(threadId);
-    console.log(`Thread ${threadId} deleted successfully`);
-  } catch (error) {
-    console.error(`Error deleting thread ${threadId}:`, error);
-  }
-}
-
-export async function getOrCreateUserThread(userId: string): Promise<string> {
-  const existingThread = activeThreads.get(userId);
-
-  if (existingThread) {
-    // Update last activity
-    existingThread.lastActivity = new Date();
-    return existingThread.threadId;
-  }
-
-  // Create new thread
-  try {
+    console.log("Creating new thread...");
     const thread = await openai.beta.threads.create();
-
-    const chatThread: ChatThread = {
-      threadId: thread.id,
-      userId,
-      lastActivity: new Date(),
-      createdAt: new Date(),
-    };
-
-    activeThreads.set(userId, chatThread);
-    console.log(`Created new thread ${thread.id} for user ${userId}`);
-
+    console.log(`Thread created with ID: ${thread.id}`);
     return thread.id;
   } catch (error) {
     console.error("Error creating thread:", error);
@@ -82,37 +28,51 @@ export async function getOrCreateUserThread(userId: string): Promise<string> {
   }
 }
 
-export async function sendMessageToAssistant(
-  userId: string,
-  message: string
-): Promise<string> {
+export async function sendMessageToAssistant(message: string): Promise<string> {
   try {
-    const threadId = await getOrCreateUserThread(userId);
+    console.log(`Sending message: "${message.substring(0, 50)}..."`);
 
-    // Add user message to thread
+    // Crear un nuevo thread cada vez
+    const threadId = await createNewThread();
+
+    // Agregar mensaje del usuario al thread
+    console.log("Adding user message to thread...");
     await openai.beta.threads.messages.create(threadId, {
       role: "user",
       content: message,
     });
 
-    // Run the assistant
+    // Ejecutar el assistant
+    console.log("Starting assistant run...");
     const run = await openai.beta.threads.runs.create(threadId, {
       assistant_id: ASSISTANT_ID,
     });
 
-    // Wait for completion
-    let runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+    // Esperar a que complete
+    console.log("Waiting for assistant response...");
+    let runStatus = await openai.beta.threads.runs.retrieve(run.id, {
+      thread_id: threadId,
+    });
+
+    let attempts = 0;
+    const maxAttempts = 30;
 
     while (
-      runStatus.status === "in_progress" ||
-      runStatus.status === "queued"
+      (runStatus.status === "in_progress" || runStatus.status === "queued") &&
+      attempts < maxAttempts
     ) {
+      console.log(`Run status: ${runStatus.status}, attempt ${attempts + 1}`);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+      runStatus = await openai.beta.threads.runs.retrieve(run.id, {
+        thread_id: threadId,
+      });
+      attempts++;
     }
 
+    console.log(`Final run status: ${runStatus.status}`);
+
     if (runStatus.status === "completed") {
-      // Get the response
+      // Obtener la respuesta
       const messages = await openai.beta.threads.messages.list(threadId);
       const lastMessage = messages.data[0];
 
@@ -120,25 +80,39 @@ export async function sendMessageToAssistant(
         lastMessage.role === "assistant" &&
         lastMessage.content[0]?.type === "text"
       ) {
-        return lastMessage.content[0].text.value;
+        const response = lastMessage.content[0].text.value;
+        console.log(
+          `Assistant response received: "${response.substring(0, 100)}..."`
+        );
+
+        // Limpiar el thread después de obtener la respuesta
+        try {
+          await openai.beta.threads.delete(threadId);
+          console.log(`Thread ${threadId} deleted successfully`);
+        } catch (deleteError) {
+          console.error(`Error deleting thread ${threadId}:`, deleteError);
+        }
+
+        return response;
+      } else {
+        throw new Error("Invalid response format from assistant");
       }
+    } else if (runStatus.status === "failed") {
+      throw new Error(
+        `Assistant run failed: ${runStatus.last_error?.message || "Unknown error"}`
+      );
+    } else if (attempts >= maxAttempts) {
+      throw new Error("Assistant run timed out");
     }
 
     throw new Error(`Assistant run failed with status: ${runStatus.status}`);
   } catch (error) {
     console.error("Error sending message to assistant:", error);
+
+    if (error instanceof Error) {
+      throw new Error(`Assistant error: ${error.message}`);
+    }
+
     throw new Error("Failed to get response from assistant");
-  }
-}
-
-export function getUserThreadInfo(userId: string): ChatThread | null {
-  return activeThreads.get(userId) || null;
-}
-
-export function clearUserThread(userId: string): void {
-  const thread = activeThreads.get(userId);
-  if (thread) {
-    deleteThread(thread.threadId).catch(console.error);
-    activeThreads.delete(userId);
   }
 }
