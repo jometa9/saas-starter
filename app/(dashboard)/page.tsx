@@ -1,18 +1,17 @@
 "use client";
 
-import React from "react";
+import { PlansComparisonTable } from "@/components/plans-comparison-table";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ArrowRight, Check, Download, Zap } from "lucide-react";
-import { useState, useEffect } from "react";
+import { toast } from "@/components/ui/use-toast";
 import { useUser } from "@/lib/auth";
 import { User } from "@/lib/db/schema";
-import { toast } from "@/components/ui/use-toast";
-import { PlansComparisonTable } from "@/components/plans-comparison-table";
+import { ArrowRight, Check, Download, Zap } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import { Terminal } from "./terminal";
-import { PricingToggle } from "@/components/pricing-toggle";
 import DownloadCard from "@/components/downloads-card";
+import { PricingToggle } from "@/components/pricing-toggle";
+import { Terminal } from "./terminal";
 
 export default function HomePage() {
   const { userPromise } = useUser();
@@ -467,7 +466,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white hidden md:block">
+      <section className="py-16 hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center justify-center">
