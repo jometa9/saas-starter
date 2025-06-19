@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 export function GradientBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,8 +11,9 @@ export function GradientBackground() {
     if (typeof window !== "undefined") {
       const container = containerRef.current;
       if (container) {
-        // Only show the gradient on the home page
-        if (pathname === "/") {
+        // Show gradient on home page OR when coming soon mode is active
+        const isComingSoonMode = process.env.NEXT_PUBLIC_COMING_SOON === "true";
+        if (pathname === "/" || isComingSoonMode) {
           // Forzar un reflow para asegurar que se renderiza correctamente
           container.style.display = "none";
           setTimeout(() => {
@@ -26,7 +27,10 @@ export function GradientBackground() {
   }, [pathname]);
 
   return (
-    <div className="gradient-container" ref={containerRef}>
+    <div
+      className="fixed top-0 left-0 w-screen h-screen -z-50 pointer-events-none overflow-hidden"
+      ref={containerRef}
+    >
       <div className="gradient gradient-1"></div>
       <div className="gradient gradient-2"></div>
       <div className="gradient gradient-3"></div>

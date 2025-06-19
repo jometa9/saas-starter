@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function Terminal() {
   const logTemplatesRef = useRef<string[]>([
@@ -183,7 +183,7 @@ export function Terminal() {
 
     const addLogWithRandomInterval = () => {
       addLog();
-      const randomInterval = Math.floor(Math.random() * (500 - 100 + 1)) + 100;
+      const randomInterval = Math.floor(Math.random() * (300 - 50 + 1)) + 50;
       setTimeout(addLogWithRandomInterval, randomInterval);
     };
 
@@ -201,7 +201,7 @@ export function Terminal() {
 
     const timeout = setTimeout(() => {
       simulateNewLogs();
-    }, 500);
+    }, 50);
 
     return () => {
       clearTimeout(timeout);

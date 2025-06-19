@@ -103,3 +103,16 @@ export async function broadcastEmailTemplate(data: {
     text: stripHtml(html),
   };
 }
+
+export async function comingSoonEmailTemplate(data: { email: string }) {
+  const template = await loadTemplate("coming-soon");
+  const html = replaceTemplateVariables(template, {
+    ...data,
+    year: new Date().getFullYear(),
+  });
+
+  return {
+    html,
+    text: stripHtml(html),
+  };
+}

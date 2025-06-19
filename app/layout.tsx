@@ -1,14 +1,15 @@
-import React from "react";
 import "@/app/globals.css";
+import { ComingSoon } from "@/components/coming-soon";
+import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Toaster } from "@/components/ui/toaster";
+import { UserProvider } from "@/lib/auth";
+import { NextAuthProvider } from "@/lib/auth/nextauth-provider";
+import { getUser } from "@/lib/db/queries";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { UserProvider } from "@/lib/auth";
-import { getUser } from "@/lib/db/queries";
-import { Toaster } from "@/components/ui/toaster";
-import { NextAuthProvider } from "@/lib/auth/nextauth-provider";
-import { GradientBackground } from "@/components/ui/gradient-background";
+import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,6 +33,22 @@ export default function RootLayout({
 }) {
   const userPromise = getUser();
 
+  // Feature flag para Coming Soon
+  const isComingSoonMode = process.env.NEXT_PUBLIC_COMING_SOON === "true";
+
+  // Si el feature flag está activado, mostrar solo el coming soon
+  if (isComingSoonMode) {
+    return (
+      <html lang="en" className="text-black dark:text-white">
+        <body className={`${inter.className}`} suppressHydrationWarning={true}>
+          <GradientBackground />
+          <ComingSoon />
+        </body>
+      </html>
+    );
+  }
+
+  // Layout normal cuando el feature flag está desactivado
   return (
     <html lang="en" className="text-black dark:text-white">
       <body className={`${inter.className}`} suppressHydrationWarning={true}>
