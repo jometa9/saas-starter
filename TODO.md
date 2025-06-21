@@ -1,12 +1,5 @@
-- email markdown
-- email managed vps email al usuario
-- email managed cuando el usuario modifica
-
-
 ---
-
 ## WEEK
-
 ---
 
 - que todas las pantallas del lado del usuario esten cubiertas con todo lo necesario (sin tener en cuenta el contenido en texto)
