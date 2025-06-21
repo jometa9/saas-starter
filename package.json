@@ -48,6 +48,7 @@
     "highlight.js": "^11.11.1",
     "jose": "^6.0.10",
     "lucide-react": "^0.479.0",
+    "marked": "^15.0.12",
     "nanoid": "^5.1.5",
     "next": "15.2.2-canary.3",
     "next-auth": "^4.24.11",

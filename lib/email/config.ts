@@ -173,6 +173,13 @@ export async function sendEmail({
       let safeRecipient = getSafeResendEmail(to);
 
       try {
+        console.log(`📧 Sending email via Resend:`, {
+          from,
+          to: safeRecipient,
+          subject,
+          originalRecipient: to,
+        });
+
         const { data, error } = await resend.emails.send({
           from,
           to: safeRecipient,
@@ -182,8 +189,15 @@ export async function sendEmail({
         });
 
         if (error) {
+          console.error("❌ Resend error:", error);
           throw error;
         }
+
+        console.log("✅ Email sent successfully via Resend:", {
+          id: data?.id,
+          originalRecipient: to,
+          actualRecipient: safeRecipient,
+        });
 
         return {
           id: data?.id,

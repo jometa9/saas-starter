@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { tradingAccounts } from "../../../../../lib/db/schema";
 import { eq } from "drizzle-orm";
-import { getUser } from "../../../../../lib/db/queries";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "../../../../../lib/db/drizzle";
+import { getUser } from "../../../../../lib/db/queries";
+import { tradingAccounts } from "../../../../../lib/db/schema";
 
 // Esquema para validar la solicitud
 const updateStatusSchema = z.object({
@@ -12,7 +12,7 @@ const updateStatusSchema = z.object({
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verificar autenticación y permisos
@@ -45,8 +45,9 @@ export async function PATCH(
 
     const { status } = validated.data;
 
-    // Convertir params.id a número directamente
-    const accountId = parseInt(params.id, 10);
+    // Obtener el ID y convertir a número
+    const { id } = await params;
+    const accountId = parseInt(id, 10);
 
     if (isNaN(accountId)) {
       return NextResponse.json(

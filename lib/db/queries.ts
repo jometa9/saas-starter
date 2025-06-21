@@ -1,11 +1,11 @@
-import { and, eq, gt, isNull } from "drizzle-orm";
-import { db } from "./drizzle";
-import { user, appSettings, tradingAccounts } from "./schema";
-import { cookies } from "next/headers";
+import { authOptions } from "@/lib/auth/next-auth";
 import { verifyToken } from "@/lib/auth/session";
 import { generateResetToken, getResetTokenExpiry } from "@/lib/utils";
+import { and, eq, gt, isNull, or } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/next-auth";
+import { cookies } from "next/headers";
+import { db } from "./drizzle";
+import { appSettings, tradingAccounts, user } from "./schema";
 
 export async function getUser() {
   // Try custom session first
@@ -308,4 +308,24 @@ export async function getUserById(userId: string) {
     .limit(1);
 
   return result.length > 0 ? result[0] : null;
+}
+
+// Function to get all admin users for notifications
+export async function getAdminUsers() {
+  const result = await db
+    .select({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    })
+    .from(user)
+    .where(
+      and(
+        or(eq(user.role, "admin"), eq(user.role, "superadmin")),
+        isNull(user.deletedAt)
+      )
+    );
+
+  return result;
 }

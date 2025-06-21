@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/next-auth";
-import { getUserById } from "@/lib/db/queries";
 import { db } from "@/lib/db/drizzle";
+import { getUserById } from "@/lib/db/queries";
 import { user } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication using the same method as admin pages
@@ -33,7 +33,8 @@ export async function PATCH(
     }
 
     // Get the user ID to update
-    const userId = params.id;
+    const { id } = await params;
+    const userId = id;
 
     // Validate that the ID is provided
     if (!userId) {

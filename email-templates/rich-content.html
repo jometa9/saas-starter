@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>{{subject}}</title>
+    <style>
+      /* Estilos específicos para contenido markdown */
+      .content h1 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #111827;
+        margin: 20px 0 15px 0;
+        line-height: 1.3;
+      }
+      .content h2 {
+        font-size: 20px;
+        font-weight: 600;
+        color: #111827;
+        margin: 20px 0 12px 0;
+        line-height: 1.3;
+      }
+      .content h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #374151;
+        margin: 15px 0 10px 0;
+        line-height: 1.4;
+      }
+      .content p {
+        margin: 15px 0;
+        color: #374151;
+        line-height: 1.6;
+      }
+      .content ul,
+      .content ol {
+        margin: 15px 0;
+        padding-left: 25px;
+        color: #374151;
+      }
+      .content li {
+        margin: 8px 0;
+        line-height: 1.5;
+      }
+      .content blockquote {
+        border-left: 4px solid #00000090;
+        margin: 20px 0;
+        padding: 15px 20px;
+        background-color: #f9fafb;
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+        color: #1f2937;
+      }
+      .content code {
+        background-color: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        color: #dc2626;
+      }
+      .content pre {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 15px;
+        overflow-x: auto;
+        margin: 20px 0;
+      }
+      .content pre code {
+        background: none;
+        padding: 0;
+        border-radius: 0;
+        color: #334155;
+      }
+      .content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .content a {
+        color: #00000090;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .content a:hover {
+        text-decoration: underline;
+      }
+      .content strong {
+        font-weight: 600;
+        color: #111827;
+      }
+      .content em {
+        font-style: italic;
+        color: #6b7280;
+      }
+      .content hr {
+        border: none;
+        border-top: 2px solid #e5e7eb;
+        margin: 30px 0;
+      }
+      .content table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #e5e7eb;
+        margin: 5px;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .content th {
+        background-color: #f9fafb;
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #111827;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .content td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #f3f4f6;
+        color: #374151;
+      }
+      .content tr:last-child td {
+        border-bottom: none;
+      }
+    </style>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;,
+        Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #1f2937;
+    "
+  >
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td align="center" style="padding: 20px">
+          <table
+            class="container"
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            style="
+              background-color: #ffffff;
+              border-radius: 8px;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <tr>
+              <td
+                class="header"
+                style="
+                  text-align: center;
+                  padding: 20px 0;
+                  border-bottom: 1px solid #e5e7eb;
+                "
+              >
+                <div style="font-size: 24px; font-weight: bold; color: #000000">
+                  IPTRADE
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="content" style="padding: 30px">
+                <h1
+                  style="
+                    color: #111827;
+                    font-size: 24px;
+                    font-weight: 600;
+                    margin: 0 0 20px;
+                  "
+                >
+                  {{subject}}
+                </h1>
+
+                <p style="margin-bottom: 20px; color: #000000">Hi {{name}},</p>
+
+                <!-- Contenido enriquecido con markdown -->
+                <div class="rich-content" style="color: #374151">
+                  {{{richContent}}}
+                </div>
+
+                <div
+                  style="
+                    background-color: #f9fafb;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                    margin-top: 30px;
+                  "
+                >
+                  <table
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                  >
+                    <tr>
+                      <td width="24" style="vertical-align: top">
+                        <span style="font-size: 20px">💬</span>
+                      </td>
+                      <td style="padding-left: 0">
+                        <p style="margin: 0; color: #4b5563">
+                          If you have any questions or need assistance, our
+                          support team is here to help.
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="footer"
+                style="
+                  text-align: center;
+                  padding: 20px 0;
+                  border-top: 1px solid #e5e7eb;
+                  font-size: 14px;
+                  color: #6b7280;
+                "
+              >
+                <p style="margin: 0">&copy; {{year}} IPTRADE</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

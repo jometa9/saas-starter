@@ -1,6 +1,11 @@
---------------
-WEEK
+- email markdown
+- email managed vps email al usuario
+- email managed cuando el usuario modifica
+
+
 ---
+
+## WEEK
 
 ---
 

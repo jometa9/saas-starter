@@ -1,7 +1,6 @@
+import { deleteTradingAccount, updateTradingAccount } from "@/lib/db/actions";
+import { getTradingAccountById, getUser } from "@/lib/db/queries";
 import { NextRequest, NextResponse } from "next/server";
-import { getUser } from "@/lib/db/queries";
-import { getTradingAccountById } from "@/lib/db/queries";
-import { updateTradingAccount, deleteTradingAccount } from "@/lib/db/actions";
 import { z } from "zod";
 
 // Schema for validating the request body for update
@@ -9,7 +8,7 @@ const tradingAccountUpdateSchema = z.object({
   accountNumber: z.string().min(1, "Account number is required").optional(),
   platform: z.string().min(1, "Platform is required").optional(),
   server: z.string().min(1, "Server is required").optional(),
-  password: z.string().min(1, "Password is required").optional(),
+  password: z.string().optional(), // Allow empty password - if empty, don't update it
   accountType: z.string().min(1, "Account type is required").optional(),
   status: z.string().optional(),
   lotCoefficient: z.number().optional(),
@@ -39,7 +38,7 @@ async function canUserAccessAccount(userId: string, accountId: number) {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUser();
@@ -47,7 +46,8 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const accountId = parseInt(params.id);
+    const { id } = await params;
+    const accountId = parseInt(id);
     if (isNaN(accountId)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
@@ -71,7 +71,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUser();
@@ -79,7 +79,9 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const accountId = parseInt(params.id);
+    const { id } = await params;
+    const accountId = parseInt(id);
+
     if (isNaN(accountId)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
@@ -98,12 +100,21 @@ export async function PUT(
     const validation = tradingAccountUpdateSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json(
-        { error: validation.error.format() },
+        {
+          error: "Validation failed",
+          details: validation.error.format(),
+        },
         { status: 400 }
       );
     }
 
-    const result = await updateTradingAccount(accountId, validation.data);
+    // Filter out empty password if it's empty (don't update it)
+    const updateData = { ...validation.data };
+    if (updateData.password === "" || updateData.password === undefined) {
+      delete updateData.password;
+    }
+
+    const result = await updateTradingAccount(accountId, updateData);
 
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 500 });
@@ -111,6 +122,7 @@ export async function PUT(
 
     return NextResponse.json({ account: result.account });
   } catch (error) {
+    console.error("Error updating trading account:", error);
     return NextResponse.json(
       { error: "Failed to update trading account" },
       { status: 500 }
@@ -120,7 +132,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUser();
@@ -128,7 +140,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const accountId = parseInt(params.id);
+    const { id } = await params;
+    const accountId = parseInt(id);
     if (isNaN(accountId)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }

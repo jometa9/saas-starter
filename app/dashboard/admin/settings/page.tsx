@@ -1,11 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -14,17 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { Toast } from "@/components/ui/toast";
+import { useEffect, useState } from "react";
 
 export default function AdminSettingsPage() {
   // Test Emails
@@ -43,6 +41,14 @@ export default function AdminSettingsPage() {
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [emailIsImportant, setEmailIsImportant] = useState(false);
+
+  // Rich Content Email
+  const [isSendingRichEmail, setIsSendingRichEmail] = useState(false);
+  const [richEmailSubject, setRichEmailSubject] = useState("");
+  const [richEmailContent, setRichEmailContent] = useState("");
+  const [isTestingRichEmail, setIsTestingRichEmail] = useState(false);
+  const [isTestingSimpleRich, setIsTestingSimpleRich] = useState(false);
+  const [isTestingTemplateOnly, setIsTestingTemplateOnly] = useState(false);
 
   const [isAssigningSubscription, setIsAssigningSubscription] = useState(false);
   const [subscriptionEmail, setSubscriptionEmail] = useState("");
@@ -241,6 +247,161 @@ export default function AdminSettingsPage() {
     }
   };
 
+  // Handler para enviar email con contenido enriquecido
+  const handleSendRichEmail = async () => {
+    try {
+      if (!richEmailSubject || !richEmailContent) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Subject and markdown content are required",
+        });
+        return;
+      }
+
+      setIsSendingRichEmail(true);
+      const response = await fetch("/api/admin/rich-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          subject: richEmailSubject,
+          markdownContent: richEmailContent,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send rich content email");
+      }
+
+      if (data.warning) {
+        toast({
+          variant: "destructive",
+          title: "Warning",
+          description: data.message,
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: data.message || "Rich content email sent successfully!",
+        });
+        // Resetear el formulario
+        setRichEmailSubject("");
+        setRichEmailContent("");
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to send rich content email. Please try again.",
+      });
+    } finally {
+      setIsSendingRichEmail(false);
+    }
+  };
+
+  // Handler para test de rich email
+  const handleTestRichEmail = async () => {
+    try {
+      setIsTestingRichEmail(true);
+
+      const response = await fetch("/api/admin/test-rich-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send test rich email");
+      }
+
+      toast({
+        title: "Success",
+        description: `Test email sent to ${data.sentTo}! Check your inbox.`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to send test email: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    } finally {
+      setIsTestingRichEmail(false);
+    }
+  };
+
+  // Handler para test de email simple
+  const handleTestSimpleRich = async () => {
+    try {
+      setIsTestingSimpleRich(true);
+
+      const response = await fetch("/api/admin/test-simple-rich", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send simple test email");
+      }
+
+      toast({
+        title: "Success",
+        description: `Simple test email sent to ${data.sentTo}! Check your inbox.`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to send simple test: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    } finally {
+      setIsTestingSimpleRich(false);
+    }
+  };
+
+  // Handler para test de template only
+  const handleTestTemplateOnly = async () => {
+    try {
+      setIsTestingTemplateOnly(true);
+
+      const response = await fetch("/api/admin/test-template-only", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send template test");
+      }
+
+      toast({
+        title: "Success",
+        description: `Template test email sent to ${data.sentTo}! Check your inbox.`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to send template test: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    } finally {
+      setIsTestingTemplateOnly(false);
+    }
+  };
+
   // Handler para asignar suscripción gratuita
   const handleAssignFreeSubscription = async () => {
     try {
@@ -313,10 +474,11 @@ export default function AdminSettingsPage() {
   return (
     <div className="container mx-auto px-4">
       <Tabs defaultValue="version" className="space-y-6 mb-0 pb-0">
-        <TabsList className="grid grid-cols-4 mb-4">
+        <TabsList className="grid grid-cols-5 mb-4">
           <TabsTrigger value="version">Version</TabsTrigger>
           <TabsTrigger value="email">Emails</TabsTrigger>
           <TabsTrigger value="mass-email">Mass Email</TabsTrigger>
+          <TabsTrigger value="rich-email">Rich Email</TabsTrigger>
           <TabsTrigger value="subscription">Subscriptions</TabsTrigger>
         </TabsList>
 
@@ -480,6 +642,55 @@ export default function AdminSettingsPage() {
                 disabled={isSendingMassEmail || !emailSubject || !emailMessage}
               >
                 {isSendingMassEmail ? "Sending..." : "Send Mass Email"}
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
+        {/* Tab de Rich Email */}
+        <TabsContent value="rich-email">
+          <Card>
+            <CardHeader>
+              <CardTitle>Rich Content Email</CardTitle>
+              <CardDescription>
+                Send rich content emails with markdown support - text
+                formatting, images, links, and more
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid w-full items-center gap-1.5">
+                <Label htmlFor="rich-email-subject">Subject</Label>
+                <Input
+                  id="rich-email-subject"
+                  placeholder="Announcement or communication title"
+                  value={richEmailSubject}
+                  onChange={(e) => setRichEmailSubject(e.target.value)}
+                />
+              </div>
+
+              <div className="grid w-full items-center gap-1.5">
+                <Label htmlFor="rich-email-content">Content (Markdown)</Label>
+                <Textarea
+                  id="rich-email-content"
+                  placeholder={`Write your content using Markdown`}
+                  value={richEmailContent}
+                  onChange={(e) => setRichEmailContent(e.target.value)}
+                  rows={15}
+                  className="font-mono text-sm"
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-2">
+              <Button
+                onClick={handleSendRichEmail}
+                disabled={
+                  isSendingRichEmail || !richEmailSubject || !richEmailContent
+                }
+                className="w-full"
+              >
+                {isSendingRichEmail
+                  ? "Sending..."
+                  : "Send Rich Content Email (To all users)"}
               </Button>
             </CardFooter>
           </Card>

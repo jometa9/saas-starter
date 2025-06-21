@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { User } from "@/lib/db/schema";
+import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -18,28 +18,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
+import { User } from "@/lib/db/schema";
 import {
-  Zap,
-  Monitor,
-  CircleCheckIcon,
-  Pencil,
-  Trash,
-  ChevronDown,
-  ChevronRight,
-  CheckCircle,
   AlertCircle,
+  CheckCircle,
   Clock,
-  XCircle,
+  Eye,
+  EyeOff,
   Info,
-  ArrowUpRight,
+  Monitor,
+  Pencil,
   RefreshCw,
+  Trash,
+  XCircle,
 } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 
 export function TradingAccountsConfig({ user }: { user: User }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState<string | null>(
+    null
+  ); // Track which account is being deleted
   const [accounts, setAccounts] = useState<
     Array<{
       id: string;
@@ -61,47 +61,65 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Add useEffect to fetch accounts from API
-  useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
+  // Define fetchAccounts as a reusable function
+  const fetchAccounts = async (showLoadingState = false) => {
+    try {
+      if (showLoadingState) {
         setIsLoading(true);
-        const response = await fetch("/api/trading-accounts");
+      }
 
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to fetch trading accounts");
-        }
+      console.log("Fetching trading accounts...");
+      const response = await fetch("/api/trading-accounts");
 
-        const data = await response.json();
-        if (data.accounts && data.accounts.length > 0) {
-          // Convert numeric IDs to strings and ensure copyingTo exists
-          const formattedAccounts = data.accounts.map((account: any) => ({
-            ...account,
-            id: account.id.toString(),
-            password: "••••••••",
-            copyingTo: account.copyingTo || [],
-          }));
-          setAccounts(formattedAccounts);
-        }
-      } catch (error) {
-        
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to fetch trading accounts");
+      }
+
+      const data = await response.json();
+      console.log("Fetched accounts data:", data);
+
+      if (data.accounts && data.accounts.length > 0) {
+        // Convert numeric IDs to strings and ensure copyingTo exists
+        const formattedAccounts = data.accounts.map((account: any) => ({
+          ...account,
+          id: account.id.toString(),
+          password: "••••••••",
+          copyingTo: account.copyingTo || [],
+        }));
+        setAccounts(formattedAccounts);
+        console.log(
+          `Updated accounts state with ${formattedAccounts.length} accounts`
+        );
+      } else {
+        setAccounts([]);
+        console.log("No accounts found, setting empty array");
+      }
+    } catch (error) {
+      console.error("Error fetching accounts:", error);
+      if (showLoadingState) {
         toast({
           title: "Error",
           description: "Failed to load trading accounts. Please try again.",
           variant: "destructive",
         });
-      } finally {
+      }
+    } finally {
+      if (showLoadingState) {
         setIsLoading(false);
       }
-    };
+    }
+  };
 
-    fetchAccounts();
+  // Add useEffect to fetch accounts from API on component mount
+  useEffect(() => {
+    fetchAccounts(true); // Show loading state on initial load
   }, []);
 
   const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [editingAccount, setEditingAccount] = useState<any>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [formState, setFormState] = useState({
     accountNumber: "",
     platform: "mt4",
@@ -117,7 +135,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
   // Check if user is administrator
   const isAdmin = user.role === "admin" || user.role === "superadmin";
-  
+
   // Check if user has Managed VPS plan
   const isManagedVPS = user.planName === "IPTRADE Managed VPS";
 
@@ -191,6 +209,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   const handleAddAccount = () => {
     setIsAddingAccount(true);
     setEditingAccount(null);
+    setShowPassword(false);
     setFormState({
       accountNumber: "",
       platform: "mt4",
@@ -208,14 +227,27 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   // Referencia para el formulario
   const formRef = React.useRef<HTMLDivElement>(null);
 
-  const handleEditAccount = (account: any) => {
+  const handleEditAccount = async (account: any) => {
     setIsAddingAccount(true);
     setEditingAccount(account);
+
+    // Fetch the real password from the database
+    let realPassword = "";
+    try {
+      const response = await fetch(`/api/trading-accounts/${account.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        realPassword = data.account?.password || "";
+      }
+    } catch (error) {
+      console.log("Could not fetch password:", error);
+    }
+
     setFormState({
       accountNumber: account.accountNumber,
       platform: account.platform,
       serverIp: account.server,
-      password: "", // We don't show the existing password
+      password: realPassword, // Load the actual password
       accountType: account.accountType,
       status: account.status,
       lotCoefficient: account.lotCoefficient || 1,
@@ -240,6 +272,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
     if (deleteConfirmId) {
       try {
         setIsSubmitting(true);
+        setIsDeletingAccount(deleteConfirmId); // Set which account is being deleted
 
         // Check if the account being deleted is a master
         const accountToDelete = accounts.find(
@@ -248,6 +281,18 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         const isMaster =
           accountToDelete && accountToDelete.accountType === "master";
         const masterAccountNumber = accountToDelete?.accountNumber;
+        const connectedSlaves = accounts.filter(
+          (acc) =>
+            acc.accountType === "slave" &&
+            acc.connectedToMaster === masterAccountNumber
+        );
+
+        console.log(`Attempting to delete account:`, {
+          id: deleteConfirmId,
+          accountNumber: masterAccountNumber,
+          isMaster,
+          connectedSlavesCount: connectedSlaves.length,
+        });
 
         const response = await fetch(
           `/api/trading-accounts/${deleteConfirmId}`,
@@ -258,63 +303,27 @@ export function TradingAccountsConfig({ user }: { user: User }) {
 
         if (!response.ok) {
           const error = await response.json();
+          console.error("Delete API response error:", error);
           throw new Error(error.error || "Failed to delete trading account");
         }
 
-        if (isMaster && masterAccountNumber) {
-          // Update local state - unlink slaves from the deleted master
-          setAccounts(
-            accounts
-              .map((account) =>
-                account.accountType === "slave" &&
-                account.connectedToMaster === masterAccountNumber
-                  ? { ...account, connectedToMaster: "" }
-                  : account
-              )
-              .filter((account) => account.id !== deleteConfirmId)
-          );
+        const responseData = await response.json();
+        console.log("Delete API success response:", responseData);
 
-          // Update slave accounts in the backend
-          const slavesToUpdate = accounts.filter(
-            (acc) =>
-              acc.accountType === "slave" &&
-              acc.connectedToMaster === masterAccountNumber
-          );
-
-          // Update each connected slave in the backend
-          for (const slave of slavesToUpdate) {
-            try {
-              await fetch(`/api/trading-accounts/${slave.id}`, {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  ...slave,
-                  connectedToMaster: "",
-                }),
-              });
-            } catch (slaveUpdateError) {
-              
-              // Continue with other updates even if one fails
-            }
-          }
-        } else {
-          // Not a master account, just remove it from the list
-          setAccounts(
-            accounts.filter((account) => account.id !== deleteConfirmId)
-          );
-        }
+        // Refresh accounts to get updated state from backend
+        console.log("Refreshing accounts after deletion...");
+        await fetchAccounts(); // This will handle its own errors internally
+        console.log("Accounts refreshed successfully");
 
         toast({
           title: "Account Deleted",
           description:
-            isMaster && masterAccountNumber
-              ? `The master account has been removed and ${accounts.filter((acc) => acc.connectedToMaster === masterAccountNumber).length} slave accounts have been unlinked.`
+            isMaster && connectedSlaves.length > 0
+              ? `The master account has been removed and ${connectedSlaves.length} slave accounts have been unlinked.`
               : "The account has been removed successfully.",
         });
       } catch (error) {
-        
+        console.error("Error in confirmDeleteAccount:", error);
         toast({
           title: "Error",
           description: "Failed to delete trading account. Please try again.",
@@ -322,6 +331,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
         });
       } finally {
         setIsSubmitting(false);
+        setIsDeletingAccount(null);
         setDeleteConfirmId(null);
       }
     }
@@ -420,9 +430,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 }
               }
             }
-          } catch (e) {
-            
-          }
+          } catch (e) {}
           throw new Error(errorMessage);
         }
 
@@ -460,6 +468,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
               : acc
           )
         );
+
+        // Refresh accounts after successful update
+        await fetchAccounts();
 
         toast({
           title: "Account Updated",
@@ -517,9 +528,7 @@ export function TradingAccountsConfig({ user }: { user: User }) {
                 }
               }
             }
-          } catch (e) {
-            
-          }
+          } catch (e) {}
           throw new Error(errorMessage);
         }
 
@@ -545,6 +554,9 @@ export function TradingAccountsConfig({ user }: { user: User }) {
           },
         ]);
 
+        // Refresh accounts after successful creation
+        await fetchAccounts();
+
         toast({
           title: "Account Added",
           description: "Your new trading account has been added successfully.",
@@ -554,8 +566,8 @@ export function TradingAccountsConfig({ user }: { user: User }) {
       // Reset form and state
       setIsAddingAccount(false);
       setEditingAccount(null);
+      setShowPassword(false);
     } catch (error) {
-      
       toast({
         title: "Error",
         description:
@@ -570,31 +582,13 @@ export function TradingAccountsConfig({ user }: { user: User }) {
   const handleCancel = () => {
     setIsAddingAccount(false);
     setEditingAccount(null);
+    setShowPassword(false);
   };
 
   const handleRefreshAccounts = async () => {
     try {
       setIsRefreshing(true);
-      const response = await fetch("/api/trading-accounts");
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to fetch trading accounts");
-      }
-
-      const data = await response.json();
-      if (data.accounts && data.accounts.length > 0) {
-        // Convert numeric IDs to strings and ensure copyingTo exists
-        const formattedAccounts = data.accounts.map((account: any) => ({
-          ...account,
-          id: account.id.toString(),
-          password: "••••••••",
-          copyingTo: account.copyingTo || [],
-        }));
-        setAccounts(formattedAccounts);
-      } else {
-        setAccounts([]);
-      }
+      await fetchAccounts(); // Use the reusable function
 
       toast({
         title: "Accounts Refreshed",
@@ -763,15 +757,15 @@ export function TradingAccountsConfig({ user }: { user: User }) {
             <Button
               onClick={handleRefreshAccounts}
               variant="outline"
-r              disabled={isRefreshing || isLoading}
+              r
+              disabled={isRefreshing || isLoading}
               className="flex items-center gap-2"
             >
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+              />
             </Button>
-            <Button
-              onClick={handleAddAccount}
-              disabled={accounts.length >= 50}
-            >
+            <Button onClick={handleAddAccount} disabled={accounts.length >= 50}>
               Add Trading Account
             </Button>
           </div>
@@ -987,42 +981,58 @@ r              disabled={isRefreshing || isLoading}
 
                 <div>
                   <Label htmlFor="password">
-                    Password{" "}
-                    {editingAccount && "(leave blank to keep unchanged)"}
+                    Password {editingAccount && "(loaded from account)"}
                   </Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={formState.password}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                    required={!editingAccount}
-                    className="bg-white"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      value={formState.password}
+                      onChange={handleChange}
+                      placeholder="••••••••"
+                      required={!editingAccount}
+                      className="bg-white pr-10"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-gray-100 focus:outline-none rounded-r-md"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-500" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-500" />
+                      )}
+                    </button>
+                  </div>
+                  {editingAccount && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      The current password has been loaded from the account
+                    </p>
+                  )}
                 </div>
 
                 <div>
                   <Label htmlFor="accountType">Account Type</Label>
-                    <Select
-                      name="accountType"
-                      value={formState.accountType}
-                      onValueChange={(value) =>
-                        handleSelectChange("accountType", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {accountTypeOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
+                  <Select
+                    name="accountType"
+                    value={formState.accountType}
+                    onValueChange={(value) =>
+                      handleSelectChange("accountType", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {accountTypeOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
@@ -1374,8 +1384,13 @@ r              disabled={isRefreshing || isLoading}
                                     e.stopPropagation();
                                     confirmDeleteAccount();
                                   }}
+                                  disabled={
+                                    isDeletingAccount === masterAccount.id
+                                  }
                                 >
-                                  Confirm
+                                  {isDeletingAccount === masterAccount.id
+                                    ? "Deleting..."
+                                    : "Confirm"}
                                 </Button>
                                 <Button
                                   size="sm"
@@ -1384,6 +1399,9 @@ r              disabled={isRefreshing || isLoading}
                                     e.stopPropagation();
                                     cancelDeleteAccount();
                                   }}
+                                  disabled={
+                                    isDeletingAccount === masterAccount.id
+                                  }
                                 >
                                   Cancel
                                 </Button>
@@ -1399,6 +1417,9 @@ r              disabled={isRefreshing || isLoading}
                                     handleEditAccount(masterAccount);
                                   }}
                                   title="Edit Account"
+                                  disabled={
+                                    isDeletingAccount === masterAccount.id
+                                  }
                                 >
                                   <Pencil className="h-4 w-4 text-blue-600" />
                                 </Button>
@@ -1411,6 +1432,9 @@ r              disabled={isRefreshing || isLoading}
                                     handleDeleteAccount(masterAccount.id);
                                   }}
                                   title="Delete Account"
+                                  disabled={
+                                    isDeletingAccount === masterAccount.id
+                                  }
                                 >
                                   <Trash className="h-4 w-4 text-red-600" />
                                 </Button>
@@ -1545,13 +1569,21 @@ r              disabled={isRefreshing || isLoading}
                                         size="sm"
                                         variant="destructive"
                                         onClick={confirmDeleteAccount}
+                                        disabled={
+                                          isDeletingAccount === slaveAccount.id
+                                        }
                                       >
-                                        Confirm
+                                        {isDeletingAccount === slaveAccount.id
+                                          ? "Deleting..."
+                                          : "Confirm"}
                                       </Button>
                                       <Button
                                         size="sm"
                                         variant="outline"
                                         onClick={cancelDeleteAccount}
+                                        disabled={
+                                          isDeletingAccount === slaveAccount.id
+                                        }
                                       >
                                         Cancel
                                       </Button>
@@ -1567,6 +1599,11 @@ r              disabled={isRefreshing || isLoading}
                                           handleEditAccount(slaveAccount);
                                         }}
                                         title="Edit Account"
+                                        disabled={
+                                          isDeletingAccount ===
+                                            slaveAccount.id ||
+                                          isDeletingAccount === masterAccount.id
+                                        }
                                       >
                                         <Pencil className="h-4 w-4 text-blue-600" />
                                       </Button>
@@ -1579,6 +1616,11 @@ r              disabled={isRefreshing || isLoading}
                                           handleDeleteAccount(slaveAccount.id);
                                         }}
                                         title="Delete Account"
+                                        disabled={
+                                          isDeletingAccount ===
+                                            slaveAccount.id ||
+                                          isDeletingAccount === masterAccount.id
+                                        }
                                       >
                                         <Trash className="h-4 w-4 text-red-600" />
                                       </Button>
@@ -1722,13 +1764,17 @@ r              disabled={isRefreshing || isLoading}
                                 size="sm"
                                 variant="destructive"
                                 onClick={confirmDeleteAccount}
+                                disabled={isDeletingAccount === orphanSlave.id}
                               >
-                                Confirm
+                                {isDeletingAccount === orphanSlave.id
+                                  ? "Deleting..."
+                                  : "Confirm"}
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={cancelDeleteAccount}
+                                disabled={isDeletingAccount === orphanSlave.id}
                               >
                                 Cancel
                               </Button>
@@ -1744,6 +1790,7 @@ r              disabled={isRefreshing || isLoading}
                                   handleEditAccount(orphanSlave);
                                 }}
                                 title="Edit Account"
+                                disabled={isDeletingAccount === orphanSlave.id}
                               >
                                 <Pencil className="h-4 w-4 text-blue-600" />
                               </Button>
@@ -1756,6 +1803,7 @@ r              disabled={isRefreshing || isLoading}
                                   handleDeleteAccount(orphanSlave.id);
                                 }}
                                 title="Delete Account"
+                                disabled={isDeletingAccount === orphanSlave.id}
                               >
                                 <Trash className="h-4 w-4 text-red-600" />
                               </Button>

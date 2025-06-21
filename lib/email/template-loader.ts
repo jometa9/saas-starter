@@ -298,6 +298,55 @@ function getDefaultTemplate(templateName: string): string {
   <p>This link will expire soon.</p>
 </body>
 </html>`,
+
+    "rich-content": `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{subject}}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1f2937; background-color: #f9fafb;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td align="center" style="padding: 20px">
+        <table class="container" width="700" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden;">
+          <tr>
+            <td class="header" style="text-align: center; padding: 30px 0 20px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+              <div style="font-size: 28px; font-weight: bold; color: #ffffff">IPTRADE</div>
+              <div style="font-size: 14px; color: #e0e7ff; margin-top: 5px">Professional Trading Solutions</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="content" style="padding: 40px">
+              <h1 style="color: #111827; font-size: 28px; font-weight: 700; margin: 0 0 25px 0; text-align: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px;">{{subject}}</h1>
+              <p style="margin-bottom: 30px; color: #374151; font-size: 16px">Hello {{name}},</p>
+              <div class="rich-content" style="color: #374151">{{{richContent}}}</div>
+              <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border: 1px solid #e5e7eb; border-radius: 12px; padding: 25px; margin-top: 40px;">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="40" style="vertical-align: top">
+                      <span style="font-size: 24px">💬</span>
+                    </td>
+                    <td style="padding-left: 15px">
+                      <p style="margin: 0; color: #4b5563; font-size: 15px; line-height: 1.6;">If you have any questions or need assistance, our support team is here to help you. Don't hesitate to contact us.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="footer" style="text-align: center; padding: 25px; background-color: #f8fafc; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280;">
+              <p style="margin: 0 0 10px 0">&copy; {{year}} IPTRADE - All rights reserved</p>
+              <p style="margin: 0; font-size: 12px; color: #9ca3af">This email was sent from our administrative panel</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
   };
 
   const template = defaultTemplates[templateName];
@@ -337,7 +386,14 @@ export function replaceTemplateVariables(
     return value ? content : "";
   });
 
-  // Reemplazar variables simples {{variable}}
+  // Reemplazar variables con triple llaves {{{variable}}} (contenido HTML sin escapar)
+  const tripleVarRegex = /{{{([^#/][^}]*?)}}}/g;
+  result = result.replace(tripleVarRegex, (match, key) => {
+    const value = key.split(".").reduce((obj, k) => obj?.[k], data);
+    return value !== undefined ? String(value) : match;
+  });
+
+  // Reemplazar variables simples {{variable}} (contenido escapado)
   const varRegex = /{{([^#/][^}]*)}}/g;
   result = result.replace(varRegex, (match, key) => {
     const value = key.split(".").reduce((obj, k) => obj?.[k], data);
