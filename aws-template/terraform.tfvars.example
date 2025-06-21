@@ -1,0 +1,89 @@
+# General AWS Configuration
+aws_region       = "us-east-1"         # US East (N. Virginia) for cost efficiency
+environment_name = "saas-starter"
+certificate_arn = "" 
+app_name         = "saas-starter"          # Application name for resources
+
+# Component Toggle Flags - DEPLOYMENT ORDER
+# 1. First enable VPC
+enable_vpc                 = true
+# 2. Then enable ECR to upload your image
+enable_ecr                 = true
+# 3. Enable storage
+enable_s3_storage          = true
+# 4. Enable database (PostgreSQL instead of MySQL)
+enable_rds                 = true
+# 5. Finally enable ECS with your Next.js app
+enable_ecs                 = true
+# Optional: Enable frontend hosting if you want separate static hosting + CloudFront protection
+enable_frontend            = false
+frontend_enable_cloudfront = false
+enable_cloudfront          = false
+
+# Security Configuration
+enable_waf_protection      = true   # Enable WAF protection for ALB (recommended)
+
+# VPC Configuration
+vpc_cidr             = "10.100.0.0/16"
+public_subnet_1_cidr = "10.100.0.0/24"
+public_subnet_2_cidr = "10.100.1.0/24"
+
+# Database Configuration - CHANGED TO POSTGRESQL
+db_name           = "saas_starter"
+db_username       = "postgres"
+db_password       = "ChangeThisSecurePassword123!"  # Change this to a secure password
+db_engine_version = "16.4"             # PostgreSQL version
+db_instance_class = "db.t4g.micro"       # 2 vCPU, 1GB RAM (cheapest option)
+db_port           = 5432                 # PostgreSQL default port
+publicly_accessible = true               # Make the database publicly accessible
+storage_type      = "gp3"                # General Purpose SSD (gp3)
+allocated_storage = 20                   # 20GB storage (minimum)
+max_allocated_storage = 100              # Up to 100GB with autoscaling (reduced for cost)
+storage_encrypted = true                 # Enable encryption
+performance_insights_enabled = false     # Disable Performance Insights (saves cost)
+monitoring_interval = 0                  # Disable Enhanced Monitoring (saves cost)
+
+# Storage Configuration (S3 bucket for application data)
+storage_bucket_name = "saas-starter-storage-bucket-unique-123"  # Must be globally unique
+
+# Backend/Next.js Configuration - UNIFIED FULL-STACK APP
+backend_service_name        = "saas-starter-nextjs"
+backend_image_url           = "ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/saas-starter-nextjs:latest"  # Using ECR image
+backend_container_port      = 3000             # Next.js default port
+backend_task_cpu            = 512            # 0.5 vCPU - better for Next.js
+backend_container_cpu       = 512            # 0.5 vCPU - better for Next.js
+backend_task_memory         = 1024           # 1 GB - needed for Next.js build
+backend_container_memory    = 1024           # 1 GB - needed for Next.js build
+backend_desired_count       = 1              # Start with one container
+backend_path_pattern        = "/*"           # Route all traffic to this service
+backend_healthcheck_path    = "/api/status"  # Health check path (you'll need to create this)
+backend_min_containers      = 1              # Minimum container count
+backend_max_containers      = 3              # Maximum container count for cost control
+backend_autoscaling_target_value = 70        # Scale at 70% CPU utilization
+backend_node_env            = "production"   # Environment variable
+backend_timezone            = "UTC"          # Timezone
+
+# Environment variables for ECS - UPDATED FOR NEXT.JS + POSTGRES
+environment_variables = {
+  "NODE_ENV" = "production"
+  "PORT" = "3000"
+  "POSTGRES_URL" = "postgresql://DB_USER:DB_PASSWORD@DB_HOST:5432/DB_NAME"
+  "DATABASE_URL" = "postgresql://DB_USER:DB_PASSWORD@DB_HOST:5432/DB_NAME"
+  "S3_BUCKET" = "saas-starter-storage-bucket-unique-123"
+  "AWS_REGION" = "us-east-1"
+  "NEXTAUTH_URL" = "https://your-domain.com"
+  "NEXTAUTH_SECRET" = "your-nextauth-secret-key-here"
+  "STRIPE_SECRET_KEY" = "your-stripe-secret-key"
+  "STRIPE_WEBHOOK_SECRET" = "your-stripe-webhook-secret"
+  "RESEND_API_KEY" = "your-resend-api-key"
+  # Add other environment variables as needed
+}
+
+# Frontend Configuration (Not needed for unified Next.js app)
+frontend_bucket_name       = "saas-starter-frontend-bucket"  # Optional
+frontend_domain_name       = ""  # Optional: your custom domain name
+
+# ECR Repository Configuration
+ecr_repository_name       = "saas-starter-nextjs"  # Name of the repository
+ecr_image_tag_mutability  = "MUTABLE"      # Allow image tags to be overwritten
+ecr_encryption_type       = "AES256"       # Use AES256 encryption for the repository
