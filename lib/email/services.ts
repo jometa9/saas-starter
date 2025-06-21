@@ -245,33 +245,29 @@ export async function sendTradingAccountNotificationEmail({
   const statusMessage = getStatusMessage(serverStatus);
   const accountsStatusText = getAccountsStatusText(accountsData);
 
-  // Create the message content for the broadcast template
-  const message = `Your administrator has finished configuring your trading accounts in the IPTRADE Managed VPS service. Here's a summary of your current configuration:
+  // Import the new trading account notification template
+  const { tradingAccountNotificationTemplate } = await import("./templates");
 
-ACCOUNT SUMMARY:
-- Total Accounts: ${accountsData.totalAccounts}
-- Master Accounts: ${accountsData.masterAccounts}
-- Slave Accounts: ${accountsData.slaveAccounts}
-- Synchronized: ${accountsData.synchronizedAccounts}
-- Pending: ${accountsData.pendingAccounts}
-- Issues/Offline: ${accountsData.errorAccounts}
-
-SERVER STATUS: ${statusMessage}
-${serverIP ? `Server IP: ${serverIP}` : ""}
-
-${accountsStatusText}
-
-You can view and manage your trading accounts by logging into your IPTRADE dashboard.
-
-If you have any questions or need assistance, please don't hesitate to contact our support team.`;
-
-  // Use the existing broadcast email template
-  return sendBroadcastEmail({
-    email,
+  // Generate the email content using the dedicated template
+  const emailData = await tradingAccountNotificationTemplate({
     name,
+    totalAccounts: accountsData.totalAccounts,
+    masterAccounts: accountsData.masterAccounts,
+    slaveAccounts: accountsData.slaveAccounts,
+    synchronizedAccounts: accountsData.synchronizedAccounts,
+    pendingAccounts: accountsData.pendingAccounts,
+    errorAccounts: accountsData.errorAccounts,
+    serverStatus: statusMessage,
+    serverIP,
+    accountsStatusText,
+  });
+
+  // Send the email
+  return await sendEmail({
+    to: email,
     subject: "Trading Account Configuration Update",
-    message,
-    isImportant: true,
+    html: emailData.html,
+    text: emailData.text,
   });
 }
 

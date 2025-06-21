@@ -168,6 +168,36 @@ export async function managedVPSAdminNotificationTemplate(data: {
   };
 }
 
+// Email para notificaciones de configuración de trading accounts (para usuarios)
+export async function tradingAccountNotificationTemplate(data: {
+  name: string;
+  totalAccounts: number;
+  masterAccounts: number;
+  slaveAccounts: number;
+  synchronizedAccounts: number;
+  pendingAccounts: number;
+  errorAccounts: number;
+  serverStatus: string;
+  serverIP?: string;
+  accountsStatusText: string;
+  dashboardUrl?: string;
+}) {
+  const template = await loadTemplate("trading-account-notification");
+  const html = replaceTemplateVariables(template, {
+    ...data,
+    dashboardUrl:
+      data.dashboardUrl ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      "http://localhost:3000",
+    year: new Date().getFullYear(),
+  });
+
+  return {
+    html,
+    text: stripHtml(html),
+  };
+}
+
 // Email con contenido enriquecido (markdown)
 export async function richContentEmailTemplate(data: {
   name: string;
