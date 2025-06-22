@@ -1,21 +1,37 @@
-import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db/drizzle";
 import { getUserByApiKey, updateUserSubscription } from "@/lib/db/queries";
 import { stripe } from "@/lib/payments/stripe";
-import { db } from "@/lib/db/drizzle";
-import { user } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+
+// Configuración CORS
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+// Manejo explícito de OPTIONS para CORS
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: corsHeaders });
+}
 
 export async function GET(request: NextRequest) {
+  console.log("🔍 GET request received - validating license...");
   const searchParams = request.nextUrl.searchParams;
   const apiKey = searchParams.get("apiKey");
   const clientType = searchParams.get("clientType");
   const isElectronClient = clientType === "electron";
 
   if (!apiKey) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: "API key is required as a URL parameter (apiKey=your_key)" },
       { status: 401 }
     );
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
+    return response;
   }
 
   if (!isElectronClient) {
@@ -25,20 +41,29 @@ export async function GET(request: NextRequest) {
     const isValidOrigin = !origin || allowedOrigins.includes(origin);
 
     if (!isValidOrigin && allowedOrigins.length > 0) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: "Unauthorized request origin" },
         { status: 403 }
       );
+      Object.entries(corsHeaders).forEach(([key, value]) => {
+        response.headers.set(key, value);
+      });
+      return response;
     }
   }
 
   try {
     const user = await getUserByApiKey(apiKey);
     if (!user) {
-      return NextResponse.json(
+      console.log(`❌ Invalid API key: ${apiKey}`);
+      const response = NextResponse.json(
         { error: "Invalid License Key" },
         { status: 401 }
       );
+      Object.entries(corsHeaders).forEach(([key, value]) => {
+        response.headers.set(key, value);
+      });
+      return response;
     }
 
     let statusChanged = false;
@@ -126,7 +151,7 @@ export async function GET(request: NextRequest) {
         )
       : undefined;
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       userId: user.id,
       email: user.email,
       name: user.name,
@@ -147,10 +172,21 @@ export async function GET(request: NextRequest) {
             ? "free"
             : "none",
     });
+
+    // Agregar headers CORS
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
+
+    return response;
   } catch (error) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
     );
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
+    return response;
   }
 }
