@@ -1,21 +1,17 @@
 "use client";
 
-import { User } from "@/lib/db/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, ArrowUpRight, ExternalLink, Mail } from "lucide-react";
-import { getAvatarBgColor, getAvatarTextColor } from "@/lib/utils";
-import {
-  customerPortalAction,
-  directCheckoutAction,
-} from "@/lib/payments/actions";
 import { toast } from "@/components/ui/use-toast";
-import { useState, useEffect } from "react";
+import { User } from "@/lib/db/schema";
+import { customerPortalAction } from "@/lib/payments/actions";
+import { getAvatarBgColor, getAvatarTextColor } from "@/lib/utils";
+import { CreditCard, ExternalLink } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface AccountInfoCardProps {
   user: User;
-  onManageSubscription?: () => void;
   onGoToPricing: () => void;
   className?: string;
   title?: string;
@@ -24,7 +20,6 @@ interface AccountInfoCardProps {
 
 export function AccountInfoCard({
   user,
-  onManageSubscription,
   onGoToPricing,
   className = "",
   title = "Account Information",
@@ -32,7 +27,6 @@ export function AccountInfoCard({
 }: AccountInfoCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isPortalLoading, setIsPortalLoading] = useState(false);
-  const [isSendingEmails, setIsSendingEmails] = useState(false);
   const [userData, setUserData] = useState<User | null>(null);
 
   useEffect(() => {
@@ -62,6 +56,7 @@ export function AccountInfoCard({
         });
       }
     } catch (error) {
+      console.error("Portal redirect error:", error);
       setIsPortalLoading(false);
 
       toast({
@@ -92,6 +87,7 @@ export function AccountInfoCard({
         window.location.href = "/dashboard/pricing";
       }
     } catch (error) {
+      console.error("Direct subscription error:", error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again later.",

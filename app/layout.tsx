@@ -2,6 +2,7 @@ import "@/app/globals.css";
 import { ComingSoon } from "@/components/coming-soon";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { MetaPixel } from "@/components/meta-pixel";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Toaster } from "@/components/ui/toaster";
 import { UserProvider } from "@/lib/auth";
@@ -52,6 +53,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="text-black dark:text-white">
       <body className={`${inter.className}`} suppressHydrationWarning={true}>
+        {process.env.NEXT_PUBLIC_META_PIXEL_ID && (
+          <MetaPixel pixelId={process.env.NEXT_PUBLIC_META_PIXEL_ID} />
+        )}
         <GradientBackground />
         <NextAuthProvider>
           <UserProvider userPromise={userPromise}>

@@ -10,11 +10,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import DownloadCard from "@/components/downloads-card";
+import { useMetaPixel } from "@/components/meta-pixel";
 import { PricingToggle } from "@/components/pricing-toggle";
 import { Terminal } from "./terminal";
 
 export default function HomePage() {
   const { userPromise } = useUser();
+  const { trackEvent, trackCustomEvent } = useMetaPixel();
   const [user, setUser] = useState<User | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(true);
@@ -137,6 +139,15 @@ export default function HomePage() {
       setIsCheckoutLoading(true);
       setSelectedPlan(plan.toLowerCase());
 
+      // Track Meta Pixel event for initiate checkout
+      trackEvent("InitiateCheckout", {
+        content_name: plan,
+        content_category: "subscription",
+        value: getPlanValue(plan, isAnnual),
+        currency: "USD",
+        num_items: 1,
+      });
+
       if (!priceId) {
         toast({
           title: "Configuration Error",
@@ -169,6 +180,20 @@ export default function HomePage() {
     }
   };
 
+  // Function to get plan value for tracking
+  const getPlanValue = (plan: string, isAnnual: boolean): number => {
+    switch (plan.toLowerCase()) {
+      case "premium":
+        return isAnnual ? 192 : 20;
+      case "unlimited":
+        return isAnnual ? 480 : 50;
+      case "managed vps":
+        return isAnnual ? 9590 : 999;
+      default:
+        return 0;
+    }
+  };
+
   // Function to get the URL for each plan button (non-checkout)
   const getPlanUrl = (planName: string): string => {
     if (!user) {
@@ -198,13 +223,31 @@ export default function HomePage() {
                 lightning-fast execution without triggering IP security alerts.
               </p>
               <div className="mt-8 flex flex-col items-center sm:flex-row sm:justify-center md:justify-center lg:justify-start gap-4 mx-auto lg:mx-0">
-                <a href="/sign-up">
+                <a
+                  href="/sign-up"
+                  onClick={() => {
+                    trackEvent("Lead", {
+                      content_name: "Hero CTA - Start Now",
+                      content_category: "hero_section",
+                    });
+                    trackCustomEvent("HeroStartNowClick", {
+                      button_location: "hero_section",
+                    });
+                  }}
+                >
                   <Button className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white border border-blue-600 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-xl transition-all duration-300 hover:shadow-xl cursor-pointer border-2">
                     Start now
                     <Zap className="ml-3 h-5 w-5" />
                   </Button>
                 </a>
-                <Link href="/dashboard/guide">
+                <Link
+                  href="/dashboard/guide"
+                  onClick={() => {
+                    trackCustomEvent("ViewGuideClick", {
+                      button_location: "hero_section",
+                    });
+                  }}
+                >
                   <Button
                     variant="outline"
                     className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer border-2"
@@ -1610,13 +1653,31 @@ export default function HomePage() {
               need to maintain compliance while maximizing efficiency.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center">
-              <a href="/sign-in">
+              <a
+                href="/sign-in"
+                onClick={() => {
+                  trackEvent("Lead", {
+                    content_name: "Final CTA - Start Now",
+                    content_category: "final_cta",
+                  });
+                  trackCustomEvent("FinalCTAStartNowClick", {
+                    button_location: "final_cta_section",
+                  });
+                }}
+              >
                 <Button className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white border border-blue-600 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center shadow-xl transition-all duration-300 hover:shadow-xl cursor-pointer border-2">
                   Start now
                   <Zap className="ml-3 h-5 w-5" />
                 </Button>
               </a>
-              <Link href="/dashboard/guide">
+              <Link
+                href="/dashboard/guide"
+                onClick={() => {
+                  trackCustomEvent("ViewGuideClick", {
+                    button_location: "final_cta_section",
+                  });
+                }}
+              >
                 <Button
                   variant="outline"
                   className="border-black text-black hover:bg-black/5 rounded-full text-lg px-8 py-6 inline-flex items-center justify-center cursor-pointer border-2"
